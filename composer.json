@@ -1,0 +1,28 @@
+{
+	"name": "adawolfa/isdoc",
+	"require": {
+		"php": ">=7.4",
+		"ext-bcmath": "*",
+		"ext-simplexml": "*",
+		"ext-zip": "*",
+		"doctrine/annotations": "^1.12",
+		"nette/utils": "^3.2",
+		"symfony/serializer": "^5.2"
+	},
+	"require-dev": {
+		"goetas-webservices/xsd-reader": "^0.3",
+		"symfony/console": "^5.2",
+		"nette/php-generator": "^v3.5",
+		"phpunit/phpunit": "^9.5"
+	},
+	"autoload": {
+		"psr-4": {
+			"Adawolfa\\ISDOC\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Tests\\Adawolfa\\ISDOC\\": "tests/"
+		}
+	}
+}

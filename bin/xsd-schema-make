@@ -1,0 +1,627 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use Symfony\Component\Console;
+use GoetasWebservices\XML\XSDReader;
+use Nette\PhpGenerator;
+
+require(__DIR__ . '/../vendor/autoload.php');
+
+(new Console\SingleCommandApplication)
+	->addArgument('xsd', Console\Input\InputArgument::OPTIONAL, '', __DIR__ . '/../xsd/isdoc-invoice-6.0.1.xsd')
+	->addArgument('folder', Console\Input\InputArgument::OPTIONAL, '', __DIR__ . '/../src/Schema')
+	->addArgument('namespace', Console\Input\InputArgument::OPTIONAL, '', 'Adawolfa\\ISDOC\\Schema')
+	->setCode(function (Console\Input\InputInterface $input, Console\Output\OutputInterface $output): void {
+
+		$schema = (new GoetasWebservices\XML\XSDReader\SchemaReader)
+			->readFile($input->getArgument('xsd'));
+
+		$maker = new class ($input->getArgument('folder'), $input->getArgument('namespace')) {
+
+			private string $folder;
+			private string $namespace;
+
+			private static array $simpleTypeMap = [
+				'date'          => DateTimeImmutable::class,
+				'decimal'       => 'string',
+				'integer'       => 'int',
+				'string'        => 'string',
+				'IDType'        => 'string',
+				'token'         => 'string',
+				'boolean'       => 'bool',
+				'anySimpleType' => 'string',
+				'anyURI'        => '',
+				'BooleanType'   => 'bool',
+			];
+
+			public function __construct(string $folder, string $namespace)
+			{
+				$this->folder    = $folder;
+				$this->namespace = $namespace;
+			}
+
+			public function make(XSDReader\Schema\Schema $schema): void
+			{
+				$invoice = $schema->getElement('Invoice');
+
+				if (!$invoice instanceof XSDReader\Schema\Element\ElementDef) {
+					throw new Exception('Invoice should be instance of ' . XSDReader\Schema\Element\ElementDef::class . '.');
+				}
+
+				$invoiceType = $invoice->getType();
+
+				if (!$invoiceType instanceof XSDReader\Schema\Type\ComplexType) {
+					throw new Exception('Invoice type should be instance of ' . XSDReader\Schema\Type\ComplexType::class . '.');
+				}
+
+				$this->complexType($invoiceType, $this->namespace . '\\Invoice', $invoice->getDoc());
+
+				foreach ($schema->getTypes() as $type) {
+
+					if ($type instanceof XSDReader\Schema\Type\BaseComplexType) {
+						$this->complexType($type, self::formatComplexTypeName('Invoice', $type));
+					}
+
+				}
+			}
+
+			private function complexType(XSDReader\Schema\Type\BaseComplexType $complexType, string $name, string $doc = null): void
+			{
+				$namespaceName = substr($name, 0, strrpos($name, '\\'));
+				$classBaseName = substr($name, strlen($namespaceName) + 1);
+				$filename      = $this->folder . '/' . str_replace('\\', '/', substr($name, strlen($this->namespace) + 1)) . '.php';
+
+				$file = new PhpGenerator\PhpFile;
+				$file->setStrictTypes(true);
+				$namespace = $file->addNamespace($namespaceName);
+				$namespace->addUse(Adawolfa\ISDOC\Map::class);
+				$namespace->addUse(Adawolfa\ISDOC\Reference::class);
+				$namespace->addUse(DateTimeImmutable::class);
+				$namespace->addUse(Adawolfa\ISDOC\SimpleContentElement::class);
+				$namespace->addUse(Adawolfa\ISDOC\Collection::class);
+				$namespace->addUse(Adawolfa\ISDOC\Restriction::class);
+				$namespace->addUse(Nette\SmartObject::class);
+				$namespace->addUse(ArrayIterator::class);
+				$namespace->addUse(Adawolfa\ISDOC\ToArray::class);
+				$namespace->addUse(Adawolfa\ISDOC\Arrayable::class);
+				$class = $namespace->addClass($classBaseName);
+
+				$class->addComment($this->formatDoc($doc ?? $complexType->getDoc()));
+
+				if ($complexType instanceof XSDReader\Schema\Type\ComplexTypeSimpleContent) {
+					$class->addExtend(Adawolfa\ISDOC\SimpleContentElement::class);
+				}
+
+				$arrayable = true;
+
+				if ($complexType instanceof XSDReader\Schema\Type\ComplexType
+					&& count($complexType->getElements())
+					&& ($collectionElement = $complexType->getElements()[0])
+					&& $collectionElement instanceof XSDReader\Schema\Element\Element
+					&& $collectionElement->getMax() !== 1) {
+
+					$arrayable = false;
+
+					$class->addExtend(Adawolfa\ISDOC\Collection::class);
+					$class->addComment('@Map("' . $collectionElement->getName() . '")');
+
+					$collectionElementType = $collectionElement->getType();
+
+					$getIteratorMethod = $class->addMethod('getIterator');
+					$getIteratorMethod->setReturnType(ArrayIterator::class);
+					$getIteratorMethod->addBody('return new ArrayIterator($this->items);');
+
+					$addMethod = $class->addMethod('add');
+					$addMethod->setReturnType('self');
+					$addMethod->addBody('$this->items[] = $' . self::formatPropertyName($collectionElement->getName()) . ';');
+					$addMethod->addBody('return $this;');
+					$addMethodParameter = $addMethod->addParameter(self::formatPropertyName($collectionElement->getName()));
+
+					switch (true) {
+
+						case $collectionElementType instanceof XSDReader\Schema\Type\ComplexType:
+							$class->addComment('@extends Collection<' . self::formatComplexTypeName('Invoice', $collectionElementType, false) . '>');
+							$getIteratorMethod->addComment('@return ArrayIterator|' . self::formatComplexTypeName('Invoice', $collectionElementType, false) . '[]');
+							$addMethodParameter->setType(self::formatComplexTypeName('Invoice', $collectionElementType));
+							break;
+
+						case $collectionElementType instanceof XSDReader\Schema\Type\SimpleType:
+							$collectionPhpType = self::$simpleTypeMap[$collectionElementType->getRestriction()->getBase()->getName()];
+							$class->addComment('@extends Collection<' . $collectionPhpType . '>');
+							$getIteratorMethod->addComment('@return ArrayIterator|' . $collectionPhpType . '[]');
+							$addMethodParameter->setType($collectionPhpType);
+							break;
+
+						default:
+							throw new Exception('Unsupported collection element type.');
+
+					}
+
+				} elseif ($complexType instanceof XSDReader\Schema\Type\ComplexType) {
+					$class->addTrait(Nette\SmartObject::class);
+					$this->complexTypeElements($class, $complexType);
+				}
+
+				$this->complexTypeAttributes($class, $complexType);
+				$this->generateConstructor($class);
+
+				if ($arrayable) {
+					$class->addTrait(Adawolfa\ISDOC\ToArray::class);
+					$class->addImplement(Adawolfa\ISDOC\Arrayable::class);
+				}
+
+				@mkdir(dirname($filename), 0777, true);
+				file_put_contents($filename, $this->reformat((string)$file));
+			}
+
+			private function complexTypeElements(PhpGenerator\ClassType $class, XSDReader\Schema\Type\ComplexType $complexType): void
+			{
+				$referencedType = null;
+
+				if ($complexType->getName() !== null && preg_match('~LineReferenceType$~', $complexType->getName())) {
+
+					$referencedTypeName = str_replace('Line', '', $complexType->getName());
+					$referencedType = $complexType->getSchema()->getType($referencedTypeName);
+
+					if (!$referencedType instanceof XSDReader\Schema\Type\ComplexType) {
+						throw new Exception('Referenced type should be an instance of ' . XSDReader\Schema\Type\ComplexType::class . '.');
+					}
+
+					$referencedTypeProperty = $this->createProperty($class, $this->formatPropertyName($referencedTypeName))
+						->addComment('@Reference');
+					$this->complexTypeProperty($class, $referencedTypeProperty, $referencedType, false);
+
+				}
+
+				foreach ($complexType->getElements() as $element) {
+
+					if ($referencedType !== null) {
+
+						foreach ($referencedType->getElements() as $referencedTypeElement) {
+
+							if ($referencedTypeElement->getName() === $element->getName()) {
+								continue 2;
+							}
+
+						}
+
+					}
+
+					switch (true) {
+
+						// Unsupported choices.
+						case $element instanceof XSDReader\Schema\Element\Element
+							&& $class->hasProperty($this->formatPropertyName($element->getName())):
+							break;
+
+						case $element instanceof XSDReader\Schema\Element\Element:
+
+							$type     = $element->getType();
+							$property = $this->createElementProperty($class, $element);
+
+							switch (true) {
+
+								case $type instanceof XSDReader\Schema\Type\ComplexType:
+								case $type instanceof XSDReader\Schema\Type\ComplexTypeSimpleContent:
+									$this->complexTypeProperty($class, $property, $type, $element->getMin() === 0);
+									break;
+
+								case $type instanceof XSDReader\Schema\Type\SimpleType:
+
+									$this->simpleTypeProperty(
+
+										$class,
+										$property,
+										$type,
+
+										// The schema parser doesn't provide a way to obtain the limit from the parent sequence.
+										$element->getMin() === 0 || in_array($property->getName(), [
+											'subDocumentType',
+											'subDocumentTypeOrigin',
+										], true)
+
+									);
+
+									break;
+
+								default:
+									throw new Exception('Unsupported complex element type.');
+
+							}
+
+							break;
+
+					}
+
+				}
+			}
+
+			private function complexTypeAttributes(PhpGenerator\ClassType $class, XSDReader\Schema\Type\BaseComplexType $complexType): void
+			{
+				foreach ($complexType->getAttributes() as $attribute) {
+
+					if (!$attribute instanceof XSDReader\Schema\Attribute\Attribute) {
+						continue; // TODO
+						throw new Exception('Attribute should be an instance of ' . XSDReader\Schema\Attribute\Attribute::class . '.');
+					}
+
+					$type     = $attribute->getType();
+					$property = $this->createAttributeProperty($class, $attribute);
+
+					if (!$type instanceof XSDReader\Schema\Type\SimpleType) {
+						throw new Exception('Unsupported attribute type.');
+					}
+
+					$this->simpleTypeProperty($class, $property, $type, $attribute->getUse() === XSDReader\Schema\Attribute\AttributeSingle::USE_OPTIONAL);
+
+				}
+			}
+
+			private function createProperty(PhpGenerator\ClassType $class, string $name, string $doc = null): PhpGenerator\Property
+			{
+				$property = $class->addProperty($name)
+					->setVisibility('private');
+
+				if ($doc !== null) {
+					$property->addComment($this->formatDoc($doc));
+				}
+
+				return $property;
+			}
+
+			private function createElementProperty(PhpGenerator\ClassType $class, XSDReader\Schema\Element\Element $element): PhpGenerator\Property
+			{
+				return $this->createProperty($class, $this->formatPropertyName($element->getName()), $element->getDoc())
+					->addComment('@Map("' . $element->getName() . '")');
+			}
+
+			private function createAttributeProperty(PhpGenerator\ClassType $class, XSDReader\Schema\Attribute\Attribute $attribute): PhpGenerator\Property
+			{
+				return $this->createProperty($class, $this->formatPropertyName($attribute->getName()), $attribute->getDoc())
+					->addComment('@Map("@' . $attribute->getName() . '")');
+			}
+
+			private function complexTypeProperty(PhpGenerator\ClassType $class, PhpGenerator\Property $property, XSDReader\Schema\Type\BaseComplexType $complexType, bool $nullable): void
+			{
+				$this->decorateProperty($class, $property, self::formatComplexTypeName('Invoice', $complexType), $nullable, $complexType->getRestriction());
+			}
+
+			private function simpleTypeProperty(PhpGenerator\ClassType $class, PhpGenerator\Property $property, XSDReader\Schema\Type\SimpleType $simpleType, bool $nullable): void
+			{
+				while (count($simpleType->getUnions()) > 0) {
+
+					// Hack for v6.0.1's LocalReverseChargeCodeType.
+					foreach ($simpleType->getUnions() as $unionSimpleType) {
+
+						if ($unionSimpleType->getRestriction() !== null
+							&& $unionSimpleType->getRestriction()->getBase() !== null
+							&& $unionSimpleType->getRestriction()->getBase()->getName() !== null
+							&& isset(self::$simpleTypeMap[$unionSimpleType->getRestriction()->getBase()->getName()])) {
+							$simpleType = $unionSimpleType;
+							break 2;
+						}
+
+					}
+
+					throw new Exception('Union types are not supported.');
+
+				}
+
+				if ($simpleType->getRestriction() === null) {
+					throw new Exception('Restriction is not defined.');
+				}
+
+				$phpType = self::$simpleTypeMap[$simpleType->getRestriction()->getBase()->getName()];
+
+				if ($phpType === null) {
+					throw new Exception("Undefined simple type conversion for '{$simpleType->getRestriction()->getBase()->getName()}'.");
+				}
+
+				$this->decorateProperty($class, $property, $phpType, $nullable, $simpleType->getRestriction());
+			}
+
+			private function decorateProperty(
+				PhpGenerator\ClassType                    $class,
+				PhpGenerator\Property                     $property,
+				string                                    $type,
+				bool                                      $nullable,
+				?XSDReader\Schema\Inheritance\Restriction $restriction
+			): void
+			{
+				$property->setType($type);
+				$property->setNullable($nullable);
+
+				$typeHint = (strpos($type, '\\') === false ? $type : substr($type, strlen($this->namespace) + 1));
+
+				if ($class->getName() !== 'Invoice' && strpos($typeHint, 'Invoice\\') === 0) {
+					$typeHint = substr($typeHint, strlen('Invoice') + 1);
+				}
+
+				$comment = '@property ' . $typeHint;
+
+				if ($nullable) {
+					$property->setValue(null);
+					$comment .= '|null';
+				}
+
+				$comment .= ' $' . $property->getName();
+				$class->addComment($comment);
+				$this->generateAccessors($class, $property, $restriction);
+			}
+
+			private function generateAccessors(
+				PhpGenerator\ClassType                    $classType,
+				PhpGenerator\Property                     $property,
+				?XSDReader\Schema\Inheritance\Restriction $restriction
+			): void
+			{
+				$this->generateGetter($classType, $property);
+				$this->generateSetter($classType, $property, $restriction);
+			}
+
+			private function generateGetter(PhpGenerator\ClassType $classType, PhpGenerator\Property $property): void
+			{
+				$method = $classType->addMethod('get' . ucfirst($property->getName()));
+				$method->setVisibility('public');
+				$method->setReturnType($property->getType());
+				$method->setReturnNullable($property->isNullable());
+				$method->addBody('return $this->' . $property->getName() . ';');
+			}
+
+			private function generateSetter(
+				PhpGenerator\ClassType                    $class,
+				PhpGenerator\Property                     $property,
+				?XSDReader\Schema\Inheritance\Restriction $restriction): void
+			{
+				$method = $class->addMethod('set' . ucfirst($property->getName()));
+				$method->setVisibility('public');
+				$method->setReturnType('self');
+
+				if ($restriction !== null) {
+
+					if ($restriction->getBase()->getName() === 'decimal') {
+						$method->addBody('Restriction::decimal($' . $property->getName() . ');');
+					}
+
+					if (count($restriction->getChecks()) > 0) {
+
+						foreach ($restriction->getChecks() as $check => $parameters) {
+							$this->implementRestriction($class, $method, $property, $check, $parameters);
+						}
+
+					}
+
+				}
+
+				$method->addBody('$this->' . $property->getName() . ' = $' . $property->getName() . ';');
+				$method->addBody('return $this;');
+				$method->addParameter($property->getName())
+					->setType($property->getType())
+					->setNullable($property->isNullable());
+			}
+
+			private function implementRestriction(
+				PhpGenerator\ClassType $class,
+				PhpGenerator\Method    $method,
+				PhpGenerator\Property  $property,
+				string                 $restriction,
+				array                  $parameters
+			): void
+			{
+				if ($property->getType() === 'bool' && $restriction === 'pattern') {
+					return;
+				}
+
+				switch ($restriction) {
+
+					case 'maxLength':
+						$method->addBody(sprintf(
+							"Restriction::maxLength($%s, %d);",
+							$property->getName(),
+							$parameters[0]['value'],
+						));
+						break;
+
+					case 'length':
+						$method->addBody(sprintf(
+							"Restriction::length($%s, %d);",
+							$property->getName(),
+							$parameters[0]['value'],
+						));
+						break;
+
+					case 'pattern':
+						$method->addBody(sprintf(
+							"Restriction::pattern($%s, %s);",
+							$property->getName(),
+							var_export($parameters[0]['value'], true),
+						));
+						break;
+
+					case 'enumeration':
+
+						$constantPrefix = strtoupper(preg_replace('~[A-Z]~', '_$0', $property->getName())) . '_';
+						$constants      = [];
+
+						foreach ($parameters as $option) {
+
+							$constant = $constantPrefix . strtoupper(
+									strtr(
+										str_replace(' ', '_',
+											substr($option['doc'], strpos($option['doc'], "\n") + 1)
+										),
+										[
+											'(' => '',
+											')' => '',
+										]
+									)
+								);
+
+							$value = $option['value'];
+							settype($value, $property->getType());
+							$class->addConstant($constant, $value);
+							$constants[] = "\tself::" . $constant . ',';
+
+						}
+
+						$method->addBody("Restriction::enumeration(\${$property->getName()}, [\n" . implode("\n", $constants) . "\n]);");
+
+						break;
+
+				}
+			}
+
+			private function generateConstructor(PhpGenerator\ClassType $class): void
+			{
+				$properties = array_filter($class->getProperties(), fn(PhpGenerator\Property $property): bool => !$property->isInitialized());
+
+				if (count($properties) === 0) {
+					return;
+				}
+
+				$constructor = $class->addMethod('__construct');
+				$constructor->setVisibility('public');
+
+				foreach ($properties as $property) {
+
+					$constructor
+						->addParameter($property->getName())
+						->setType($property->getType());
+
+					$constructor->addBody('$this->set' . ucfirst($property->getName()) . '($' . $property->getName() . ');');
+
+				}
+			}
+
+			private function reformat(string $code): string
+			{
+				$code = str_replace("declare(strict_types=1);\n\n", "declare(strict_types=1);\n", $code);
+				$code = preg_replace('~namespace (.*);\n\n~', "namespace $1;\n", $code);
+				$code = preg_replace('~}\n$~', "\n}", $code);
+				$code = preg_replace('~\n\n\n\tpublic~', "\n\n\tpublic", $code);
+				$code = preg_replace('~class (.*)\n{\n~', "class $1\n{\n\n", $code);
+
+				if (preg_match_all('~ \* @property ([^ ]+) ~', $code, $matches)) {
+
+					$length = max(array_map('strlen', $matches[1]));
+
+					$code = preg_replace_callback('~ \* @property ([^ ]+) (.+)~', function (array $match) use ($length): string {
+						return ' * @property ' . str_pad($match[1], $length) . ' ' . $match[2];
+					}, $code);
+
+				}
+
+				if (preg_match_all('~\tconst ([^ ]+) ~', $code, $matches)) {
+
+					$length = max(array_map('strlen', $matches[1]));
+
+					$code = preg_replace_callback('~\tconst ([^ ]+) (.+)~', function (array $match) use ($length): string {
+						return "\tpublic const " . str_pad($match[1], $length) . ' ' . $match[2];
+					}, $code);
+
+				}
+
+				if (preg_match_all('~\nuse ([^;]+);~', $code, $matches)) {
+
+					foreach ($matches[1] as $i => $use) {
+
+						$className = strpos($use, '\\') === false ? $use : substr($use, strrpos($use, '\\') + 1);
+
+						if (preg_match('~private \??' . $className . ' ~', $code)) {
+							continue;
+						}
+
+						if (strpos($code, ' extends ' . $className) !== false) {
+							continue;
+						}
+
+						if (strpos($code, "\tuse " . $className) !== false) {
+							continue;
+						}
+
+						if (strpos($code, $className . '::') !== false) {
+							continue;
+						}
+
+						if (strpos($code, 'new ' . $className . '(') !== false) {
+							continue;
+						}
+
+						if (strpos($code, 'implements ' . $className) !== false) {
+							continue;
+						}
+
+						if (($className === 'Map' || $className === 'Reference') && strpos($code, '@' . $className) !== false) {
+							continue;
+						}
+
+						$code = str_replace($matches[0][$i], '', $code);
+
+					}
+
+				}
+
+				if (preg_match('~\n\n\tpublic function __construct[^}]+}~s', $code, $matches) === 1) {
+
+					$code = str_replace($matches[0], '', $code);
+
+					preg_match_all('~\tprivate .*;\n~', $code, $matches2, PREG_OFFSET_CAPTURE);
+					$last     = end($matches2[0]);
+					$position = $last[1] + strlen($last[0]);
+					$code     = substr($code, 0, $position) . substr($matches[0], 1) . "\n" . substr($code, $position);
+
+				}
+
+				return preg_replace('~\t/\*\*\n\t \* (.*)\n\t \*/~', "\t/** $1 */", $code);
+			}
+
+			private function formatComplexTypeName(string $namespace, XSDReader\Schema\Type\BaseComplexType $complexType, bool $full = true): string
+			{
+				$className = preg_replace('~(Reference)?Type$~', '', $complexType->getName());
+
+				if ($full) {
+					return $this->namespace . '\\' . $namespace . '\\' . $className;
+				} else {
+					return $className;
+				}
+			}
+
+			private function formatPropertyName(string $name): string
+			{
+				if ($name !== 'Reference') {
+					$name = preg_replace('~Reference$~', '', $name);
+				}
+
+				if ($name !== 'ReferenceType') {
+					$name = preg_replace('~ReferenceType$~', '', $name);
+				}
+
+				if (strtoupper($name) === $name) {
+					return strtolower($name);
+				} elseif (preg_match('~^([A-Z]+)([A-Z][a-z].*)~', $name, $matches)) {
+					return strtolower($matches[1]) . $matches[2];
+				} else {
+					return lcfirst($name);
+				}
+			}
+
+			private function formatDoc(string $doc): string
+			{
+				$doc   = Nette\Utils\Strings::normalizeNewLines($doc);
+				$lines = substr_count($doc, "\n");
+
+				if ($lines === 1) {
+					return rtrim(substr($doc, strpos($doc, "\n") + 1), '.') . ".\n";
+				} else {
+					throw new Exception('Weird doc.');
+				}
+			}
+
+		};
+
+		$maker->make($schema);
+
+	})
+	->run();

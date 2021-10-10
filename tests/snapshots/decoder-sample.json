@@ -1,0 +1,701 @@
+{
+    "documentType": 1,
+    "subDocumentType": null,
+    "subDocumentTypeOrigin": null,
+    "targetConsolidator": null,
+    "clientOnTargetConsolidator": null,
+    "clientBankAccount": null,
+    "id": "FV-111999/2011",
+    "uuid": "7B4C5BE0-288C-11D2-8E62-004095452B84",
+    "egovFlag": null,
+    "isds_id": null,
+    "file": null,
+    "referenceNumber": null,
+    "egovClassifiers": null,
+    "issuingSystem": null,
+    "issueDate": "2013-02-28 00:00:00",
+    "taxPointDate": "2013-02-28 00:00:00",
+    "vatApplicable": true,
+    "electronicPossibilityAgreement": {
+        "languageID": null,
+        "content": "ABC123/90007/2012"
+    },
+    "note": {
+        "languageID": null,
+        "content": "Nepovinná poznámka k dokladu"
+    },
+    "localCurrencyCode": "CZK",
+    "foreignCurrencyCode": "EUR",
+    "currRate": "25.10",
+    "refCurrRate": "1",
+    "extensions": [],
+    "accountingSupplierParty": {
+        "party": {
+            "partyIdentification": {
+                "userID": "315",
+                "catalogFirmIdentification": "0",
+                "id": "25097563"
+            },
+            "partyName": {
+                "name": "ABRA Software a.s."
+            },
+            "postalAddress": {
+                "streetName": "Jeremiášova",
+                "buildingNumber": "1422",
+                "cityName": "Praha 13",
+                "postalZone": "15300",
+                "country": {
+                    "identificationCode": "CZ",
+                    "name": "Česká republika"
+                }
+            },
+            "partyTaxScheme": {
+                "companyID": "CZ25097563",
+                "taxScheme": "VAT"
+            },
+            "registerIdentification": {
+                "registerKeptAt": "Městského soudu v Praze",
+                "registerFileRef": "odd. B, vl. 4475",
+                "registerDate": "1996-12-31 00:00:00",
+                "preformatted": null
+            },
+            "contact": {
+                "name": "Josef Novák",
+                "telephone": "123456789",
+                "electronicMail": "novak@abra.eu"
+            }
+        }
+    },
+    "sellerSupplierParty": {
+        "party": {
+            "partyIdentification": {
+                "userID": "315",
+                "catalogFirmIdentification": "0",
+                "id": "25097563"
+            },
+            "partyName": {
+                "name": "ABRA Software a.s."
+            },
+            "postalAddress": {
+                "streetName": "Jeremiášova",
+                "buildingNumber": "1422",
+                "cityName": "Praha 13",
+                "postalZone": "15300",
+                "country": {
+                    "identificationCode": "CZ",
+                    "name": "Česká republika"
+                }
+            },
+            "partyTaxScheme": {
+                "companyID": "CZ25097563",
+                "taxScheme": "VAT"
+            },
+            "registerIdentification": {
+                "registerKeptAt": "Městského soudu v Praze",
+                "registerFileRef": "odd. B, vl. 4475",
+                "registerDate": "1996-12-31 00:00:00",
+                "preformatted": null
+            },
+            "contact": {
+                "name": "Josef Novák",
+                "telephone": "123456789",
+                "electronicMail": "novak@abra.eu"
+            }
+        }
+    },
+    "accountingCustomerParty": {
+        "party": {
+            "partyIdentification": {
+                "userID": "000001",
+                "catalogFirmIdentification": "0",
+                "id": "00006947"
+            },
+            "partyName": {
+                "name": "Ministerstvo financí ČR"
+            },
+            "postalAddress": {
+                "streetName": "Letenská",
+                "buildingNumber": "15",
+                "cityName": "Praha 1",
+                "postalZone": "11810",
+                "country": {
+                    "identificationCode": "CZ",
+                    "name": "Česká republika"
+                }
+            },
+            "partyTaxScheme": {
+                "companyID": "CZ00006947",
+                "taxScheme": "VAT"
+            },
+            "registerIdentification": null,
+            "contact": {
+                "name": "Jan Novák",
+                "telephone": "987654321",
+                "electronicMail": "novotny@mfcr.cz"
+            }
+        }
+    },
+    "anonymousCustomerParty": null,
+    "buyerCustomerParty": {
+        "party": {
+            "partyIdentification": {
+                "userID": "000001",
+                "catalogFirmIdentification": "0",
+                "id": "00006947"
+            },
+            "partyName": {
+                "name": "Ministerstvo financí ČR"
+            },
+            "postalAddress": {
+                "streetName": "Letenská",
+                "buildingNumber": "15",
+                "cityName": "Praha 1",
+                "postalZone": "11810",
+                "country": {
+                    "identificationCode": "CZ",
+                    "name": "Česká republika"
+                }
+            },
+            "partyTaxScheme": {
+                "companyID": "CZ00006947",
+                "taxScheme": "VAT"
+            },
+            "registerIdentification": null,
+            "contact": {
+                "name": "Jan Novák",
+                "telephone": "987654321",
+                "electronicMail": "novotny@mfcr.cz"
+            }
+        }
+    },
+    "orderReferences": [
+        {
+            "salesOrderID": "OP-111222/2011",
+            "externalOrderID": "OV-123111/2011",
+            "issueDate": "2013-01-03 00:00:00",
+            "externalOrderIssueDate": null,
+            "uuid": null,
+            "isds_id": null,
+            "file": null,
+            "referenceNumber": null
+        },
+        {
+            "salesOrderID": "OP-111223/2011",
+            "externalOrderID": "OV-123112/2011",
+            "issueDate": "2013-01-20 00:00:00",
+            "externalOrderIssueDate": null,
+            "uuid": null,
+            "isds_id": null,
+            "file": null,
+            "referenceNumber": null
+        }
+    ],
+    "deliveryNoteReferences": [
+        {
+            "id": "DL-45678/2011",
+            "issueDate": "2013-02-28 00:00:00",
+            "uuid": null
+        }
+    ],
+    "originalDocumentReferences": [
+        {
+            "id": "FV-111999/2011",
+            "issueDate": "2013-02-28 00:00:00",
+            "uuid": "7B4C5BE0-288C-11D2-8E62-004095452B84"
+        }
+    ],
+    "contractReferences": null,
+    "delivery": {
+        "party": {
+            "partyIdentification": {
+                "userID": "000001",
+                "catalogFirmIdentification": "0",
+                "id": "00006947"
+            },
+            "partyName": {
+                "name": "Ministerstvo financí ČR"
+            },
+            "postalAddress": {
+                "streetName": "Letenská",
+                "buildingNumber": "15",
+                "cityName": "Praha 1",
+                "postalZone": "11810",
+                "country": {
+                    "identificationCode": "CZ",
+                    "name": "Česká republika"
+                }
+            },
+            "partyTaxScheme": {
+                "companyID": "CZ00006947",
+                "taxScheme": "VAT"
+            },
+            "registerIdentification": null,
+            "contact": {
+                "name": "Jan Novák",
+                "telephone": "987654321",
+                "electronicMail": "novotny@mfcr.cz"
+            }
+        }
+    },
+    "invoiceLines": [
+        {
+            "id": "1",
+            "order": {
+                "order": {
+                    "salesOrderID": "OP-111222/2011",
+                    "externalOrderID": "OV-123111/2011",
+                    "issueDate": "2013-01-03 00:00:00",
+                    "externalOrderIssueDate": null,
+                    "uuid": null,
+                    "isds_id": null,
+                    "file": null,
+                    "referenceNumber": null
+                },
+                "lineID": "1"
+            },
+            "deliveryNote": {
+                "deliveryNote": {
+                    "id": "DL-45678/2011",
+                    "issueDate": "2013-02-28 00:00:00",
+                    "uuid": null
+                },
+                "lineID": "1"
+            },
+            "originalDocument": {
+                "originalDocument": {
+                    "id": "FV-111999/2011",
+                    "issueDate": "2013-02-28 00:00:00",
+                    "uuid": "7B4C5BE0-288C-11D2-8E62-004095452B84"
+                },
+                "lineID": "1"
+            },
+            "contract": null,
+            "egovClassifier": null,
+            "invoicedQuantity": {
+                "unitCode": "Ks",
+                "content": "100"
+            },
+            "lineExtensionAmountCurr": "4.30",
+            "lineExtensionAmount": "107.93",
+            "lineExtensionAmountBeforeDiscount": null,
+            "lineExtensionAmountTaxInclusiveCurr": "5.20",
+            "lineExtensionAmountTaxInclusive": "130.52",
+            "lineExtensionAmountTaxInclusiveBeforeDiscount": null,
+            "lineExtensionTaxAmount": "22.59",
+            "unitPrice": "1.0793",
+            "unitPriceTaxInclusive": "1.3052",
+            "classifiedTaxCategory": {
+                "percent": "19",
+                "vatCalculationMethod": 0,
+                "vatApplicable": null,
+                "localReverseCharge": null
+            },
+            "note": {
+                "languageID": null,
+                "content": "Parfémovaný, vůně strawberry"
+            },
+            "vatNote": null,
+            "item": {
+                "description": "Kapesník papírový NAPPAX NP458",
+                "catalogueItemIdentification": {
+                    "id": "1000000000013"
+                },
+                "sellersItemIdentification": {
+                    "id": "10000001"
+                },
+                "secondarySellersItemIdentification": {
+                    "id": "DE555444333"
+                },
+                "tertiarySellersItemIdentification": {
+                    "id": "NAPPAX 458-1028-30"
+                },
+                "buyersItemIdentification": {
+                    "id": "999988887777766666"
+                },
+                "storeBatches": [
+                    {
+                        "name": "Šarže 3A5/2011",
+                        "note": {
+                            "languageID": null,
+                            "content": "Pozor doprodej staré řady parfémů"
+                        },
+                        "expirationDate": "2010-12-31 00:00:00",
+                        "specification": "Dávkování 35",
+                        "quantity": {
+                            "unitCode": "Ks",
+                            "content": "80"
+                        },
+                        "batchOrSerialNumber": "B",
+                        "sealSeriesID": null
+                    },
+                    {
+                        "name": "Šarže 3A9/2011",
+                        "note": {
+                            "languageID": null,
+                            "content": "Nová řada"
+                        },
+                        "expirationDate": "2015-12-31 00:00:00",
+                        "specification": "Dávkování 35",
+                        "quantity": {
+                            "unitCode": "Ks",
+                            "content": "20"
+                        },
+                        "batchOrSerialNumber": "B",
+                        "sealSeriesID": null
+                    }
+                ]
+            },
+            "extensions": []
+        },
+        {
+            "id": "2",
+            "order": {
+                "order": {
+                    "salesOrderID": "OP-111223/2011",
+                    "externalOrderID": "OV-123112/2011",
+                    "issueDate": "2013-01-20 00:00:00",
+                    "externalOrderIssueDate": null,
+                    "uuid": null,
+                    "isds_id": null,
+                    "file": null,
+                    "referenceNumber": null
+                },
+                "lineID": "3"
+            },
+            "deliveryNote": {
+                "deliveryNote": {
+                    "id": "DL-45678/2011",
+                    "issueDate": "2013-02-28 00:00:00",
+                    "uuid": null
+                },
+                "lineID": "2"
+            },
+            "originalDocument": null,
+            "contract": null,
+            "egovClassifier": null,
+            "invoicedQuantity": {
+                "unitCode": "Ks",
+                "content": "1000"
+            },
+            "lineExtensionAmountCurr": "8.70",
+            "lineExtensionAmount": "218.37",
+            "lineExtensionAmountBeforeDiscount": null,
+            "lineExtensionAmountTaxInclusiveCurr": "9.50",
+            "lineExtensionAmountTaxInclusive": "238.45",
+            "lineExtensionAmountTaxInclusiveBeforeDiscount": null,
+            "lineExtensionTaxAmount": "20.08",
+            "unitPrice": ".21837",
+            "unitPriceTaxInclusive": ".23845",
+            "classifiedTaxCategory": {
+                "percent": "9",
+                "vatCalculationMethod": 0,
+                "vatApplicable": null,
+                "localReverseCharge": null
+            },
+            "note": {
+                "languageID": null,
+                "content": "S úpravou LA1"
+            },
+            "vatNote": null,
+            "item": {
+                "description": "Papír barevný XERTEC 120g/L",
+                "catalogueItemIdentification": {
+                    "id": "0000000000013"
+                },
+                "sellersItemIdentification": {
+                    "id": "10000002"
+                },
+                "secondarySellersItemIdentification": {
+                    "id": "ABFN78956546"
+                },
+                "tertiarySellersItemIdentification": {
+                    "id": "XRT 1054/222/100020"
+                },
+                "buyersItemIdentification": {
+                    "id": "5555444433332222"
+                },
+                "storeBatches": null
+            },
+            "extensions": null
+        },
+        {
+            "id": "3",
+            "order": null,
+            "deliveryNote": {
+                "deliveryNote": {
+                    "id": "DL-45678/2011",
+                    "issueDate": "2013-02-28 00:00:00",
+                    "uuid": null
+                },
+                "lineID": "3"
+            },
+            "originalDocument": null,
+            "contract": null,
+            "egovClassifier": null,
+            "invoicedQuantity": {
+                "unitCode": "Ks",
+                "content": "1"
+            },
+            "lineExtensionAmountCurr": "1",
+            "lineExtensionAmount": "25.1",
+            "lineExtensionAmountBeforeDiscount": null,
+            "lineExtensionAmountTaxInclusiveCurr": "1.05",
+            "lineExtensionAmountTaxInclusive": "26.355",
+            "lineExtensionAmountTaxInclusiveBeforeDiscount": null,
+            "lineExtensionTaxAmount": "1.255",
+            "unitPrice": "25.1",
+            "unitPriceTaxInclusive": "26.355",
+            "classifiedTaxCategory": {
+                "percent": "5",
+                "vatCalculationMethod": 0,
+                "vatApplicable": null,
+                "localReverseCharge": null
+            },
+            "note": {
+                "languageID": null,
+                "content": "Expresní zásilka"
+            },
+            "vatNote": null,
+            "item": {
+                "description": "Služba ve zvláštní sazbě, ekologická přeprava",
+                "catalogueItemIdentification": null,
+                "sellersItemIdentification": null,
+                "secondarySellersItemIdentification": null,
+                "tertiarySellersItemIdentification": null,
+                "buyersItemIdentification": null,
+                "storeBatches": null
+            },
+            "extensions": null
+        }
+    ],
+    "nonTaxedDeposits": [
+        {
+            "id": "ZLV-111888/2011",
+            "variableSymbol": "111888",
+            "depositAmountCurr": "1",
+            "depositAmount": "25.1"
+        }
+    ],
+    "taxedDeposits": [
+        {
+            "id": "DZV-111555/2011",
+            "variableSymbol": "111555",
+            "taxableDepositAmountCurr": "4.30",
+            "taxableDepositAmount": "107.93",
+            "taxInclusiveDepositAmountCurr": "5.20",
+            "taxInclusiveDepositAmount": "130.52",
+            "classifiedTaxCategory": {
+                "percent": "19",
+                "vatCalculationMethod": 0,
+                "vatApplicable": null,
+                "localReverseCharge": null
+            }
+        },
+        {
+            "id": "DZV-111666/2011",
+            "variableSymbol": "",
+            "taxableDepositAmountCurr": "8.70",
+            "taxableDepositAmount": "218.37",
+            "taxInclusiveDepositAmountCurr": "9.50",
+            "taxInclusiveDepositAmount": "238.45",
+            "classifiedTaxCategory": {
+                "percent": "9",
+                "vatCalculationMethod": 0,
+                "vatApplicable": null,
+                "localReverseCharge": null
+            }
+        }
+    ],
+    "taxTotal": [
+        {
+            "taxableAmountCurr": "4.30",
+            "taxableAmount": "107.93",
+            "taxAmountCurr": "0.9",
+            "taxAmount": "22.59",
+            "taxInclusiveAmountCurr": "5.20",
+            "taxInclusiveAmount": "130.52",
+            "alreadyClaimedTaxableAmountCurr": "4.30",
+            "alreadyClaimedTaxableAmount": "107.93",
+            "alreadyClaimedTaxAmountCurr": "0.9",
+            "alreadyClaimedTaxAmount": "22.59",
+            "alreadyClaimedTaxInclusiveAmountCurr": "5.20",
+            "alreadyClaimedTaxInclusiveAmount": "130.52",
+            "differenceTaxableAmountCurr": "0",
+            "differenceTaxableAmount": "0",
+            "differenceTaxAmountCurr": "0",
+            "differenceTaxAmount": "0",
+            "differenceTaxInclusiveAmountCurr": "0",
+            "differenceTaxInclusiveAmount": "0",
+            "taxCategory": {
+                "percent": "19",
+                "taxScheme": null,
+                "vatApplicable": null,
+                "localReverseChargeFlag": null
+            }
+        },
+        {
+            "taxableAmountCurr": "8.70",
+            "taxableAmount": "218.37",
+            "taxAmountCurr": "0.8",
+            "taxAmount": "20.08",
+            "taxInclusiveAmountCurr": "9.50",
+            "taxInclusiveAmount": "238.45",
+            "alreadyClaimedTaxableAmountCurr": "8.70",
+            "alreadyClaimedTaxableAmount": "218.37",
+            "alreadyClaimedTaxAmountCurr": "0.80",
+            "alreadyClaimedTaxAmount": "20.08",
+            "alreadyClaimedTaxInclusiveAmountCurr": "9.50",
+            "alreadyClaimedTaxInclusiveAmount": "238.45",
+            "differenceTaxableAmountCurr": "0",
+            "differenceTaxableAmount": "0",
+            "differenceTaxAmountCurr": "0",
+            "differenceTaxAmount": "0",
+            "differenceTaxInclusiveAmountCurr": "0",
+            "differenceTaxInclusiveAmount": "0",
+            "taxCategory": {
+                "percent": "9",
+                "taxScheme": null,
+                "vatApplicable": null,
+                "localReverseChargeFlag": null
+            }
+        },
+        {
+            "taxableAmountCurr": "1",
+            "taxableAmount": "25.10",
+            "taxAmountCurr": "0.1",
+            "taxAmount": "2.51",
+            "taxInclusiveAmountCurr": "1.10",
+            "taxInclusiveAmount": "27.61",
+            "alreadyClaimedTaxableAmountCurr": "0",
+            "alreadyClaimedTaxableAmount": "0",
+            "alreadyClaimedTaxAmountCurr": "0",
+            "alreadyClaimedTaxAmount": "0",
+            "alreadyClaimedTaxInclusiveAmountCurr": "0",
+            "alreadyClaimedTaxInclusiveAmount": "0",
+            "differenceTaxableAmountCurr": "1",
+            "differenceTaxableAmount": "25.10",
+            "differenceTaxAmountCurr": "1.10",
+            "differenceTaxAmount": "27.61",
+            "differenceTaxInclusiveAmountCurr": "0.1",
+            "differenceTaxInclusiveAmount": "2.51",
+            "taxCategory": {
+                "percent": "5",
+                "taxScheme": null,
+                "vatApplicable": null,
+                "localReverseChargeFlag": null
+            }
+        }
+    ],
+    "legalMonetaryTotal": {
+        "taxExclusiveAmount": "351.40",
+        "taxExclusiveAmountCurr": "14",
+        "taxInclusiveAmount": "396.58",
+        "taxInclusiveAmountCurr": "15.80",
+        "alreadyClaimedTaxExclusiveAmount": "326.30",
+        "alreadyClaimedTaxExclusiveAmountCurr": "13",
+        "alreadyClaimedTaxInclusiveAmount": "368.97",
+        "alreadyClaimedTaxInclusiveAmountCurr": "14.70",
+        "differenceTaxExclusiveAmount": "25.10",
+        "differenceTaxExclusiveAmountCurr": "1",
+        "differenceTaxInclusiveAmount": "27.61",
+        "differenceTaxInclusiveAmountCurr": "1.10",
+        "payableRoundingAmount": "-2.51",
+        "payableRoundingAmountCurr": "-0.10",
+        "paidDepositsAmount": "-25.10",
+        "paidDepositsAmountCurr": "-1",
+        "payableAmount": "0",
+        "payableAmountCurr": "0"
+    },
+    "paymentMeans": [
+        {
+            "paidAmount": "0",
+            "paymentMeansCode": 10,
+            "details": {
+                "documentID": "PP-455123/2011",
+                "issueDate": "2013-05-27 00:00:00",
+                "paymentDueDate": null,
+                "variableSymbol": null,
+                "constantSymbol": null,
+                "specificSymbol": null
+            },
+            "partialPayment": null
+        },
+        {
+            "paidAmount": "0",
+            "paymentMeansCode": 42,
+            "details": {
+                "documentID": null,
+                "issueDate": null,
+                "paymentDueDate": "2013-03-13 00:00:00",
+                "variableSymbol": "111999",
+                "constantSymbol": "0308",
+                "specificSymbol": "105512"
+            },
+            "partialPayment": null
+        },
+        {
+            "paidAmount": "0",
+            "paymentMeansCode": 42,
+            "details": {
+                "documentID": null,
+                "issueDate": null,
+                "paymentDueDate": "2013-06-30 00:00:00",
+                "variableSymbol": "111999",
+                "constantSymbol": "0308",
+                "specificSymbol": "105512"
+            },
+            "partialPayment": null
+        }
+    ],
+    "supplementsList": [
+        {
+            "filename": "Logo.bmp",
+            "digestMethod": {
+                "algorithm": "http://www.w3.org/2000/09/xmldsig#sha1"
+            },
+            "digestValue": "t1y5ADJ5+2IM/oCnvvlo/g+Gnvo=",
+            "preview": null
+        },
+        {
+            "filename": "Notebook.jpg",
+            "digestMethod": {
+                "algorithm": "http://www.w3.org/2000/09/xmldsig#sha1"
+            },
+            "digestValue": "r32gUQt4vqSBnw401tL7QhjH2xs=",
+            "preview": null
+        },
+        {
+            "filename": "OBCHODNI_PODMINKY.DOC",
+            "digestMethod": {
+                "algorithm": "http://www.w3.org/2000/09/xmldsig#sha1"
+            },
+            "digestValue": "Gm9hyD0uRKiUN3VOY7X0OIB1+DU=",
+            "preview": null
+        },
+        {
+            "filename": "Dodany nahled FV.pdf",
+            "digestMethod": {
+                "algorithm": "http://www.w3.org/2000/09/xmldsig#sha1"
+            },
+            "digestValue": "hDcHV8mAaNkRAF/AHBjE+JjpbIQ=",
+            "preview": true
+        },
+        {
+            "filename": "stare doklady\\dalsi.isdoc",
+            "digestMethod": {
+                "algorithm": "http://www.w3.org/2000/09/xmldsig#sha1"
+            },
+            "digestValue": "e2yeqeUXMAxst6rS92+2XPIvDjQ=",
+            "preview": null
+        },
+        {
+            "filename": "stare doklady\\logo2.bmp",
+            "digestMethod": {
+                "algorithm": "http://www.w3.org/2000/09/xmldsig#sha1"
+            },
+            "digestValue": "t1y5ADJ5+2IM/oCnvvlo/g+Gnvo=",
+            "preview": null
+        }
+    ],
+    "version": "6.0.1"
+}
