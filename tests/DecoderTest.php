@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 namespace Tests\Adawolfa\ISDOC;
+use Nette\Utils\Json;
 use PHPUnit\Framework\TestCase;
 use Symfony;
 use Adawolfa;
@@ -20,9 +21,12 @@ final class DecoderTest extends TestCase
 		$hydrator         = new Adawolfa\ISDOC\Hydrator($reflector);
 		$decoder          = new Adawolfa\ISDOC\Decoder($xmlEncoder, $hydrator);
 		$invoice          = $decoder->decode(file_get_contents(__DIR__ . '/fixtures/sample.isdoc'));
+		$data             = $invoice->toArray();
+
+		self::walkArrayDateToString($data);
 
 		$this->assertInstanceOf(Adawolfa\ISDOC\Schema\Invoice::class, $invoice);
-		$this->assertSnapshot('decoder-sample', $invoice->toArray());
+		$this->assertSnapshot('decoder-sample.json', Json::encode($data, Json::PRETTY));
 	}
 
 }

@@ -2,28 +2,22 @@
 
 declare(strict_types=1);
 namespace Tests\Adawolfa\ISDOC;
-use Nette\Utils\Json;
 use DateTimeInterface;
 
 trait Snapshot
 {
 
 	/** @param mixed $data */
-	public function assertSnapshot(string $name, $data): void
+	public function assertSnapshot(string $name, string $data): void
 	{
-		if (is_array($data)) {
-			self::walkArrayDateToString($data);
-		}
-
-		$filename = __DIR__ . '/snapshots/' . $name . '.json';
+		$filename = __DIR__ . '/snapshots/' . $name;
 		$current = @file_get_contents($filename);
-		$serialized = Json::encode($data, Json::PRETTY);
 
 		if ($current === false) {
 			$this->addWarning("Snapshot file '$name' does not exist.");
-			file_put_contents($filename, $serialized);
+			file_put_contents($filename, $data);
 		} else {
-			$this->assertSame($current, $serialized);
+			$this->assertSame($current, $data);
 		}
 	}
 

@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<Invoice version="6.0.1">
+  <DocumentType>1</DocumentType>
+  <ID>12345</ID>
+  <UUID>00000000-0000-0000-0000-000000001234</UUID>
+  <IssueDate>2021-08-16</IssueDate>
+  <VATApplicable>false</VATApplicable>
+  <ElectronicPossibilityAgreementReference/>
+  <LocalCurrencyCode>CZK</LocalCurrencyCode>
+  <CurrRate>1.0</CurrRate>
+  <RefCurrRate>1.0</RefCurrRate>
+  <AccountingSupplierParty>
+    <Party>
+      <PartyIdentification>
+        <ID>12345678</ID>
+      </PartyIdentification>
+      <PartyName>
+        <Name>Firma, a. s.</Name>
+      </PartyName>
+      <PostalAddress>
+        <StreetName>Dlouh&#xE1;</StreetName>
+        <BuildingNumber>1234</BuildingNumber>
+        <CityName>Praha</CityName>
+        <PostalZone>100 01</PostalZone>
+        <Country>
+          <IdentificationCode>CZ</IdentificationCode>
+          <Name>&#x10C;esk&#xE1; republika</Name>
+        </Country>
+      </PostalAddress>
+    </Party>
+  </AccountingSupplierParty>
+  <InvoiceLines>
+    <InvoiceLine>
+      <ID>1</ID>
+      <LineExtensionAmount>100.0</LineExtensionAmount>
+      <LineExtensionAmountTaxInclusive>121.0</LineExtensionAmountTaxInclusive>
+      <LineExtensionTaxAmount>21.0</LineExtensionTaxAmount>
+      <UnitPrice>100.0</UnitPrice>
+      <UnitPriceTaxInclusive>121.0</UnitPriceTaxInclusive>
+      <ClassifiedTaxCategory>
+        <Percent>21</Percent>
+        <VATCalculationMethod>1</VATCalculationMethod>
+      </ClassifiedTaxCategory>
+    </InvoiceLine>
+  </InvoiceLines>
+  <TaxTotal/>
+  <LegalMonetaryTotal>
+    <TaxExclusiveAmount>100</TaxExclusiveAmount>
+    <TaxInclusiveAmount>121</TaxInclusiveAmount>
+    <AlreadyClaimedTaxExclusiveAmount>0</AlreadyClaimedTaxExclusiveAmount>
+    <AlreadyClaimedTaxInclusiveAmount>0</AlreadyClaimedTaxInclusiveAmount>
+    <DifferenceTaxExclusiveAmount>0</DifferenceTaxExclusiveAmount>
+    <DifferenceTaxInclusiveAmount>0</DifferenceTaxInclusiveAmount>
+    <PaidDepositsAmount>0</PaidDepositsAmount>
+    <PayableAmount>0</PayableAmount>
+  </LegalMonetaryTotal>
+</Invoice>
