@@ -17,9 +17,26 @@ trait ToArray
 			throw new RuntimeException('Failed to create reflection.', 0, $exception);
 		}
 
-		$data = [];
+		$data       = [];
+		$properties = [];
 
-		foreach ($reflection->getProperties(~ReflectionProperty::IS_STATIC) as $property) {
+		do {
+
+			foreach ($reflection->getProperties(~ReflectionProperty::IS_STATIC) as $property) {
+
+				if (isset($properties[$property->getName()])) {
+					continue;
+				}
+
+				$properties[$property->getName()] = $property;
+
+			}
+
+			$reflection = $reflection->getParentClass();
+
+		} while($reflection !== false);
+
+		foreach ($properties as $property) {
 
 			$value = $this->{$property->getName()};
 
