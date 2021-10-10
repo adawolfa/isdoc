@@ -1,5 +1,14 @@
 {
 	"name": "adawolfa/isdoc",
+	"description": "ISDOC parser and generator.",
+	"license": ["MIT"],
+	"authors": [
+		{
+			"name": "Adam Klvač",
+			"homepage": "https://klva.cz",
+			"email": "adam@klva.cz"
+		}
+	],
 	"require": {
 		"php": ">=7.4",
 		"ext-bcmath": "*",
@@ -23,6 +32,11 @@
 	"autoload-dev": {
 		"psr-4": {
 			"Tests\\Adawolfa\\ISDOC\\": "tests/"
+		}
+	},
+	"extra": {
+		"branch-alias": {
+			"dev-master": "0.1.x-dev"
 		}
 	}
 }
