@@ -31,7 +31,6 @@ use Nette\SmartObject;
  * @property Note|null                 $note
  * @property Note|null                 $vatNote
  * @property Item|null                 $item
- * @property Extensions|null           $extensions
  */
 class InvoiceLine implements Arrayable
 {
@@ -178,13 +177,6 @@ class InvoiceLine implements Arrayable
 	 * @Map("Item")
 	 */
 	private ?Item $item = null;
-
-	/**
-	 * Arbitrary fragment of user-defined elements. Elements must use their own namespace.
-	 *
-	 * @Map("Extensions")
-	 */
-	private ?Extensions $extensions = null;
 
 	public function __construct(
 		string $id,
@@ -431,17 +423,6 @@ class InvoiceLine implements Arrayable
 	public function setItem(?Item $item): self
 	{
 		$this->item = $item;
-		return $this;
-	}
-
-	public function getExtensions(): ?Extensions
-	{
-		return $this->extensions;
-	}
-
-	public function setExtensions(?Extensions $extensions): self
-	{
-		$this->extensions = $extensions;
 		return $this;
 	}
 

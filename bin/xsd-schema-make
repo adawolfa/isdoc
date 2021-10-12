@@ -191,6 +191,9 @@ require(__DIR__ . '/../vendor/autoload.php');
 
 					switch (true) {
 
+						case $element instanceof XSDReader\Schema\Element\Element
+							&& $element->getName() === 'Extensions':
+
 						// Unsupported choices.
 						case $element instanceof XSDReader\Schema\Element\Element
 							&& $class->hasProperty($this->formatPropertyName($element->getName())):

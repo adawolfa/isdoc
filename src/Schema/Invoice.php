@@ -35,7 +35,6 @@ use Nette\SmartObject;
  * @property string|null                             $foreignCurrencyCode
  * @property string                                  $currRate
  * @property string                                  $refCurrRate
- * @property Invoice\Extensions|null                 $extensions
  * @property Invoice\AccountingSupplierParty         $accountingSupplierParty
  * @property Invoice\SellerSupplierParty|null        $sellerSupplierParty
  * @property Invoice\AccountingCustomerParty|null    $accountingCustomerParty
@@ -229,13 +228,6 @@ class Invoice implements Arrayable
 	 * @Map("RefCurrRate")
 	 */
 	private string $refCurrRate;
-
-	/**
-	 * Arbitrary fragment of user-defined elements. Elements must use their own namespace.
-	 *
-	 * @Map("Extensions")
-	 */
-	private ?Invoice\Extensions $extensions = null;
 
 	/**
 	 * Supplier, accounting entity in Commercial Register.
@@ -660,17 +652,6 @@ class Invoice implements Arrayable
 	{
 		Restriction::decimal($refCurrRate);
 		$this->refCurrRate = $refCurrRate;
-		return $this;
-	}
-
-	public function getExtensions(): ?Invoice\Extensions
-	{
-		return $this->extensions;
-	}
-
-	public function setExtensions(?Invoice\Extensions $extensions): self
-	{
-		$this->extensions = $extensions;
 		return $this;
 	}
 

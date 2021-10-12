@@ -28,7 +28,6 @@
     "foreignCurrencyCode": "EUR",
     "currRate": "25.10",
     "refCurrRate": "1",
-    "extensions": [],
     "accountingSupplierParty": {
         "party": {
             "partyIdentification": {
@@ -344,8 +343,7 @@
                         "sealSeriesID": null
                     }
                 ]
-            },
-            "extensions": []
+            }
         },
         {
             "id": "2",
@@ -415,8 +413,7 @@
                     "id": "5555444433332222"
                 },
                 "storeBatches": null
-            },
-            "extensions": null
+            }
         },
         {
             "id": "3",
@@ -464,8 +461,7 @@
                 "tertiarySellersItemIdentification": null,
                 "buyersItemIdentification": null,
                 "storeBatches": null
-            },
-            "extensions": null
+            }
         }
     ],
     "nonTaxedDeposits": [
