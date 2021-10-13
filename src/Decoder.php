@@ -5,6 +5,9 @@ namespace Adawolfa\ISDOC;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 
+/**
+ * XML to Invoice decoder.
+ */
 final class Decoder
 {
 

@@ -5,6 +5,8 @@ namespace Adawolfa\ISDOC;
 use Nette\SmartObject;
 
 /**
+ * Simple content element base class.
+ *
  * @property string $content
  */
 abstract class SimpleContentElement

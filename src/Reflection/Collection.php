@@ -5,6 +5,8 @@ namespace Adawolfa\ISDOC\Reflection;
 use ReflectionObject;
 
 /**
+ * Collection reflection.
+ *
  * @template T
  */
 final class Collection extends Instance

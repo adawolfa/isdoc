@@ -7,6 +7,9 @@ use Adawolfa\ISDOC\Reflection\Property;
 use Adawolfa\ISDOC\Reflection\Reflector;
 use DateTimeInterface;
 
+/**
+ * Converts instance into an XML encoder compatible array.
+ */
 final class Serializer
 {
 
@@ -49,7 +52,7 @@ final class Serializer
 	}
 
 	/**
-	 * @return mixed|null
+	 * @return array|string|null
 	 * @throws SerializerException
 	 */
 	private function serializeProperty(Property $property)

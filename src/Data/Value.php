@@ -8,6 +8,9 @@ use ReflectionNamedType;
 use DateTimeImmutable;
 use Error;
 
+/**
+ * XML value wrapper.
+ */
 final class Value
 {
 

@@ -8,6 +8,8 @@ use ReflectionProperty;
 use ReflectionException;
 
 /**
+ * Element instance reflection.
+ *
  * @template T
  */
 class Instance

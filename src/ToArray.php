@@ -6,6 +6,9 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionProperty;
 
+/**
+ * Automatic object to array conversion.
+ */
 trait ToArray
 {
 

@@ -3,6 +3,9 @@
 declare(strict_types=1);
 namespace Adawolfa\ISDOC;
 
+/**
+ * Common validations.
+ */
 final class Restriction
 {
 

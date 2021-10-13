@@ -4,6 +4,9 @@ declare(strict_types=1);
 namespace Adawolfa\ISDOC\Reflection;
 use ReflectionProperty;
 
+/**
+ * Mapped element property reflection.
+ */
 class MappedProperty extends Property
 {
 

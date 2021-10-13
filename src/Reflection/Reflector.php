@@ -11,6 +11,9 @@ use ReflectionObject;
 use Adawolfa\ISDOC;
 use ReflectionProperty;
 
+/**
+ * Schema classes introspections.
+ */
 final class Reflector
 {
 

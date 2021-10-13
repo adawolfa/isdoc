@@ -4,6 +4,9 @@ declare(strict_types=1);
 namespace Adawolfa\ISDOC;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 
+/**
+ * Invoice XML encoder.
+ */
 final class Encoder
 {
 

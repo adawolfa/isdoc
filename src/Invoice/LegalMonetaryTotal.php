@@ -4,6 +4,9 @@ declare(strict_types=1);
 namespace Adawolfa\ISDOC\Invoice;
 use Adawolfa\ISDOC;
 
+/**
+ * Legal monetary total with auto-computed properties.
+ */
 class LegalMonetaryTotal extends ISDOC\Schema\Invoice\LegalMonetaryTotal
 {
 

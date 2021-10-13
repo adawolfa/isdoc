@@ -4,6 +4,9 @@ declare(strict_types=1);
 namespace Adawolfa\ISDOC;
 use Adawolfa\ISDOC\Data\Value;
 
+/**
+ * Wrapper for XML data traversal.
+ */
 final class Data
 {
 

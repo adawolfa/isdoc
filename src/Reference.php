@@ -5,6 +5,8 @@ namespace Adawolfa\ISDOC;
 use Doctrine\Common\Annotations\Annotation;
 
 /**
+ * Indicates a referenced element.
+ *
  * @Annotation
  * @Annotation\Target({"PROPERTY"})
  */

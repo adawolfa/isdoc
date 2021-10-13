@@ -10,6 +10,9 @@ use Adawolfa\ISDOC\Reflection\Property;
 use Adawolfa\ISDOC\Reflection\ReferenceProperty;
 use Adawolfa\ISDOC\Reflection\Reflector;
 
+/**
+ * Instantiates classes and hydrates them with data from XML decoder.
+ */
 final class Hydrator
 {
 

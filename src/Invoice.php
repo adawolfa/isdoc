@@ -4,6 +4,9 @@ declare(strict_types=1);
 namespace Adawolfa\ISDOC;
 use DateTimeImmutable;
 
+/**
+ * Decorated version of Invoice with more sane constructor.
+ */
 class Invoice extends Schema\Invoice
 {
 

@@ -5,6 +5,8 @@ namespace Adawolfa\ISDOC;
 use Doctrine\Common\Annotations\Annotation;
 
 /**
+ * Annotates elements to properties or top-most element in a collection.
+ *
  * @Annotation
  * @Annotation\Target({"PROPERTY", "CLASS"})
  */

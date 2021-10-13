@@ -10,6 +10,9 @@ use ReflectionException;
 use ReflectionNamedType;
 use DateTimeImmutable;
 
+/**
+ * Property reflection.
+ */
 class Property
 {
 
