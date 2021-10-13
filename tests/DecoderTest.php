@@ -15,13 +15,8 @@ final class DecoderTest extends TestCase
 
 	public function testSample(): void
 	{
-		$xmlEncoder       = new Symfony\Component\Serializer\Encoder\XmlEncoder;
-		$annotationReader = new Doctrine\Common\Annotations\AnnotationReader;
-		$reflector        = new Adawolfa\ISDOC\Reflection\Reflector($annotationReader);
-		$hydrator         = new Adawolfa\ISDOC\Hydrator($reflector);
-		$decoder          = new Adawolfa\ISDOC\Decoder($xmlEncoder, $hydrator);
-		$invoice          = $decoder->decode(file_get_contents(__DIR__ . '/fixtures/sample.isdoc'));
-		$data             = $invoice->toArray();
+		$invoice = Adawolfa\ISDOC\Manager::create()->getReader()->file(__DIR__ . '/fixtures/sample.isdoc');
+		$data    = $invoice->toArray();
 
 		self::walkArrayDateToString($data);
 

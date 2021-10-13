@@ -3,17 +3,15 @@
 declare(strict_types=1);
 namespace Tests\Adawolfa\ISDOC;
 use PHPUnit\Framework\TestCase;
-use Symfony;
 use Adawolfa;
-use Doctrine;
 use DateTimeImmutable;
 
-final class EncoderTest extends TestCase
+final class XTest extends TestCase
 {
 
-	use Snapshot;
+	private string $temp;
 
-	public function testSample(): void
+	public function testWriteRead(): void
 	{
 		$invoice = new Adawolfa\ISDOC\Invoice(
 			'12345',
@@ -51,8 +49,33 @@ final class EncoderTest extends TestCase
 			)
 		);
 
-		$encoded = Adawolfa\ISDOC\Manager::create()->getWriter()->xml($invoice);
-		$this->assertSnapshot('encoder-sample.xml', $encoded);
+		$supplements = new Adawolfa\ISDOC\Schema\Invoice\SupplementsList;
+		$supplements->add(Adawolfa\ISDOC\Invoice\Supplement::fromString('foo', 'foo.txt'));
+		$invoice->supplementsList = $supplements;
+
+		$manager = Adawolfa\ISDOC\Manager::create();
+		$manager->writer->file($invoice, $this->temp, Adawolfa\ISDOC\Manager::FORMAT_ISDOCX);
+
+		$read = $manager->reader->file($this->temp, Adawolfa\ISDOC\Schema\Invoice::class, Adawolfa\ISDOC\Manager::FORMAT_ISDOCX);
+
+		$this->assertSame($invoice->id, $read->id);
+		$this->assertCount(1, $read->supplementsList);
+
+		/** @var $readSupplement Adawolfa\ISDOC\X\Supplement */
+		$readSupplement = iterator_to_array($read->supplementsList)[0];
+
+		$this->assertTrue($readSupplement->ok);
+		$this->assertSame('foo.txt', $readSupplement->filename);
+		$this->assertSame('foo', $readSupplement->contents);
+	}
+
+	protected function setUp(): void
+	{
+		$this->temp = tempnam(sys_get_temp_dir(), 'isdocx_test');
+
+		register_shutdown_function(function(): void {
+			@unlink($this->temp);
+		});
 	}
 
 }

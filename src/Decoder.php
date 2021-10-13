@@ -26,7 +26,7 @@ final class Decoder
 	 * @return T
 	 * @throws DecoderException
 	 */
-	public function decode(string $xml, string $class = Schema\Invoice::class): Schema\Invoice
+	public function decode(string $xml, string $class = Schema\Invoice::class, callable $hook = null): Schema\Invoice
 	{
 		try {
 			$data = Data::create($this->encoder->decode($xml, $this->encoder::FORMAT));
@@ -35,7 +35,7 @@ final class Decoder
 		}
 
 		try {
-			return $this->hydrator->hydrate($data, $class);
+			return $this->hydrator->hydrate($data, $class, $hook);
 		} catch (Data\Exception $exception) {
 			throw new DecoderException('A data error has been encountered.', 0, $exception);
 		}

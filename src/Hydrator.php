@@ -22,6 +22,9 @@ final class Hydrator
 	private array $finishers  = [];
 	private int   $depth      = 0;
 
+	/** @var callable|null */
+	private $hook;
+
 	/** @var Instance[] */
 	private array $references = [];
 
@@ -34,11 +37,20 @@ final class Hydrator
 	 * @template T
 	 * @param Data            $data
 	 * @param class-string<T> $class
+	 * @param callable|null   $hook
 	 * @return T
 	 * @throws Data\Exception
 	 */
-	public function hydrate(Data $data, string $class): object
+	public function hydrate(Data $data, string $class, callable $hook = null): object
 	{
+		if ($this->depth > 0 && $hook !== null) {
+			throw new RuntimeException('Hook cannot be attached at this point.');
+		}
+
+		if ($hook !== null) {
+			$this->hook = $hook;
+		}
+
 		$this->depth++;
 
 		try {
@@ -50,14 +62,21 @@ final class Hydrator
 			}
 
 			foreach ($instance->getProperties() as $property) {
-				$this->hydrateProperty($data, $property);
+				$this->hydrateProperty($data, $property, $hook);
 			}
 
-			return $instance->getInstance();
+			$hydrated = $instance->getInstance();
+
+			if ($this->hook !== null) {
+				$hydrated = call_user_func($this->hook, $hydrated);
+			}
+
+			return $hydrated;
 
 		} finally {
 
 			if (--$this->depth === 0) {
+				$this->hook = null;
 				$this->finish();
 			}
 
@@ -208,6 +227,21 @@ final class Hydrator
 	private function hydrateComplexProperty(Data $data, MappedProperty $property): void
 	{
 		if (!$data->hasChild($property->getMap())) {
+
+			// This is hack around empty collections.
+			if ($property->isCollection()
+				&& $data->hasValue($property->getMap())
+				&& $data->getValue($property->getMap())->toString() === '') {
+
+				$value = $this->hydrate(
+					Data::createEmpty($data, $property->getMap()),
+					$property->getType()->getName()
+				);
+
+				$property->setValue($value);
+				return;
+
+			}
 
 			if (!$property->isNullable()) {
 				throw Data\Exception::missingRequiredChild($property->getMap(), $data->getPath());
