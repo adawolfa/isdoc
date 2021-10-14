@@ -28,6 +28,7 @@ final class Encoder
 
 			return $this->encoder->encode($this->serializer->serialize($invoice), $this->encoder::FORMAT, [
 				$this->encoder::ROOT_NODE_NAME => 'Invoice',
+				$this->encoder::ENCODING       => 'utf-8',
 			]);
 
 		} catch (SerializerException $exception) {

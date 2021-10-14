@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Invoice version="6.0.1">
   <DocumentType>1</DocumentType>
   <ID>12345</ID>
@@ -18,13 +18,13 @@
         <Name>Firma, a. s.</Name>
       </PartyName>
       <PostalAddress>
-        <StreetName>Dlouh&#xE1;</StreetName>
+        <StreetName>Dlouhá</StreetName>
         <BuildingNumber>1234</BuildingNumber>
         <CityName>Praha</CityName>
         <PostalZone>100 01</PostalZone>
         <Country>
           <IdentificationCode>CZ</IdentificationCode>
-          <Name>&#x10C;esk&#xE1; republika</Name>
+          <Name>Česká republika</Name>
         </Country>
       </PostalAddress>
     </Party>

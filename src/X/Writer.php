@@ -75,6 +75,7 @@ final class Writer
 			$this->xmlEncoder::FORMAT,
 			[
 				$this->xmlEncoder::ROOT_NODE_NAME => 'manifest',
+				$this->xmlEncoder::ENCODING       => 'utf-8',
 			]
 		);
 	}
