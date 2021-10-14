@@ -8,6 +8,7 @@ use ReflectionObject;
  * Collection reflection.
  *
  * @template T
+ * @internal
  */
 final class Collection extends Instance
 {

@@ -5,6 +5,8 @@ namespace Adawolfa\ISDOC\Serializer;
 
 /**
  * Referenced element.
+ *
+ * @internal
  */
 final class Reference
 {

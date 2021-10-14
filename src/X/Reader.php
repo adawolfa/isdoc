@@ -10,6 +10,8 @@ use ZipArchive;
 
 /**
  * ISDOCX reader.
+ *
+ * @internal
  */
 final class Reader
 {

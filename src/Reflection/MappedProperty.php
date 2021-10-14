@@ -6,6 +6,8 @@ use ReflectionProperty;
 
 /**
  * Mapped element property reflection.
+ *
+ * @internal
  */
 class MappedProperty extends Property
 {

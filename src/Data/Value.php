@@ -10,6 +10,8 @@ use Error;
 
 /**
  * XML value wrapper.
+ *
+ * @internal
  */
 final class Value
 {

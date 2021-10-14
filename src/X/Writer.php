@@ -9,6 +9,8 @@ use ZipArchive;
 
 /**
  * ISDOCX writer.
+ *
+ * @internal
  */
 final class Writer
 {

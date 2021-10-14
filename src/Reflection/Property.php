@@ -12,6 +12,8 @@ use DateTimeImmutable;
 
 /**
  * Property reflection.
+ *
+ * @internal
  */
 class Property
 {

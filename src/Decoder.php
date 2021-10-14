@@ -7,6 +7,8 @@ use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 
 /**
  * XML to Invoice decoder.
+ *
+ * @internal
  */
 final class Decoder
 {

@@ -11,6 +11,7 @@ use ReflectionException;
  * Element instance reflection.
  *
  * @template T
+ * @internal
  */
 class Instance
 {

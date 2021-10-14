@@ -12,6 +12,8 @@ use Adawolfa\ISDOC\Reflection\Reflector;
 
 /**
  * Instantiates classes and hydrates them with data from XML decoder.
+ *
+ * @internal
  */
 final class Hydrator
 {

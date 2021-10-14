@@ -6,6 +6,8 @@ use Symfony\Component\Serializer\Encoder\XmlEncoder;
 
 /**
  * Invoice XML encoder.
+ *
+ * @internal
  */
 final class Encoder
 {

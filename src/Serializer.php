@@ -10,6 +10,8 @@ use DateTimeInterface;
 
 /**
  * Converts instance into an XML encoder compatible array.
+ *
+ * @internal
  */
 final class Serializer
 {

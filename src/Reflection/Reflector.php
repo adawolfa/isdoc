@@ -13,6 +13,8 @@ use ReflectionProperty;
 
 /**
  * Schema classes introspections.
+ *
+ * @internal
  */
 final class Reflector
 {
