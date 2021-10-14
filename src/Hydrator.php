@@ -271,9 +271,8 @@ final class Hydrator
 				throw new RuntimeException('Collection reflection was expected to be instance of ' . Reflection\Collection::class . '.');
 			}
 
-			// TODO: Check add() method.
 			foreach ($child->getChildList($collection->getMap()) as $itemData) {
-				$value->add($this->hydrate($itemData, $collection->getItemClassName()));
+				$collection->add($this->hydrate($itemData, $collection->getItemClassName()));
 			}
 
 		}
