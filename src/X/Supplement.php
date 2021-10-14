@@ -87,7 +87,9 @@ final class Supplement extends ISDOC\Schema\Invoice\Supplement
 		switch ($this->getDigestMethod()->algorithm) {
 
 			case 'http://www.w3.org/2000/09/xmldsig#sha1':
-				return base64_encode(sha1($this->contents, true)) === $this->getDigestValue();
+				$contents = $this->contents;
+				return base64_encode(sha1($contents, true)) === $this->getDigestValue()
+					|| sha1($contents) === strtolower($this->getDigestValue());
 
 			default: throw SupplementException::unsupportedDigestAlgo($this->getFilename(), $this->getDigestMethod()->algorithm);
 
