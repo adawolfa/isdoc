@@ -141,7 +141,13 @@ final class Hydrator
 				throw Data\Exception::referencedElementNotFound($id->toString(), $id->getPath());
 			}
 
-			// TODO: Validation.
+			if (!$property->accepts($this->references[$id->toString()]->getReflection()->name)) {
+				throw Data\Exception::referencedElementTypeMismatch(
+					$property->getType()->getName(),
+					$this->references[$id->toString()]->getReflection()->getName(),
+				);
+			}
+
 			$property->setValue($this->references[$id->toString()]->getInstance());
 
 		};

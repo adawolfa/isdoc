@@ -9,6 +9,8 @@ use ReflectionProperty;
 use ReflectionException;
 use ReflectionNamedType;
 use DateTimeImmutable;
+use Reflector;
+use ReflectionClass;
 
 /**
  * Property reflection.
@@ -18,20 +20,22 @@ use DateTimeImmutable;
 class Property
 {
 
-	private Instance           $instance;
-	private ReflectionProperty $property;
+	private Instance             $instance;
+	private ReflectionProperty   $property;
+	private ?ReflectionNamedType $type;
 
 	public function __construct(Instance $instance, ReflectionProperty $property)
 	{
 		$this->instance = $instance;
 		$this->property = $property;
+		$this->type     = $property->hasType() ? $property->getType() : null;
 	}
 
 	public function isPrimitive(): bool
 	{
-		return $this->property->hasType()
-			&& $this->property->getType()->isBuiltin()
-			&& $this->property->getType()->getName() !== 'array';
+		return $this->type !== null
+			&& $this->type->isBuiltin()
+			&& $this->type->getName() !== 'array';
 	}
 
 	public function isDate(): bool
@@ -51,19 +55,19 @@ class Property
 
 	private function isA(string $class): bool
 	{
-		return $this->property->hasType()
-			&& !$this->property->getType()->isBuiltin()
-			&& is_a($this->property->getType()->getName(), $class, true);
+		return $this->type !== null
+			&& !$this->type->isBuiltin()
+			&& is_a($this->type->getName(), $class, true);
 	}
 
 	public function isNullable(): bool
 	{
-		return !$this->property->hasType() || $this->property->getType()->allowsNull();
+		return $this->type === null || $this->type->allowsNull();
 	}
 
 	public function getType(): ?ReflectionNamedType
 	{
-		return $this->property->getType();
+		return $this->type;
 	}
 
 	private function getMethod(string $name): ?callable
@@ -95,12 +99,25 @@ class Property
 		return $this->getMethod('get' . ucfirst($this->property->getName()));
 	}
 
+	public function accepts(string $type): bool
+	{
+		if ($this->type === null) {
+			return true;
+		}
+
+		if ($this->type->isBuiltin()) {
+			return $type === $this->type->getName();
+		}
+
+		return is_a($type, $this->type->getName(), true);
+	}
+
 	/** @param mixed|null $value */
 	public function setValue($value): void
 	{
 		if ($value === null
-			&& $this->property->hasType()
-			&& !$this->property->getType()->allowsNull()) {
+			&& $this->type !== null
+			&& !$this->type->allowsNull()) {
 			throw new RuntimeException('Property is not nullable.');
 		}
 

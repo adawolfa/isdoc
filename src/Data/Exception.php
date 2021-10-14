@@ -27,4 +27,9 @@ class Exception extends ISDOC\Exception
 		return new self("Element '$id' referenced in '$path' not found.");
 	}
 
+	public static function referencedElementTypeMismatch(string $expected, string $actual): self
+	{
+		return new self("Referenced element is expected to be instance of $expected, got $actual.");
+	}
+
 }
