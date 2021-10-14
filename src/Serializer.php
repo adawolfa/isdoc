@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Adawolfa\ISDOC;
 use Adawolfa\ISDOC\Reflection\MappedProperty;
 use Adawolfa\ISDOC\Reflection\Property;
+use Adawolfa\ISDOC\Reflection\ReferenceProperty;
 use Adawolfa\ISDOC\Reflection\Reflector;
 use DateTimeInterface;
 
@@ -14,6 +15,7 @@ final class Serializer
 {
 
 	private Reflector $reflector;
+	private int       $depth = 0;
 
 	public function __construct(Reflector $reflector)
 	{
@@ -23,32 +25,146 @@ final class Serializer
 	/** @throws SerializerException */
 	public function serialize(object $instance): array
 	{
-		$instance = $this->reflector->instance($instance);
-		$data     = [];
+		$this->depth++;
 
-		foreach ($instance->getProperties() as $property) {
+		try {
 
-			$value = $this->serializeProperty($property);
+			$instance = $this->reflector->instance($instance);
+			$data     = ['@id' => new Serializer\ID($instance->getInstance())];
 
-			if ($value === null) {
+			foreach ($instance->getProperties() as $property) {
 
-				if (!$property->isNullable()) {
-					throw new SerializerException('Property is not nullable.');
+				if ($property instanceof ReferenceProperty && $property->getValue() !== null) {
+
+					$referencedElement = $property->getValue();
+
+					if (!is_object($referencedElement)) {
+						throw new RuntimeException('Referenced element must be an object.');
+					}
+
+					$data['@ref'] = new Serializer\Reference($referencedElement);
+					continue;
+
 				}
 
-				continue;
+				$value = $this->serializeProperty($property);
+
+				if ($value === null) {
+
+					if (!$property->isNullable()) {
+						throw SerializerException::propertyNotNullable($property);
+					}
+
+					continue;
+
+				}
+
+				if ($property instanceof MappedProperty) {
+					$data[$property->getMap()] = $value;
+				}
 
 			}
 
-			if ($property instanceof MappedProperty) {
-				$data[$property->getMap()] = $value;
+			if ($this->depth === 1) {
+				$this->resolveReferences($data);
 			}
 
-			// TODO: Reference properties.
+			return $data;
+
+		} finally {
+			$this->depth--;
+		}
+	}
+
+	/** @throws SerializerException */
+	private function resolveReferences(array &$data): void
+	{
+		/** @var $elements Serializer\ID[] */
+		$elements = [];
+
+		/** @var $references Serializer\Reference[] */
+		$references = [];
+
+		array_walk_recursive($data, function($value) use(&$elements, &$references): void {
+
+			switch (true) {
+
+				case $value instanceof Serializer\ID:
+					$elements[] = $value;
+					break;
+
+				case $value instanceof Serializer\Reference:
+					$references[] = $value;
+					break;
+
+			}
+
+		});
+
+		$id = 1;
+
+		foreach ($elements as $element) {
+
+			foreach ($references as $reference) {
+
+				if ($reference->getInstance() !== $element->getInstance()) {
+					continue;
+				}
+
+				if ($element->getId() === null) {
+					$element->setId($id++);
+				}
+
+				$reference->setElement($element);
+
+			}
 
 		}
 
-		return $data;
+		$data = self::mapRecursive($data, function($value) {
+
+			switch (true) {
+
+				case $value instanceof Serializer\Reference:
+
+					if ($value->getElement() === null) {
+						throw SerializerException::referencedElementNotFound(get_class($value->getInstance()));
+					}
+
+					return $value->getElement()->getId();
+
+				case is_array($value) && isset($value['@id']) && $value['@id'] instanceof Serializer\ID:
+
+					if ($value['@id']->getId() === null) {
+						unset($value['@id']);
+					} else {
+						$value['@id'] = (string) $value['@id']->getId();
+					}
+
+				default: return $value;
+
+			}
+
+		});
+	}
+
+	private static function mapRecursive(array $array, callable $callback, bool $top = true): array
+	{
+		if ($top) {
+			$array = $callback($array);
+		}
+
+		foreach ($array as $key => $value) {
+
+			$array[$key] = $callback($value);
+
+			if (is_array($array[$key])) {
+				$array[$key] = self::mapRecursive($array[$key], $callback, false);
+			}
+
+		}
+
+		return $array;
 	}
 
 	/**

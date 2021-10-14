@@ -130,4 +130,14 @@ class Property
 		return $value;
 	}
 
+	public function getClass(): string
+	{
+		return $this->instance->getReflection()->name;
+	}
+
+	public function getName(): string
+	{
+		return $this->property->name;
+	}
+
 }
