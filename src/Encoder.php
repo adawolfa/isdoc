@@ -26,7 +26,10 @@ final class Encoder
 	{
 		try {
 
-			return $this->encoder->encode($this->serializer->serialize($invoice), $this->encoder::FORMAT, [
+			$data = $this->serializer->serialize($invoice);
+			$data['@xmlns'] = 'http://isdoc.cz/namespace/2013';
+
+			return $this->encoder->encode($data, $this->encoder::FORMAT, [
 				$this->encoder::ROOT_NODE_NAME => 'Invoice',
 				$this->encoder::ENCODING       => 'utf-8',
 			]);

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Invoice version="6.0.1">
+<Invoice xmlns="http://isdoc.cz/namespace/2013" version="6.0.1">
   <DocumentType>1</DocumentType>
   <ID>12345</ID>
   <UUID>00000000-0000-0000-0000-000000001234</UUID>
