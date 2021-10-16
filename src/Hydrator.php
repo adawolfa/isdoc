@@ -130,7 +130,14 @@ final class Hydrator
 	private function hydrateReferenceProperty(Data $data, ReferenceProperty $property): void
 	{
 		if (!$data->hasValue('@ref')) {
+
+			if ($property->getType() !== null) {
+				$property->setValue($this->hydrate($data, $property->getType()->getName()));
+				return;
+			}
+
 			throw Data\Exception::missingReferenceId($data->getPath());
+
 		}
 
 		$this->finishers[] = function() use($data, $property): void {
