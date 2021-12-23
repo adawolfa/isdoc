@@ -7,21 +7,21 @@ use Nette\SmartObject;
 /**
  * Simple content element base class.
  *
- * @property string $content
+ * @property string|null $content
  */
 abstract class SimpleContentElement
 {
 
 	use SmartObject;
 
-	protected string $content;
+	protected ?string $content = null;
 
-	public function getContent(): string
+	public function getContent(): ?string
 	{
 		return $this->content;
 	}
 
-	public function setContent(string $content): self
+	public function setContent(?string $content): self
 	{
 		$this->content = $content;
 		return $this;

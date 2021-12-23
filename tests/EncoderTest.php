@@ -36,20 +36,25 @@ final class EncoderTest extends TestCase
 			)
 		);
 
-		$invoice->invoiceLines->add(
-			new Adawolfa\ISDOC\Schema\Invoice\InvoiceLine(
-				'1',
-				'100.0',
-				'121.0',
-				'21.0',
-				'100.0',
-				'121.0',
-				new Adawolfa\ISDOC\Schema\Invoice\ClassifiedTaxCategory(
-					'21',
-					Adawolfa\ISDOC\Schema\Invoice\ClassifiedTaxCategory::VAT_CALCULATION_METHOD_FROM_THE_TOP,
-				),
-			)
+		$invoiceLine = new Adawolfa\ISDOC\Schema\Invoice\InvoiceLine(
+			'1',
+			'100.0',
+			'121.0',
+			'21.0',
+			'100.0',
+			'121.0',
+			new Adawolfa\ISDOC\Schema\Invoice\ClassifiedTaxCategory(
+				'21',
+				Adawolfa\ISDOC\Schema\Invoice\ClassifiedTaxCategory::VAT_CALCULATION_METHOD_FROM_THE_TOP,
+			),
 		);
+
+		$quantity = new Adawolfa\ISDOC\Schema\Invoice\Quantity;
+		$quantity->setUnitCode('ks');
+		$quantity->setContent('99');
+		$invoiceLine->setInvoicedQuantity($quantity);
+
+		$invoice->invoiceLines->add($invoiceLine);
 
 		$encoded = Adawolfa\ISDOC\Manager::create()->getWriter()->xml($invoice);
 		$this->assertSnapshot('encoder-sample.xml', $encoded);

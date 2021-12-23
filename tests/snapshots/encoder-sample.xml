@@ -32,6 +32,7 @@
   <InvoiceLines>
     <InvoiceLine>
       <ID>1</ID>
+      <InvoicedQuantity unitCode="ks">99</InvoicedQuantity>
       <LineExtensionAmount>100.0</LineExtensionAmount>
       <LineExtensionAmountTaxInclusive>121.0</LineExtensionAmountTaxInclusive>
       <LineExtensionTaxAmount>21.0</LineExtensionTaxAmount>

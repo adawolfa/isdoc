@@ -31,10 +31,10 @@ final class Serializer
 
 		try {
 
-			$instance = $this->reflector->instance($instance);
-			$data     = ['@id' => new Serializer\ID($instance->getInstance())];
+			$instanceReflection = $this->reflector->instance($instance);
+			$data               = ['@id' => new Serializer\ID($instanceReflection->getInstance())];
 
-			foreach ($instance->getProperties() as $property) {
+			foreach ($instanceReflection->getProperties() as $property) {
 
 				if ($property instanceof ReferenceProperty && $property->getValue() !== null) {
 
@@ -65,6 +65,10 @@ final class Serializer
 					$data[$property->getMap()] = $value;
 				}
 
+			}
+
+			if ($instance instanceof SimpleContentElement && $instance->content !== null) {
+				$data['#'] = $instance->content;
 			}
 
 			if ($this->depth === 1) {
