@@ -54,9 +54,9 @@ final class XTest extends TestCase
 		$invoice->supplementsList = $supplements;
 
 		$manager = Adawolfa\ISDOC\Manager::create();
-		$manager->writer->file($invoice, $this->temp, Adawolfa\ISDOC\Manager::FORMAT_ISDOCX);
+		$manager->writer->file($invoice, $this->temp);
 
-		$read = $manager->reader->file($this->temp, Adawolfa\ISDOC\Schema\Invoice::class, Adawolfa\ISDOC\Manager::FORMAT_ISDOCX);
+		$read = $manager->reader->file($this->temp);
 
 		$this->assertSame($invoice->id, $read->id);
 		$this->assertCount(1, $read->supplementsList);
@@ -71,11 +71,12 @@ final class XTest extends TestCase
 
 	protected function setUp(): void
 	{
-		$this->temp = tempnam(sys_get_temp_dir(), 'isdocx_test');
+		$this->temp = sprintf('%s/isdocx_test.%d.isdocx', sys_get_temp_dir(), getmypid());
+	}
 
-		register_shutdown_function(function(): void {
-			@unlink($this->temp);
-		});
+	protected function tearDown(): void
+	{
+		@unlink($this->temp);
 	}
 
 }
