@@ -175,6 +175,11 @@ final class Reflector
 							|| is_array($tokens[$i]) && $tokens[$i][0] === T_AS:
 							break 2;
 
+						case PHP_MAJOR_VERSION >= 8 && $tokens[$i][0] === T_NAME_QUALIFIED:
+							$use = $tokens[$i][1];
+							$alias = substr($use, strrpos($use, '\\') + 1);
+							break;
+
 					}
 
 				}
