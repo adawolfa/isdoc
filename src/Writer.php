@@ -19,7 +19,7 @@ final class Writer
 	}
 
 	/** @throws WriterException */
-	public function file(Schema\Invoice $invoice, string $filename, string $format = Manager::FORMAT_AUTO): void
+	public function file(Schema\Invoice $invoice, string $filename, ?string $format = Manager::FORMAT_AUTO): void
 	{
 		$format = $format ?? Utils::detectFormat($filename);
 

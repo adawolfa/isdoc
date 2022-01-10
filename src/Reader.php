@@ -25,9 +25,9 @@ final class Reader
 	 * @throws ReaderException
 	 */
 	public function file(
-		string $filename,
-		string $class = Schema\Invoice::class,
-		string $format = Manager::FORMAT_AUTO
+		string  $filename,
+		string  $class = Schema\Invoice::class,
+		?string $format = Manager::FORMAT_AUTO
 	): Schema\Invoice
 	{
 		$format = $format ?? Utils::detectFormat($filename);
