@@ -34,7 +34,7 @@ class MyInvoice extends Adawolfa\ISDOC\Schema\Invoice
 
 class MyExtensions
 {
-    #[Map("CustomElement")]
+    #[Map('CustomElement')]
     private string $customElement;
 }
 
