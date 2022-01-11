@@ -28,13 +28,13 @@ use Adawolfa\ISDOC\Map;
 
 class MyInvoice extends Adawolfa\ISDOC\Schema\Invoice
 {
-    /** @Map("Extensions") */
+    #[Map('Extensions')]
     private ?MyExtensions $extensions;
 }
 
 class MyExtensions
 {
-    /** @Map("CustomElement") */
+    #[Map("CustomElement")]
     private string $customElement;
 }
 
