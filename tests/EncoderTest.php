@@ -56,6 +56,21 @@ final class EncoderTest extends TestCase
 
 		$invoice->invoiceLines->add($invoiceLine);
 
+		$payment = new Adawolfa\ISDOC\Schema\Invoice\Payment(
+			'0.0',
+			10,
+		);
+
+		$payment->details = new Adawolfa\ISDOC\Schema\Invoice\Details;
+		$payment->details->id = '12345678';
+		$payment->details->bankCode = '0800';
+		$payment->details->name = 'Česká spořitelna, a. s.';
+		$payment->details->variableSymbol = '123456';
+		$payment->details->paymentDueDate = DateTimeImmutable::createFromFormat('Y-m-d', '2022-02-02');
+
+		$invoice->paymentMeans = new Adawolfa\ISDOC\Schema\Invoice\PaymentMeans;
+		$invoice->paymentMeans->add($payment);
+
 		$encoded = Adawolfa\ISDOC\Manager::create()->getWriter()->xml($invoice);
 		$this->assertSnapshot('encoder-sample.xml', $encoded);
 	}

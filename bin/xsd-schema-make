@@ -189,54 +189,69 @@ require(__DIR__ . '/../vendor/autoload.php');
 
 					}
 
-					switch (true) {
+					$this->complexTypeElementsOne($class, $element);
 
-						case $element instanceof XSDReader\Schema\Element\Element
-							&& $element->getName() === 'Extensions':
+				}
+			}
 
-						// Unsupported choices.
-						case $element instanceof XSDReader\Schema\Element\Element
-							&& $class->hasProperty($this->formatPropertyName($element->getName())):
-							break;
+			private function complexTypeElementsOne(
+				PhpGenerator\ClassType $class,
+				XSDReader\Schema\Element\ElementItem $element,
+				bool $defaultNullable = null
+			): void
+			{
+				switch (true) {
 
-						case $element instanceof XSDReader\Schema\Element\Element:
+					case $element instanceof XSDReader\Schema\Element\Element
+						&& $element->getName() === 'Extensions':
 
-							$type     = $element->getType();
-							$property = $this->createElementProperty($class, $element);
+					// Unsupported choices.
+					case $element instanceof XSDReader\Schema\Element\Element
+						&& $class->hasProperty($this->formatPropertyName($element->getName())):
+						break;
 
-							switch (true) {
+					case $element instanceof XSDReader\Schema\Element\Element:
 
-								case $type instanceof XSDReader\Schema\Type\ComplexType:
-								case $type instanceof XSDReader\Schema\Type\ComplexTypeSimpleContent:
-									$this->complexTypeProperty($class, $property, $type, $element->getMin() === 0);
-									break;
+						$type     = $element->getType();
+						$property = $this->createElementProperty($class, $element);
 
-								case $type instanceof XSDReader\Schema\Type\SimpleType:
+						switch (true) {
 
-									$this->simpleTypeProperty(
+							case $type instanceof XSDReader\Schema\Type\ComplexType:
+							case $type instanceof XSDReader\Schema\Type\ComplexTypeSimpleContent:
+								$this->complexTypeProperty($class, $property, $type, $element->getMin() === 0);
+								break;
 
-										$class,
-										$property,
-										$type,
+							case $type instanceof XSDReader\Schema\Type\SimpleType:
 
-										// The schema parser doesn't provide a way to obtain the limit from the parent sequence.
-										$element->getMin() === 0 || in_array($property->getName(), [
-											'subDocumentType',
-											'subDocumentTypeOrigin',
-										], true)
+								$this->simpleTypeProperty(
 
-									);
+									$class,
+									$property,
+									$type,
 
-									break;
+									// The schema parser doesn't provide a way to obtain the limit from the parent sequence.
+									$defaultNullable ?? ($element->getMin() === 0 || in_array($property->getName(), [
+										'subDocumentType',
+										'subDocumentTypeOrigin',
+									], true))
 
-								default:
-									throw new Exception('Unsupported complex element type.');
+								);
 
-							}
+								break;
 
-							break;
+							default:
+								throw new Exception('Unsupported complex element type.');
 
-					}
+						}
+
+						break;
+
+					case $element instanceof XSDReader\Schema\Element\GroupRef:
+
+						foreach ($element->getElements() as $groupElement) {
+							$this->complexTypeElementsOne($class, $groupElement, true);
+						}
 
 				}
 			}
