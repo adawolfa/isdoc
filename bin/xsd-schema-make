@@ -73,6 +73,10 @@ require(__DIR__ . '/../vendor/autoload.php');
 				$classBaseName = substr($name, strlen($namespaceName) + 1);
 				$filename      = $this->folder . '/' . str_replace('\\', '/', substr($name, strlen($this->namespace) + 1)) . '.php';
 
+				if ($classBaseName === 'Extensions') {
+					return;
+				}
+
 				$file = new PhpGenerator\PhpFile;
 				$file->setStrictTypes(true);
 				$namespace = $file->addNamespace($namespaceName);
