@@ -55,4 +55,17 @@
     <PaidDepositsAmount>0</PaidDepositsAmount>
     <PayableAmount>0</PayableAmount>
   </LegalMonetaryTotal>
+  <PaymentMeans>
+    <Payment>
+      <PaidAmount>0.0</PaidAmount>
+      <PaymentMeansCode>10</PaymentMeansCode>
+      <Details>
+        <PaymentDueDate>2022-02-02</PaymentDueDate>
+        <ID>12345678</ID>
+        <BankCode>0800</BankCode>
+        <Name>Česká spořitelna, a. s.</Name>
+        <VariableSymbol>123456</VariableSymbol>
+      </Details>
+    </Payment>
+  </PaymentMeans>
 </Invoice>
