@@ -37,137 +37,80 @@ class TaxSubTotal implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/**
-	 * Tax base for rate in a foreign currency.
-	 *
-	 * @Map("TaxableAmountCurr")
-	 */
+	/** Tax base for rate in a foreign currency. */
+	#[Map('TaxableAmountCurr')]
 	private ?string $taxableAmountCurr = null;
 
-	/**
-	 * Tax base for rate in a local currency.
-	 *
-	 * @Map("TaxableAmount")
-	 */
+	/** Tax base for rate in a local currency. */
+	#[Map('TaxableAmount')]
 	private string $taxableAmount;
 
-	/**
-	 * Tax for rate in a foreign currency.
-	 *
-	 * @Map("TaxAmountCurr")
-	 */
+	/** Tax for rate in a foreign currency. */
+	#[Map('TaxAmountCurr')]
 	private ?string $taxAmountCurr = null;
 
-	/**
-	 * Tax for rate in a local currency.
-	 *
-	 * @Map("TaxAmount")
-	 */
+	/** Tax for rate in a local currency. */
+	#[Map('TaxAmount')]
 	private string $taxAmount;
 
-	/**
-	 * Amount including tax for rate in a foreign currency.
-	 *
-	 * @Map("TaxInclusiveAmountCurr")
-	 */
+	/** Amount including tax for rate in a foreign currency. */
+	#[Map('TaxInclusiveAmountCurr')]
 	private ?string $taxInclusiveAmountCurr = null;
 
-	/**
-	 * Amount including tax for rate in a local currency.
-	 *
-	 * @Map("TaxInclusiveAmount")
-	 */
+	/** Amount including tax for rate in a local currency. */
+	#[Map('TaxInclusiveAmount')]
 	private string $taxInclusiveAmount;
 
-	/**
-	 * Already claimed amount for rate in a foreign currency.
-	 *
-	 * @Map("AlreadyClaimedTaxableAmountCurr")
-	 */
+	/** Already claimed amount for rate in a foreign currency. */
+	#[Map('AlreadyClaimedTaxableAmountCurr')]
 	private ?string $alreadyClaimedTaxableAmountCurr = null;
 
-	/**
-	 * Already claimed amount for rate in a local currency.
-	 *
-	 * @Map("AlreadyClaimedTaxableAmount")
-	 */
+	/** Already claimed amount for rate in a local currency. */
+	#[Map('AlreadyClaimedTaxableAmount')]
 	private string $alreadyClaimedTaxableAmount;
 
-	/**
-	 * Already claimed tax for rate in a foreign currency.
-	 *
-	 * @Map("AlreadyClaimedTaxAmountCurr")
-	 */
+	/** Already claimed tax for rate in a foreign currency. */
+	#[Map('AlreadyClaimedTaxAmountCurr')]
 	private ?string $alreadyClaimedTaxAmountCurr = null;
 
-	/**
-	 * Already claimed tax for rate in a local currency.
-	 *
-	 * @Map("AlreadyClaimedTaxAmount")
-	 */
+	/** Already claimed tax for rate in a local currency. */
+	#[Map('AlreadyClaimedTaxAmount')]
 	private string $alreadyClaimedTaxAmount;
 
-	/**
-	 * Already claimed amount including tax for rate in a foreign currency.
-	 *
-	 * @Map("AlreadyClaimedTaxInclusiveAmountCurr")
-	 */
+	/** Already claimed amount including tax for rate in a foreign currency. */
+	#[Map('AlreadyClaimedTaxInclusiveAmountCurr')]
 	private ?string $alreadyClaimedTaxInclusiveAmountCurr = null;
 
-	/**
-	 * Already claimed amount including tax for rate in a local currency.
-	 *
-	 * @Map("AlreadyClaimedTaxInclusiveAmount")
-	 */
+	/** Already claimed amount including tax for rate in a local currency. */
+	#[Map('AlreadyClaimedTaxInclusiveAmount')]
 	private string $alreadyClaimedTaxInclusiveAmount;
 
-	/**
-	 * Difference in the amount in a foreign currency.
-	 *
-	 * @Map("DifferenceTaxableAmountCurr")
-	 */
+	/** Difference in the amount in a foreign currency. */
+	#[Map('DifferenceTaxableAmountCurr')]
 	private ?string $differenceTaxableAmountCurr = null;
 
-	/**
-	 * Difference in the amount in a local currency.
-	 *
-	 * @Map("DifferenceTaxableAmount")
-	 */
+	/** Difference in the amount in a local currency. */
+	#[Map('DifferenceTaxableAmount')]
 	private string $differenceTaxableAmount;
 
-	/**
-	 * Difference in the tax in a foreign currency.
-	 *
-	 * @Map("DifferenceTaxAmountCurr")
-	 */
+	/** Difference in the tax in a foreign currency. */
+	#[Map('DifferenceTaxAmountCurr')]
 	private ?string $differenceTaxAmountCurr = null;
 
-	/**
-	 * Difference in the tax in a local currency.
-	 *
-	 * @Map("DifferenceTaxAmount")
-	 */
+	/** Difference in the tax in a local currency. */
+	#[Map('DifferenceTaxAmount')]
 	private string $differenceTaxAmount;
 
-	/**
-	 * Difference including tax in a foreign currency.
-	 *
-	 * @Map("DifferenceTaxInclusiveAmountCurr")
-	 */
+	/** Difference including tax in a foreign currency. */
+	#[Map('DifferenceTaxInclusiveAmountCurr')]
 	private ?string $differenceTaxInclusiveAmountCurr = null;
 
-	/**
-	 * Difference including tax in a local currency.
-	 *
-	 * @Map("DifferenceTaxInclusiveAmount")
-	 */
+	/** Difference including tax in a local currency. */
+	#[Map('DifferenceTaxInclusiveAmount')]
 	private string $differenceTaxInclusiveAmount;
 
-	/**
-	 * Information about a tax rate.
-	 *
-	 * @Map("TaxCategory")
-	 */
+	/** Information about a tax rate. */
+	#[Map('TaxCategory')]
 	private TaxCategory $taxCategory;
 
 	public function __construct(

@@ -9,9 +9,9 @@ use ArrayIterator;
 /**
  * Collection of classifiers.
  *
- * @Map("EgovClassifier")
  * @extends Collection<string>
  */
+#[Map('EgovClassifier', 'string')]
 class EgovClassifiers extends Collection
 {
 

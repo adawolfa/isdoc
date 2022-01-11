@@ -22,32 +22,20 @@ class NonTaxedDeposit implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/**
-	 * Document name, issuer identification of proforma invoice.
-	 *
-	 * @Map("ID")
-	 */
+	/** Document name, issuer identification of proforma invoice. */
+	#[Map('ID')]
 	private string $id;
 
-	/**
-	 * Variable symbol, used when proforma invoice was paid, typically number of the proforma invoice.
-	 *
-	 * @Map("VariableSymbol")
-	 */
+	/** Variable symbol, used when proforma invoice was paid, typically number of the proforma invoice. */
+	#[Map('VariableSymbol')]
 	private string $variableSymbol;
 
-	/**
-	 * Deposit in a foreign currency.
-	 *
-	 * @Map("DepositAmountCurr")
-	 */
+	/** Deposit in a foreign currency. */
+	#[Map('DepositAmountCurr')]
 	private ?string $depositAmountCurr = null;
 
-	/**
-	 * Deposit in a local currency.
-	 *
-	 * @Map("DepositAmount")
-	 */
+	/** Deposit in a local currency. */
+	#[Map('DepositAmount')]
 	private string $depositAmount;
 
 	public function __construct(string $id, string $variableSymbol, string $depositAmount)

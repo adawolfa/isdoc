@@ -9,9 +9,9 @@ use ArrayIterator;
 /**
  * Header collection of referenced purchase order(s).
  *
- * @Map("OrderReference")
  * @extends Collection<Order>
  */
+#[Map('OrderReference', Order::class)]
 class OrderReferences extends Collection
 {
 

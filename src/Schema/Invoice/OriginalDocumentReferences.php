@@ -9,9 +9,9 @@ use ArrayIterator;
 /**
  * Header collection of referenced original documents.
  *
- * @Map("OriginalDocumentReference")
  * @extends Collection<OriginalDocument>
  */
+#[Map('OriginalDocumentReference', OriginalDocument::class)]
 class OriginalDocumentReferences extends Collection
 {
 

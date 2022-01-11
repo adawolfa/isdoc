@@ -9,9 +9,9 @@ use ArrayIterator;
 /**
  * Batch or serial number collection.
  *
- * @Map("StoreBatch")
  * @extends Collection<StoreBatch>
  */
+#[Map('StoreBatch', StoreBatch::class)]
 class StoreBatches extends Collection
 {
 

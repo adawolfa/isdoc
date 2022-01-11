@@ -24,46 +24,28 @@ class Details implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/**
-	 * Identifier of paired document, for example of bill.
-	 *
-	 * @Map("DocumentID")
-	 */
+	/** Identifier of paired document, for example of bill. */
+	#[Map('DocumentID')]
 	private ?string $documentID = null;
 
-	/**
-	 * Issue date.
-	 *
-	 * @Map("IssueDate")
-	 */
+	/** Issue date. */
+	#[Map('IssueDate')]
 	private ?DateTimeImmutable $issueDate = null;
 
-	/**
-	 * Due date.
-	 *
-	 * @Map("PaymentDueDate")
-	 */
+	/** Due date. */
+	#[Map('PaymentDueDate')]
 	private ?DateTimeImmutable $paymentDueDate = null;
 
-	/**
-	 * Variable symbol (distinctive symbol of payment, typically number of invoice). Used for payment inside of the Czech Republic.
-	 *
-	 * @Map("VariableSymbol")
-	 */
+	/** Variable symbol (distinctive symbol of payment, typically number of invoice). Used for payment inside of the Czech Republic. */
+	#[Map('VariableSymbol')]
 	private ?string $variableSymbol = null;
 
-	/**
-	 * Constant symbol (used for payment inside of the Czech Republic).
-	 *
-	 * @Map("ConstantSymbol")
-	 */
+	/** Constant symbol (used for payment inside of the Czech Republic). */
+	#[Map('ConstantSymbol')]
 	private ?string $constantSymbol = null;
 
-	/**
-	 * Specific symbol (used for payment inside of the Czech Republic).
-	 *
-	 * @Map("SpecificSymbol")
-	 */
+	/** Specific symbol (used for payment inside of the Czech Republic). */
+	#[Map('SpecificSymbol')]
 	private ?string $specificSymbol = null;
 
 	public function getDocumentID(): ?string

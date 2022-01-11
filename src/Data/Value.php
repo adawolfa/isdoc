@@ -19,12 +19,11 @@ final class Value
 	private const DATE_FORMAT = 'Y-m-d';
 
 	/** @var mixed */
-	private        $value;
+	private mixed  $value;
 	private Data   $parent;
 	private string $name;
 
-	/** @param mixed $value */
-	public function __construct($value, Data $parent, string $name)
+	public function __construct(mixed $value, Data $parent, string $name)
 	{
 		$this->value  = $value;
 		$this->parent = $parent;
@@ -36,11 +35,8 @@ final class Value
 		return $this->parent->getPath() . ($this->parent->getPath() === '' ? '' : '/') . $this->name;
 	}
 
-	/**
-	 * @return mixed
-	 * @throws ValueException
-	 */
-	public function cast(?ReflectionNamedType $type)
+	/** @throws ValueException */
+	public function cast(?ReflectionNamedType $type): mixed
 	{
 		if ($type !== null && !$type->isBuiltin()) {
 			throw new RuntimeException(__METHOD__ . '() can only cast to a primitive type, ' . $type->getName() . ' given.');
@@ -85,11 +81,8 @@ final class Value
 		return $parsed->setTime(0, 0);
 	}
 
-	/**
-	 * @return mixed
-	 * @throws ValueException
-	 */
-	private function as(string $type)
+	/** @throws ValueException */
+	private function as(string $type): mixed
 	{
 		$value = $this->value;
 
@@ -99,7 +92,7 @@ final class Value
 				return $value;
 			}
 
-		} catch (Error $error) {
+		} catch (Error) {
 			// Elevated later on.
 		}
 

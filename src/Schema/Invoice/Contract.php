@@ -27,60 +27,36 @@ class Contract implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/**
-	 * Human readable contract identifier.
-	 *
-	 * @Map("ID")
-	 */
+	/** Human readable contract identifier. */
+	#[Map('ID')]
 	private string $id;
 
-	/**
-	 * Contract identifier supplied at the time of contract registration inside file system.
-	 *
-	 * @Map("UUID")
-	 */
+	/** Contract identifier supplied at the time of contract registration inside file system. */
+	#[Map('UUID')]
 	private ?string $uuid = null;
 
-	/**
-	 * Date of contract signature.
-	 *
-	 * @Map("IssueDate")
-	 */
+	/** Date of contract signature. */
+	#[Map('IssueDate')]
 	private DateTimeImmutable $issueDate;
 
-	/**
-	 * Date until contract is valid.
-	 *
-	 * @Map("LastValidDate")
-	 */
+	/** Date until contract is valid. */
+	#[Map('LastValidDate')]
 	private ?DateTimeImmutable $lastValidDate = null;
 
-	/**
-	 * Contract for indefinite period.
-	 *
-	 * @Map("LastValidDateUnbounded")
-	 */
+	/** Contract for indefinite period. */
+	#[Map('LastValidDateUnbounded')]
 	private ?LastValidDateUnbounded $lastValidDateUnbounded = null;
 
-	/**
-	 * Unique identifier inside ISDS system.
-	 *
-	 * @Map("ISDS_ID")
-	 */
+	/** Unique identifier inside ISDS system. */
+	#[Map('ISDS_ID')]
 	private ?string $isds_id = null;
 
-	/**
-	 * File number.
-	 *
-	 * @Map("FileReference")
-	 */
+	/** File number. */
+	#[Map('FileReference')]
 	private ?string $file = null;
 
-	/**
-	 * Reference number.
-	 *
-	 * @Map("ReferenceNumber")
-	 */
+	/** Reference number. */
+	#[Map('ReferenceNumber')]
 	private ?string $referenceNumber = null;
 
 	public function __construct(string $id, DateTimeImmutable $issueDate)

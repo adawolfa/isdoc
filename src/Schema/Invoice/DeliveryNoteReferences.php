@@ -9,9 +9,9 @@ use ArrayIterator;
 /**
  * Header collection of referenced delivery notes.
  *
- * @Map("DeliveryNoteReference")
  * @extends Collection<DeliveryNote>
  */
+#[Map('DeliveryNoteReference', DeliveryNote::class)]
 class DeliveryNoteReferences extends Collection
 {
 

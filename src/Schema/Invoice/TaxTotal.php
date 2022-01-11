@@ -9,9 +9,9 @@ use ArrayIterator;
 /**
  * Information about a total amount of a particular type of tax.
  *
- * @Map("TaxSubTotal")
  * @extends Collection<TaxSubTotal>
  */
+#[Map('TaxSubTotal', TaxSubTotal::class)]
 class TaxTotal extends Collection
 {
 

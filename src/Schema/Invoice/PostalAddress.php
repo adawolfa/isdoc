@@ -22,39 +22,24 @@ class PostalAddress implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/**
-	 * Street.
-	 *
-	 * @Map("StreetName")
-	 */
+	/** Street. */
+	#[Map('StreetName')]
 	private string $streetName;
 
-	/**
-	 * Building number.
-	 *
-	 * @Map("BuildingNumber")
-	 */
+	/** Building number. */
+	#[Map('BuildingNumber')]
 	private string $buildingNumber;
 
-	/**
-	 * City.
-	 *
-	 * @Map("CityName")
-	 */
+	/** City. */
+	#[Map('CityName')]
 	private string $cityName;
 
-	/**
-	 * ZIP/postal zone.
-	 *
-	 * @Map("PostalZone")
-	 */
+	/** ZIP/postal zone. */
+	#[Map('PostalZone')]
 	private string $postalZone;
 
-	/**
-	 * Country.
-	 *
-	 * @Map("Country")
-	 */
+	/** Country. */
+	#[Map('Country')]
 	private Country $country;
 
 	public function __construct(

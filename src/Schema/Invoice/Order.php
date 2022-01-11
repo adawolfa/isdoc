@@ -27,60 +27,36 @@ class Order implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/**
-	 * Private identifier of purchase order received at supplier.
-	 *
-	 * @Map("SalesOrderID")
-	 */
+	/** Private identifier of purchase order received at supplier. */
+	#[Map('SalesOrderID')]
 	private string $salesOrderID;
 
-	/**
-	 * External number of accepted purchase order, usually purchase order issued at purchaser.
-	 *
-	 * @Map("ExternalOrderID")
-	 */
+	/** External number of accepted purchase order, usually purchase order issued at purchaser. */
+	#[Map('ExternalOrderID')]
 	private ?string $externalOrderID = null;
 
-	/**
-	 * Issue date of purchase order received at supplier.
-	 *
-	 * @Map("IssueDate")
-	 */
+	/** Issue date of purchase order received at supplier. */
+	#[Map('IssueDate')]
 	private ?DateTimeImmutable $issueDate = null;
 
-	/**
-	 * Issue date of purchase order.
-	 *
-	 * @Map("ExternalOrderIssueDate")
-	 */
+	/** Issue date of purchase order. */
+	#[Map('ExternalOrderIssueDate')]
 	private ?DateTimeImmutable $externalOrderIssueDate = null;
 
-	/**
-	 * Unique GUID identifier.
-	 *
-	 * @Map("UUID")
-	 */
+	/** Unique GUID identifier. */
+	#[Map('UUID')]
 	private ?string $uuid = null;
 
-	/**
-	 * Message ID inside ISDS system.
-	 *
-	 * @Map("ISDS_ID")
-	 */
+	/** Message ID inside ISDS system. */
+	#[Map('ISDS_ID')]
 	private ?string $isds_id = null;
 
-	/**
-	 * File number.
-	 *
-	 * @Map("FileReference")
-	 */
+	/** File number. */
+	#[Map('FileReference')]
 	private ?string $file = null;
 
-	/**
-	 * Reference number.
-	 *
-	 * @Map("ReferenceNumber")
-	 */
+	/** Reference number. */
+	#[Map('ReferenceNumber')]
 	private ?string $referenceNumber = null;
 
 	public function __construct(string $salesOrderID)

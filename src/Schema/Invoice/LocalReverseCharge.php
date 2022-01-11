@@ -25,18 +25,12 @@ class LocalReverseCharge implements Arrayable
 	public const LOCAL_REVERSE_CHARGE_CODE_DELIVERY_OF_DEVELOPER_OR_ASSEMBLY_WORK = '4';
 	public const LOCAL_REVERSE_CHARGE_CODE_WASTE_SEE_APPENDIX_5_OF_VAT_BILL       = '5';
 
-	/**
-	 * VAT subject code for local reverse charge mode.
-	 *
-	 * @Map("LocalReverseChargeCode")
-	 */
+	/** VAT subject code for local reverse charge mode. */
+	#[Map('LocalReverseChargeCode')]
 	private string $localReverseChargeCode;
 
-	/**
-	 * Amount.
-	 *
-	 * @Map("LocalReverseChargeQuantity")
-	 */
+	/** Amount. */
+	#[Map('LocalReverseChargeQuantity')]
 	private ?Quantity $localReverseChargeQuantity = null;
 
 	public function __construct(string $localReverseChargeCode)

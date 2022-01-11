@@ -18,11 +18,8 @@ class AccountingSupplierParty implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/**
-	 * Information about an organization, sub-organization, or individual fulfilling a role in a business process.
-	 *
-	 * @Map("Party")
-	 */
+	/** Information about an organization, sub-organization, or individual fulfilling a role in a business process. */
+	#[Map('Party')]
 	private Party $party;
 
 	public function __construct(Party $party)

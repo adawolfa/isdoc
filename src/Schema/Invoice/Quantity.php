@@ -17,11 +17,8 @@ class Quantity extends SimpleContentElement implements Arrayable
 
 	use ToArray;
 
-	/**
-	 * Unit.
-	 *
-	 * @Map("@unitCode")
-	 */
+	/** Unit. */
+	#[Map('@unitCode')]
 	private ?string $unitCode = null;
 
 	public function getUnitCode(): ?string

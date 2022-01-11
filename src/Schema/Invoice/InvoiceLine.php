@@ -38,144 +38,84 @@ class InvoiceLine implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/**
-	 * Unique alphanumeric line identifier.
-	 *
-	 * @Map("ID")
-	 */
+	/** Unique alphanumeric line identifier. */
+	#[Map('ID')]
 	private string $id;
 
-	/**
-	 * Reference to line on a related purchase order.
-	 *
-	 * @Map("OrderReference")
-	 */
+	/** Reference to line on a related purchase order. */
+	#[Map('OrderReference')]
 	private ?OrderLine $order = null;
 
-	/**
-	 * Information about referenced line on delivery note.
-	 *
-	 * @Map("DeliveryNoteReference")
-	 */
+	/** Information about referenced line on delivery note. */
+	#[Map('DeliveryNoteReference')]
 	private ?DeliveryNoteLine $deliveryNote = null;
 
-	/**
-	 * Line reference to an original document which is being corrected by this document (only for document types 2, 3 and 6).
-	 *
-	 * @Map("OriginalDocumentReference")
-	 */
+	/** Line reference to an original document which is being corrected by this document (only for document types 2, 3 and 6). */
+	#[Map('OriginalDocumentReference')]
 	private ?OriginalDocumentLine $originalDocument = null;
 
-	/**
-	 * Reference to a related contract.
-	 *
-	 * @Map("ContractReference")
-	 */
+	/** Reference to a related contract. */
+	#[Map('ContractReference')]
 	private ?ContractLine $contract = null;
 
-	/**
-	 * Egoverment accounting classifier.
-	 *
-	 * @Map("EgovClassifier")
-	 */
+	/** Egoverment accounting classifier. */
+	#[Map('EgovClassifier')]
 	private ?string $egovClassifier = null;
 
-	/**
-	 * Invoiced quantity.
-	 *
-	 * @Map("InvoicedQuantity")
-	 */
+	/** Invoiced quantity. */
+	#[Map('InvoicedQuantity')]
 	private ?Quantity $invoicedQuantity = null;
 
-	/**
-	 * Total line amount without tax in a foreign currency.
-	 *
-	 * @Map("LineExtensionAmountCurr")
-	 */
+	/** Total line amount without tax in a foreign currency. */
+	#[Map('LineExtensionAmountCurr')]
 	private ?string $lineExtensionAmountCurr = null;
 
-	/**
-	 * Total line amount without tax in a local currency.
-	 *
-	 * @Map("LineExtensionAmount")
-	 */
+	/** Total line amount without tax in a local currency. */
+	#[Map('LineExtensionAmount')]
 	private string $lineExtensionAmount;
 
-	/**
-	 * Total line amount without tax in a local currency without discount.
-	 *
-	 * @Map("LineExtensionAmountBeforeDiscount")
-	 */
+	/** Total line amount without tax in a local currency without discount. */
+	#[Map('LineExtensionAmountBeforeDiscount')]
 	private ?string $lineExtensionAmountBeforeDiscount = null;
 
-	/**
-	 * Total line amount including tax in a foreign currency.
-	 *
-	 * @Map("LineExtensionAmountTaxInclusiveCurr")
-	 */
+	/** Total line amount including tax in a foreign currency. */
+	#[Map('LineExtensionAmountTaxInclusiveCurr')]
 	private ?string $lineExtensionAmountTaxInclusiveCurr = null;
 
-	/**
-	 * Total line amount including tax in a local currency.
-	 *
-	 * @Map("LineExtensionAmountTaxInclusive")
-	 */
+	/** Total line amount including tax in a local currency. */
+	#[Map('LineExtensionAmountTaxInclusive')]
 	private string $lineExtensionAmountTaxInclusive;
 
-	/**
-	 * Total line amount including tax in a local currency without discount.
-	 *
-	 * @Map("LineExtensionAmountTaxInclusiveBeforeDiscount")
-	 */
+	/** Total line amount including tax in a local currency without discount. */
+	#[Map('LineExtensionAmountTaxInclusiveBeforeDiscount')]
 	private ?string $lineExtensionAmountTaxInclusiveBeforeDiscount = null;
 
-	/**
-	 * Line tax amount in a local currency.
-	 *
-	 * @Map("LineExtensionTaxAmount")
-	 */
+	/** Line tax amount in a local currency. */
+	#[Map('LineExtensionTaxAmount')]
 	private string $lineExtensionTaxAmount;
 
-	/**
-	 * Unit price without tax in a local currency.
-	 *
-	 * @Map("UnitPrice")
-	 */
+	/** Unit price without tax in a local currency. */
+	#[Map('UnitPrice')]
 	private string $unitPrice;
 
-	/**
-	 * Unit price including tax in a local currency.
-	 *
-	 * @Map("UnitPriceTaxInclusive")
-	 */
+	/** Unit price including tax in a local currency. */
+	#[Map('UnitPriceTaxInclusive')]
 	private string $unitPriceTaxInclusive;
 
-	/**
-	 * Compound VAT field.
-	 *
-	 * @Map("ClassifiedTaxCategory")
-	 */
+	/** Compound VAT field. */
+	#[Map('ClassifiedTaxCategory')]
 	private ClassifiedTaxCategory $classifiedTaxCategory;
 
-	/**
-	 * Note.
-	 *
-	 * @Map("Note")
-	 */
+	/** Note. */
+	#[Map('Note')]
 	private ?Note $note = null;
 
-	/**
-	 * Legislation citation which defines VAT exception for this line.
-	 *
-	 * @Map("VATNote")
-	 */
+	/** Legislation citation which defines VAT exception for this line. */
+	#[Map('VATNote')]
 	private ?Note $vatNote = null;
 
-	/**
-	 * Information directly relating to an item.
-	 *
-	 * @Map("Item")
-	 */
+	/** Information directly relating to an item. */
+	#[Map('Item')]
 	private ?Item $item = null;
 
 	public function __construct(

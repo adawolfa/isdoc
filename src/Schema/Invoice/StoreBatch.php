@@ -29,53 +29,32 @@ class StoreBatch implements Arrayable
 	public const BATCH_OR_SERIAL_NUMBER_BATCH         = 'B';
 	public const BATCH_OR_SERIAL_NUMBER_SERIAL_NUMBER = 'S';
 
-	/**
-	 * Batch name/serial number.
-	 *
-	 * @Map("Name")
-	 */
+	/** Batch name/serial number. */
+	#[Map('Name')]
 	private string $name;
 
-	/**
-	 * Note.
-	 *
-	 * @Map("Note")
-	 */
+	/** Note. */
+	#[Map('Note')]
 	private ?Note $note = null;
 
-	/**
-	 * Expiration date.
-	 *
-	 * @Map("ExpirationDate")
-	 */
+	/** Expiration date. */
+	#[Map('ExpirationDate')]
 	private ?DateTimeImmutable $expirationDate = null;
 
-	/**
-	 * Specification.
-	 *
-	 * @Map("Specification")
-	 */
+	/** Specification. */
+	#[Map('Specification')]
 	private ?string $specification = null;
 
-	/**
-	 * Amount.
-	 *
-	 * @Map("Quantity")
-	 */
+	/** Amount. */
+	#[Map('Quantity')]
 	private Quantity $quantity;
 
-	/**
-	 * Differentiation between batch and serial number.
-	 *
-	 * @Map("BatchOrSerialNumber")
-	 */
+	/** Differentiation between batch and serial number. */
+	#[Map('BatchOrSerialNumber')]
 	private string $batchOrSerialNumber;
 
-	/**
-	 * External number of duty stamp.
-	 *
-	 * @Map("SealSeriesID")
-	 */
+	/** External number of duty stamp. */
+	#[Map('SealSeriesID')]
 	private ?string $sealSeriesID = null;
 
 	public function __construct(string $name, Quantity $quantity, string $batchOrSerialNumber)

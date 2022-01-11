@@ -16,7 +16,7 @@ final class Collection extends Instance
 {
 
 	private string $map;
-	private string $itemClassName;
+	private string $type;
 
 	/**
 	 * @param T                         $instance
@@ -27,12 +27,12 @@ final class Collection extends Instance
 		ReflectionObject $reflection,
 		array            $properties,
 		string           $map,
-		string           $itemClassName
+		string           $type,
 	)
 	{
 		parent::__construct($instance, $reflection, $properties);
-		$this->map           = $map;
-		$this->itemClassName = $itemClassName;
+		$this->map  = $map;
+		$this->type = $type;
 	}
 
 	public function getMap(): ?string
@@ -40,22 +40,22 @@ final class Collection extends Instance
 		return $this->map;
 	}
 
-	public function getItemClassName(): string
+	public function getType(): string
 	{
-		return $this->itemClassName;
+		return $this->type;
 	}
 
 	public function add(object $item): void
 	{
-		if (!is_a($item, $this->itemClassName)) {
-			throw new RuntimeException(sprintf("Item must be an instance of %s, got %s.", $this->itemClassName, get_class($item)));
+		if (!is_a($item, $this->type)) {
+			throw new RuntimeException(sprintf("Item must be an instance of %s, got %s.", $this->type, get_class($item)));
 		}
 
 		$method = null;
 
 		try {
 			$method = $this->getReflection()->getMethod('add');
-		} catch (ReflectionException $exception) {
+		} catch (ReflectionException) {
 			// NOP.
 		}
 
@@ -74,7 +74,7 @@ final class Collection extends Instance
 		try {
 			$property = $this->getReflection()->getProperty('items');
 		} catch (ReflectionException $exception) {
-			throw new RuntimeException("Unable to create reflection of {$this->itemClassName}::\$items.");
+			throw new RuntimeException("Unable to create reflection of $this->type::\$items.", 0, $exception);
 		}
 
 		$property->setAccessible(true);

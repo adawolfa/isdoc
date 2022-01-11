@@ -68,291 +68,168 @@ class Invoice implements Arrayable
 	public const DOCUMENT_TYPE_CREDIT_NOTE_FOR_ADVANCE_INVOICE_WITH_VAT = 6;
 	public const DOCUMENT_TYPE_SIMPLIFIED_TAX_DOCUMENT                  = 7;
 
-	/**
-	 * Document type.
-	 *
-	 * @Map("DocumentType")
-	 */
+	/** Document type. */
+	#[Map('DocumentType')]
 	private int $documentType;
 
-	/**
-	 * Document subtype. Codelist is maintained and published by subject specified in SubDocumentTypeOrigin.
-	 *
-	 * @Map("SubDocumentType")
-	 */
+	/** Document subtype. Codelist is maintained and published by subject specified in SubDocumentTypeOrigin. */
+	#[Map('SubDocumentType')]
 	private ?string $subDocumentType = null;
 
-	/**
-	 * Maintainer of subdocument type code list.
-	 *
-	 * @Map("SubDocumentTypeOrigin")
-	 */
+	/** Maintainer of subdocument type code list. */
+	#[Map('SubDocumentTypeOrigin')]
 	private ?string $subDocumentTypeOrigin = null;
 
-	/**
-	 * Identification of target consolidator. Values are extended list of bank codes maintained and published by ČBA.
-	 *
-	 * @Map("TargetConsolidator")
-	 */
+	/** Identification of target consolidator. Values are extended list of bank codes maintained and published by ČBA. */
+	#[Map('TargetConsolidator')]
 	private ?string $targetConsolidator = null;
 
-	/**
-	 * Client identification in the issuer system. Used mainly in B2C systems of companies issuing large volume of invoices.
-	 *
-	 * @Map("ClientOnTargetConsolidator")
-	 */
+	/** Client identification in the issuer system. Used mainly in B2C systems of companies issuing large volume of invoices. */
+	#[Map('ClientOnTargetConsolidator')]
 	private ?string $clientOnTargetConsolidator = null;
 
-	/**
-	 * Complete bank account number of invoice receiver. Used mainly in B2C systems of companies issuing large volume of invoices.
-	 *
-	 * @Map("ClientBankAccount")
-	 */
+	/** Complete bank account number of invoice receiver. Used mainly in B2C systems of companies issuing large volume of invoices. */
+	#[Map('ClientBankAccount')]
 	private ?string $clientBankAccount = null;
 
-	/**
-	 * Human readable document number.
-	 *
-	 * @Map("ID")
-	 */
+	/** Human readable document number. */
+	#[Map('ID')]
 	private string $id;
 
-	/**
-	 * GUID identifier produced by emitting system.
-	 *
-	 * @Map("UUID")
-	 */
+	/** GUID identifier produced by emitting system. */
+	#[Map('UUID')]
 	private string $uuid;
 
-	/**
-	 * Flag for state governed documents.
-	 *
-	 * @Map("EgovFlag")
-	 */
+	/** Flag for state governed documents. */
+	#[Map('EgovFlag')]
 	private ?bool $egovFlag = null;
 
-	/**
-	 * Unique identifier inside ISDS system.
-	 *
-	 * @Map("ISDS_ID")
-	 */
+	/** Unique identifier inside ISDS system. */
+	#[Map('ISDS_ID')]
 	private ?string $isds_id = null;
 
-	/**
-	 * File number.
-	 *
-	 * @Map("FileReference")
-	 */
+	/** File number. */
+	#[Map('FileReference')]
 	private ?string $file = null;
 
-	/**
-	 * Reference number.
-	 *
-	 * @Map("ReferenceNumber")
-	 */
+	/** Reference number. */
+	#[Map('ReferenceNumber')]
 	private ?string $referenceNumber = null;
 
-	/**
-	 * Collection of classifiers.
-	 *
-	 * @Map("EgovClassifiers")
-	 */
+	/** Collection of classifiers. */
+	#[Map('EgovClassifiers')]
 	private ?Invoice\EgovClassifiers $egovClassifiers = null;
 
-	/**
-	 * Identification of issuing system.
-	 *
-	 * @Map("IssuingSystem")
-	 */
+	/** Identification of issuing system. */
+	#[Map('IssuingSystem')]
 	private ?string $issuingSystem = null;
 
-	/**
-	 * Issue date.
-	 *
-	 * @Map("IssueDate")
-	 */
+	/** Issue date. */
+	#[Map('IssueDate')]
 	private DateTimeImmutable $issueDate;
 
-	/**
-	 * Tax point date.
-	 *
-	 * @Map("TaxPointDate")
-	 */
+	/** Tax point date. */
+	#[Map('TaxPointDate')]
 	private ?DateTimeImmutable $taxPointDate = null;
 
-	/**
-	 * VAT is applicable.
-	 *
-	 * @Map("VATApplicable")
-	 */
+	/** VAT is applicable. */
+	#[Map('VATApplicable')]
 	private bool $vatApplicable;
 
-	/**
-	 * Reference to agreement about acceptance of electronic invoices.
-	 *
-	 * @Map("ElectronicPossibilityAgreementReference")
-	 */
+	/** Reference to agreement about acceptance of electronic invoices. */
+	#[Map('ElectronicPossibilityAgreementReference')]
 	private Invoice\Note $electronicPossibilityAgreement;
 
-	/**
-	 * Note.
-	 *
-	 * @Map("Note")
-	 */
+	/** Note. */
+	#[Map('Note')]
 	private ?Invoice\Note $note = null;
 
-	/**
-	 * Currency code.
-	 *
-	 * @Map("LocalCurrencyCode")
-	 */
+	/** Currency code. */
+	#[Map('LocalCurrencyCode')]
 	private string $localCurrencyCode;
 
-	/**
-	 * Currency code.
-	 *
-	 * @Map("ForeignCurrencyCode")
-	 */
+	/** Currency code. */
+	#[Map('ForeignCurrencyCode')]
 	private ?string $foreignCurrencyCode = null;
 
-	/**
-	 * Foreign currency exchange rate (if foreign currency is used), otherwise 1.
-	 *
-	 * @Map("CurrRate")
-	 */
+	/** Foreign currency exchange rate (if foreign currency is used), otherwise 1. */
+	#[Map('CurrRate')]
 	private string $currRate;
 
-	/**
-	 * Reference foreign currency exchange rate, usually 1.
-	 *
-	 * @Map("RefCurrRate")
-	 */
+	/** Reference foreign currency exchange rate, usually 1. */
+	#[Map('RefCurrRate')]
 	private string $refCurrRate;
 
-	/**
-	 * Supplier, accounting entity in Commercial Register.
-	 *
-	 * @Map("AccountingSupplierParty")
-	 */
+	/** Supplier, accounting entity in Commercial Register. */
+	#[Map('AccountingSupplierParty')]
 	private Invoice\AccountingSupplierParty $accountingSupplierParty;
 
-	/**
-	 * Supplier, invoicing address.
-	 *
-	 * @Map("SellerSupplierParty")
-	 */
+	/** Supplier, invoicing address. */
+	#[Map('SellerSupplierParty')]
 	private ?Invoice\SellerSupplierParty $sellerSupplierParty = null;
 
-	/**
-	 * Customer, accounting entity in Commercial Register.
-	 *
-	 * @Map("AccountingCustomerParty")
-	 */
+	/** Customer, accounting entity in Commercial Register. */
+	#[Map('AccountingCustomerParty')]
 	private ?Invoice\AccountingCustomerParty $accountingCustomerParty = null;
 
-	/**
-	 * Anonymous receiver of simplified tax document.
-	 *
-	 * @Map("AnonymousCustomerParty")
-	 */
+	/** Anonymous receiver of simplified tax document. */
+	#[Map('AnonymousCustomerParty')]
 	private ?Invoice\AnonymousCustomerParty $anonymousCustomerParty = null;
 
-	/**
-	 * Purchaser, invoicing address.
-	 *
-	 * @Map("BuyerCustomerParty")
-	 */
+	/** Purchaser, invoicing address. */
+	#[Map('BuyerCustomerParty')]
 	private ?Invoice\BuyerCustomerParty $buyerCustomerParty = null;
 
-	/**
-	 * Header collection of referenced purchase order(s).
-	 *
-	 * @Map("OrderReferences")
-	 */
+	/** Header collection of referenced purchase order(s). */
+	#[Map('OrderReferences')]
 	private ?Invoice\OrderReferences $orderReferences = null;
 
-	/**
-	 * Header collection of referenced delivery notes.
-	 *
-	 * @Map("DeliveryNoteReferences")
-	 */
+	/** Header collection of referenced delivery notes. */
+	#[Map('DeliveryNoteReferences')]
 	private ?Invoice\DeliveryNoteReferences $deliveryNoteReferences = null;
 
-	/**
-	 * Header collection of referenced original documents.
-	 *
-	 * @Map("OriginalDocumentReferences")
-	 */
+	/** Header collection of referenced original documents. */
+	#[Map('OriginalDocumentReferences')]
 	private ?Invoice\OriginalDocumentReferences $originalDocumentReferences = null;
 
-	/**
-	 * Related contracts.
-	 *
-	 * @Map("ContractReferences")
-	 */
+	/** Related contracts. */
+	#[Map('ContractReferences')]
 	private ?Invoice\ContractReferences $contractReferences = null;
 
-	/**
-	 * Information about delivery.
-	 *
-	 * @Map("Delivery")
-	 */
+	/** Information about delivery. */
+	#[Map('Delivery')]
 	private ?Invoice\Delivery $delivery = null;
 
-	/**
-	 * Invoice lines collection.
-	 *
-	 * @Map("InvoiceLines")
-	 */
+	/** Invoice lines collection. */
+	#[Map('InvoiceLines')]
 	private Invoice\InvoiceLines $invoiceLines;
 
-	/**
-	 * Collection of proforma invoices (without VAT).
-	 *
-	 * @Map("NonTaxedDeposits")
-	 */
+	/** Collection of proforma invoices (without VAT). */
+	#[Map('NonTaxedDeposits')]
 	private ?Invoice\NonTaxedDeposits $nonTaxedDeposits = null;
 
-	/**
-	 * Collection of taxed deposits (advance invoices with VAT).
-	 *
-	 * @Map("TaxedDeposits")
-	 */
+	/** Collection of taxed deposits (advance invoices with VAT). */
+	#[Map('TaxedDeposits')]
 	private ?Invoice\TaxedDeposits $taxedDeposits = null;
 
-	/**
-	 * Information about a total amount of a particular type of tax.
-	 *
-	 * @Map("TaxTotal")
-	 */
+	/** Information about a total amount of a particular type of tax. */
+	#[Map('TaxTotal')]
 	private Invoice\TaxTotal $taxTotal;
 
-	/**
-	 * Collection of total amounts on document ending with payable amount.
-	 *
-	 * @Map("LegalMonetaryTotal")
-	 */
+	/** Collection of total amounts on document ending with payable amount. */
+	#[Map('LegalMonetaryTotal')]
 	private Invoice\LegalMonetaryTotal $legalMonetaryTotal;
 
-	/**
-	 * Information about payment means.
-	 *
-	 * @Map("PaymentMeans")
-	 */
+	/** Information about payment means. */
+	#[Map('PaymentMeans')]
 	private ?Invoice\PaymentMeans $paymentMeans = null;
 
-	/**
-	 * Collection of document attachments. Exactly one attachment can be document preview marked by preview="true".
-	 *
-	 * @Map("SupplementsList")
-	 */
+	/** Collection of document attachments. Exactly one attachment can be document preview marked by preview="true". */
+	#[Map('SupplementsList')]
 	private ?Invoice\SupplementsList $supplementsList = null;
 
-	/**
-	 * ISDOC version number.
-	 *
-	 * @Map("@version")
-	 */
+	/** ISDOC version number. */
+	#[Map('@version')]
 	private string $version;
 
 	public function __construct(

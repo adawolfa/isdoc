@@ -19,18 +19,12 @@ class PartyTaxScheme implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/**
-	 * VAT number.
-	 *
-	 * @Map("CompanyID")
-	 */
+	/** VAT number. */
+	#[Map('CompanyID')]
 	private string $companyID;
 
-	/**
-	 * Information about a tax scheme. The most common values are VAT (Value Added Tax) and TIN (Tax Identification Number).
-	 *
-	 * @Map("TaxScheme")
-	 */
+	/** Information about a tax scheme. The most common values are VAT (Value Added Tax) and TIN (Tax Identification Number). */
+	#[Map('TaxScheme')]
 	private string $taxScheme;
 
 	public function __construct(string $companyID, string $taxScheme)

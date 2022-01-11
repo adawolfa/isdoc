@@ -37,7 +37,7 @@ final class Restriction
 			return;
 		}
 
-		if (strpos($pattern, '~') !== false) {
+		if (str_contains($pattern, '~')) {
 			throw new RuntimeException("Pattern '$pattern' contains forbidden character '~'.");
 		}
 
@@ -46,8 +46,7 @@ final class Restriction
 		}
 	}
 
-	/** @param string|int|null $value */
-	public static function enumeration($value, array $options): void
+	public static function enumeration(string|int|null $value, array $options): void
 	{
 		if ($value === null) {
 			return;

@@ -22,32 +22,20 @@ class TaxCategory implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/**
-	 * Tax rate expressed as a percentage.
-	 *
-	 * @Map("Percent")
-	 */
+	/** Tax rate expressed as a percentage. */
+	#[Map('Percent')]
 	private string $percent;
 
-	/**
-	 * Information about a tax scheme. The most common values are VAT (Value Added Tax) and TIN (Tax Identification Number).
-	 *
-	 * @Map("TaxScheme")
-	 */
+	/** Information about a tax scheme. The most common values are VAT (Value Added Tax) and TIN (Tax Identification Number). */
+	#[Map('TaxScheme')]
 	private ?string $taxScheme = null;
 
-	/**
-	 * VAT is applicable.
-	 *
-	 * @Map("VATApplicable")
-	 */
+	/** VAT is applicable. */
+	#[Map('VATApplicable')]
 	private ?bool $vatApplicable = null;
 
-	/**
-	 * Is tax rate included in a local reverse charge mode?.
-	 *
-	 * @Map("LocalReverseChargeFlag")
-	 */
+	/** Is tax rate included in a local reverse charge mode?. */
+	#[Map('LocalReverseChargeFlag')]
 	private ?bool $localReverseChargeFlag = null;
 
 	public function __construct(string $percent)

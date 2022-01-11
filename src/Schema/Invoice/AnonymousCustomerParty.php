@@ -19,18 +19,12 @@ class AnonymousCustomerParty implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/**
-	 * Unique identifier.
-	 *
-	 * @Map("ID")
-	 */
+	/** Unique identifier. */
+	#[Map('ID')]
 	private string $id;
 
-	/**
-	 * Identification of schema used for identifier construction.
-	 *
-	 * @Map("IDScheme")
-	 */
+	/** Identification of schema used for identifier construction. */
+	#[Map('IDScheme')]
 	private $idScheme;
 
 	public function __construct(string $id, $idScheme)

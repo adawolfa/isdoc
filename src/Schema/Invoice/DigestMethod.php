@@ -18,11 +18,8 @@ class DigestMethod implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/**
-	 * Algorithm identifiers are defined in http://www.w3.org/TR/xmldsig-core/#sec-AlgID.
-	 *
-	 * @Map("@Algorithm")
-	 */
+	/** Algorithm identifiers are defined in http://www.w3.org/TR/xmldsig-core/#sec-AlgID. */
+	#[Map('@Algorithm')]
 	private string $algorithm;
 
 	public function __construct(string $algorithm)

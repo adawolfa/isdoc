@@ -105,7 +105,6 @@ require(__DIR__ . '/../vendor/autoload.php');
 					$arrayable = false;
 
 					$class->addExtend(Adawolfa\ISDOC\Collection::class);
-					$class->addComment('@Map("' . $collectionElement->getName() . '")');
 
 					$collectionElementType = $collectionElement->getType();
 
@@ -122,7 +121,8 @@ require(__DIR__ . '/../vendor/autoload.php');
 					switch (true) {
 
 						case $collectionElementType instanceof XSDReader\Schema\Type\ComplexType:
-							$class->addComment('@extends Collection<' . self::formatComplexTypeName('Invoice', $collectionElementType, false) . '>');
+							$collectionPhpType = self::formatComplexTypeName('Invoice', $collectionElementType, false);
+							$class->addComment('@extends Collection<' . $collectionPhpType . '>');
 							$getIteratorMethod->addComment('@return ArrayIterator|' . self::formatComplexTypeName('Invoice', $collectionElementType, false) . '[]');
 							$addMethodParameter->setType(self::formatComplexTypeName('Invoice', $collectionElementType));
 							break;
@@ -138,6 +138,17 @@ require(__DIR__ . '/../vendor/autoload.php');
 							throw new Exception('Unsupported collection element type.');
 
 					}
+
+					if ($collectionPhpType !== 'string') {
+						$collectionPhpType = "$collectionPhpType::class";
+					} else {
+						$collectionPhpType = "'string'";
+					}
+
+					$class->addAttribute(Adawolfa\ISDOC\Map::class, [
+						$collectionElement->getName(),
+						new PhpGenerator\Literal($collectionPhpType),
+					]);
 
 				} elseif ($complexType instanceof XSDReader\Schema\Type\ComplexType) {
 					$class->addTrait(Nette\SmartObject::class);
@@ -170,7 +181,7 @@ require(__DIR__ . '/../vendor/autoload.php');
 					}
 
 					$referencedTypeProperty = $this->createProperty($class, $this->formatPropertyName($referencedTypeName))
-						->addComment('@Reference');
+						->addAttribute(Adawolfa\ISDOC\Reference::class);
 					$this->complexTypeProperty($class, $referencedTypeProperty, $referencedType, false);
 
 				}
@@ -277,13 +288,13 @@ require(__DIR__ . '/../vendor/autoload.php');
 			private function createElementProperty(PhpGenerator\ClassType $class, XSDReader\Schema\Element\Element $element): PhpGenerator\Property
 			{
 				return $this->createProperty($class, $this->formatPropertyName($element->getName()), $element->getDoc())
-					->addComment('@Map("' . $element->getName() . '")');
+					->addAttribute(Adawolfa\ISDOC\Map::class, [$element->getName()]);
 			}
 
 			private function createAttributeProperty(PhpGenerator\ClassType $class, XSDReader\Schema\Attribute\Attribute $attribute): PhpGenerator\Property
 			{
 				return $this->createProperty($class, $this->formatPropertyName($attribute->getName()), $attribute->getDoc())
-					->addComment('@Map("@' . $attribute->getName() . '")');
+					->addAttribute(Adawolfa\ISDOC\Map::class, ['@' . $attribute->getName()]);
 			}
 
 			private function complexTypeProperty(PhpGenerator\ClassType $class, PhpGenerator\Property $property, XSDReader\Schema\Type\BaseComplexType $complexType, bool $nullable): void
@@ -336,9 +347,9 @@ require(__DIR__ . '/../vendor/autoload.php');
 				$property->setType($type);
 				$property->setNullable($nullable);
 
-				$typeHint = (strpos($type, '\\') === false ? $type : substr($type, strlen($this->namespace) + 1));
+				$typeHint = (!str_contains($type, '\\') ? $type : substr($type, strlen($this->namespace) + 1));
 
-				if ($class->getName() !== 'Invoice' && strpos($typeHint, 'Invoice\\') === 0) {
+				if ($class->getName() !== 'Invoice' && str_starts_with($typeHint, 'Invoice\\')) {
 					$typeHint = substr($typeHint, strlen('Invoice') + 1);
 				}
 
@@ -530,33 +541,33 @@ require(__DIR__ . '/../vendor/autoload.php');
 
 					foreach ($matches[1] as $i => $use) {
 
-						$className = strpos($use, '\\') === false ? $use : substr($use, strrpos($use, '\\') + 1);
+						$className = !str_contains($use, '\\') ? $use : substr($use, strrpos($use, '\\') + 1);
 
 						if (preg_match('~private \??' . $className . ' ~', $code)) {
 							continue;
 						}
 
-						if (strpos($code, ' extends ' . $className) !== false) {
+						if (str_contains($code, ' extends ' . $className)) {
 							continue;
 						}
 
-						if (strpos($code, "\tuse " . $className) !== false) {
+						if (str_contains($code, "\tuse " . $className)) {
 							continue;
 						}
 
-						if (strpos($code, $className . '::') !== false) {
+						if (str_contains($code, $className . '::')) {
 							continue;
 						}
 
-						if (strpos($code, 'new ' . $className . '(') !== false) {
+						if (str_contains($code, 'new ' . $className . '(')) {
 							continue;
 						}
 
-						if (strpos($code, 'implements ' . $className) !== false) {
+						if (str_contains($code, 'implements ' . $className)) {
 							continue;
 						}
 
-						if (($className === 'Map' || $className === 'Reference') && strpos($code, '@' . $className) !== false) {
+						if (($className === 'Map' || $className === 'Reference') && str_contains($code, '#[' . $className)) {
 							continue;
 						}
 
@@ -576,6 +587,19 @@ require(__DIR__ . '/../vendor/autoload.php');
 					$code     = substr($code, 0, $position) . substr($matches[0], 1) . "\n" . substr($code, $position);
 
 				}
+
+				$length = 0;
+
+				if (preg_match_all('~public const (?<name>\w+)~', $code, $matches)) {
+
+					foreach ($matches['name'] as $name) {
+						$length = max($length, strlen($name));
+					}
+
+				}
+
+				$length += strlen('public const ');
+				$code = preg_replace_callback('~public const \w+~', fn (array $m): string => str_pad($m[0], $length), $code);
 
 				return preg_replace('~\t/\*\*\n\t \* (.*)\n\t \*/~', "\t/** $1 */", $code);
 			}

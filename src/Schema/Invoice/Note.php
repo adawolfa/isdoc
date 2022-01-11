@@ -18,11 +18,8 @@ class Note extends SimpleContentElement implements Arrayable
 
 	use ToArray;
 
-	/**
-	 * Language identifier (e.g. "en" for English).
-	 *
-	 * @Map("@languageID")
-	 */
+	/** Language identifier (e.g. "en" for English). */
+	#[Map('@languageID')]
 	private ?string $languageID = null;
 
 	public function getLanguageID(): ?string

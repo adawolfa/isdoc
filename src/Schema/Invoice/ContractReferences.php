@@ -9,9 +9,9 @@ use ArrayIterator;
 /**
  * Related contracts.
  *
- * @Map("ContractReference")
  * @extends Collection<Contract>
  */
+#[Map('ContractReference', Contract::class)]
 class ContractReferences extends Collection
 {
 

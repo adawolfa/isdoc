@@ -11,8 +11,7 @@ class ValueException extends Exception
 		return new self("Value {$value->getPath()} is missing.");
 	}
 
-	/** @param mixed $originalValue */
-	public static function cannotCast(Value $value, $originalValue, string $desiredType): self
+	public static function cannotCast(Value $value, mixed $originalValue, string $desiredType): self
 	{
 		$originalType = is_object($originalValue) ? get_class($originalValue) : gettype($originalValue);
 		return new self("Value {$value->getPath()} ($originalType) cannot be casted to $desiredType.");

@@ -20,25 +20,16 @@ class PartyIdentification implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/**
-	 * User defined company/workplace number.
-	 *
-	 * @Map("UserID")
-	 */
+	/** User defined company/workplace number. */
+	#[Map('UserID')]
 	private ?string $userID = null;
 
-	/**
-	 * International company/workplace number, e.g. EAN.
-	 *
-	 * @Map("CatalogFirmIdentification")
-	 */
+	/** International company/workplace number, e.g. EAN. */
+	#[Map('CatalogFirmIdentification')]
 	private ?string $catalogFirmIdentification = null;
 
-	/**
-	 * Company identification number.
-	 *
-	 * @Map("ID")
-	 */
+	/** Company identification number. */
+	#[Map('ID')]
 	private string $id;
 
 	public function __construct(string $id)

@@ -24,53 +24,32 @@ class Item implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/**
-	 * Item description.
-	 *
-	 * @Map("Description")
-	 */
+	/** Item description. */
+	#[Map('Description')]
 	private ?string $description = null;
 
-	/**
-	 * EAN code.
-	 *
-	 * @Map("CatalogueItemIdentification")
-	 */
+	/** EAN code. */
+	#[Map('CatalogueItemIdentification')]
 	private ?CatalogueItemIdentification $catalogueItemIdentification = null;
 
-	/**
-	 * Seller's item identification.
-	 *
-	 * @Map("SellersItemIdentification")
-	 */
+	/** Seller's item identification. */
+	#[Map('SellersItemIdentification')]
 	private ?SellersItemIdentification $sellersItemIdentification = null;
 
-	/**
-	 * Secondary seller's item identification.
-	 *
-	 * @Map("SecondarySellersItemIdentification")
-	 */
+	/** Secondary seller's item identification. */
+	#[Map('SecondarySellersItemIdentification')]
 	private ?SecondarySellersItemIdentification $secondarySellersItemIdentification = null;
 
-	/**
-	 * Tertiary seller's item identification.
-	 *
-	 * @Map("TertiarySellersItemIdentification")
-	 */
+	/** Tertiary seller's item identification. */
+	#[Map('TertiarySellersItemIdentification')]
 	private ?TertiarySellersItemIdentification $tertiarySellersItemIdentification = null;
 
-	/**
-	 * Buyer's item identification.
-	 *
-	 * @Map("BuyersItemIdentification")
-	 */
+	/** Buyer's item identification. */
+	#[Map('BuyersItemIdentification')]
 	private ?BuyersItemIdentification $buyersItemIdentification = null;
 
-	/**
-	 * Batch or serial number collection.
-	 *
-	 * @Map("StoreBatches")
-	 */
+	/** Batch or serial number collection. */
+	#[Map('StoreBatches')]
 	private ?StoreBatches $storeBatches = null;
 
 	public function getDescription(): ?string

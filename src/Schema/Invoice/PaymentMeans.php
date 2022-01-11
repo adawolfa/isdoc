@@ -9,9 +9,9 @@ use ArrayIterator;
 /**
  * Information about payment means.
  *
- * @Map("Payment")
  * @extends Collection<Payment>
  */
+#[Map('Payment', Payment::class)]
 class PaymentMeans extends Collection
 {
 

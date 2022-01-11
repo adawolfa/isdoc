@@ -64,7 +64,7 @@ final class Hydrator
 			}
 
 			foreach ($instance->getProperties() as $property) {
-				$this->hydrateProperty($data, $property, $hook);
+				$this->hydrateProperty($data, $property);
 			}
 
 			$hydrated = $instance->getInstance();
@@ -279,7 +279,7 @@ final class Hydrator
 			}
 
 			foreach ($child->getChildList($collection->getMap()) as $itemData) {
-				$collection->add($this->hydrate($itemData, $collection->getItemClassName()));
+				$collection->add($this->hydrate($itemData, $collection->getType()));
 			}
 
 		}

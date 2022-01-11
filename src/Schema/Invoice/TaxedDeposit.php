@@ -25,53 +25,32 @@ class TaxedDeposit implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/**
-	 * Document name, issuer identification of taxed advance invoice.
-	 *
-	 * @Map("ID")
-	 */
+	/** Document name, issuer identification of taxed advance invoice. */
+	#[Map('ID')]
 	private string $id;
 
-	/**
-	 * Variable symbol (distinctive symbol of payment, typically number of invoice). Used for payment inside of the Czech Republic.
-	 *
-	 * @Map("VariableSymbol")
-	 */
+	/** Variable symbol (distinctive symbol of payment, typically number of invoice). Used for payment inside of the Czech Republic. */
+	#[Map('VariableSymbol')]
 	private string $variableSymbol;
 
-	/**
-	 * Deposit amount without tax in a foreign currency.
-	 *
-	 * @Map("TaxableDepositAmountCurr")
-	 */
+	/** Deposit amount without tax in a foreign currency. */
+	#[Map('TaxableDepositAmountCurr')]
 	private ?string $taxableDepositAmountCurr = null;
 
-	/**
-	 * Deposit amount without tax in a local currency.
-	 *
-	 * @Map("TaxableDepositAmount")
-	 */
+	/** Deposit amount without tax in a local currency. */
+	#[Map('TaxableDepositAmount')]
 	private string $taxableDepositAmount;
 
-	/**
-	 * Deposit amount including tax in a foreign currency.
-	 *
-	 * @Map("TaxInclusiveDepositAmountCurr")
-	 */
+	/** Deposit amount including tax in a foreign currency. */
+	#[Map('TaxInclusiveDepositAmountCurr')]
 	private ?string $taxInclusiveDepositAmountCurr = null;
 
-	/**
-	 * Deposit amount including tax in a local currency.
-	 *
-	 * @Map("TaxInclusiveDepositAmount")
-	 */
+	/** Deposit amount including tax in a local currency. */
+	#[Map('TaxInclusiveDepositAmount')]
 	private string $taxInclusiveDepositAmount;
 
-	/**
-	 * Compound VAT field.
-	 *
-	 * @Map("ClassifiedTaxCategory")
-	 */
+	/** Compound VAT field. */
+	#[Map('ClassifiedTaxCategory')]
 	private ClassifiedTaxCategory $classifiedTaxCategory;
 
 	public function __construct(

@@ -20,14 +20,11 @@ class OriginalDocumentLine implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/** @Reference */
+	#[Reference]
 	private OriginalDocument $originalDocument;
 
-	/**
-	 * Line number.
-	 *
-	 * @Map("LineID")
-	 */
+	/** Line number. */
+	#[Map('LineID')]
 	private ?string $lineID = null;
 
 	public function __construct(OriginalDocument $originalDocument)

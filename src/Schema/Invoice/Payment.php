@@ -31,32 +31,20 @@ class Payment implements Arrayable
 	public const PAYMENT_MEANS_CODE_PAYMENT_BY_POSTGIRO          = 50;
 	public const PAYMENT_MEANS_CODE_COMPOSITION_BETWEEN_PARTNERS = 97;
 
-	/**
-	 * Amount to be paid.
-	 *
-	 * @Map("PaidAmount")
-	 */
+	/** Amount to be paid. */
+	#[Map('PaidAmount')]
 	private string $paidAmount;
 
-	/**
-	 * The set of valid means of paying the debt incurred.
-	 *
-	 * @Map("PaymentMeansCode")
-	 */
+	/** The set of valid means of paying the debt incurred. */
+	#[Map('PaymentMeansCode')]
 	private int $paymentMeansCode;
 
-	/**
-	 * Payment details.
-	 *
-	 * @Map("Details")
-	 */
+	/** Payment details. */
+	#[Map('Details')]
 	private ?Details $details = null;
 
-	/**
-	 * Flag indicating that partial payment is permitted.
-	 *
-	 * @Map("@partialPayment")
-	 */
+	/** Flag indicating that partial payment is permitted. */
+	#[Map('@partialPayment')]
 	private ?bool $partialPayment = null;
 
 	public function __construct(string $paidAmount, int $paymentMeansCode)

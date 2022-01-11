@@ -19,18 +19,12 @@ class Country implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/**
-	 * ISO 3166 country code.
-	 *
-	 * @Map("IdentificationCode")
-	 */
+	/** ISO 3166 country code. */
+	#[Map('IdentificationCode')]
 	private string $identificationCode;
 
-	/**
-	 * Country name.
-	 *
-	 * @Map("Name")
-	 */
+	/** Country name. */
+	#[Map('Name')]
 	private string $name;
 
 	public function __construct(string $identificationCode, string $name)

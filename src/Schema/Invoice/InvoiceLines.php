@@ -9,9 +9,9 @@ use ArrayIterator;
 /**
  * Invoice lines collection.
  *
- * @Map("InvoiceLine")
  * @extends Collection<InvoiceLine>
  */
+#[Map('InvoiceLine', InvoiceLine::class)]
 class InvoiceLines extends Collection
 {
 

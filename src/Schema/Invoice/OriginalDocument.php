@@ -22,25 +22,16 @@ class OriginalDocument implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/**
-	 * Human readable number of original document.
-	 *
-	 * @Map("ID")
-	 */
+	/** Human readable number of original document. */
+	#[Map('ID')]
 	private string $id;
 
-	/**
-	 * Issue date of original document.
-	 *
-	 * @Map("IssueDate")
-	 */
+	/** Issue date of original document. */
+	#[Map('IssueDate')]
 	private ?DateTimeImmutable $issueDate = null;
 
-	/**
-	 * Unique GUID identifier.
-	 *
-	 * @Map("UUID")
-	 */
+	/** Unique GUID identifier. */
+	#[Map('UUID')]
 	private ?string $uuid = null;
 
 	public function __construct(string $id)

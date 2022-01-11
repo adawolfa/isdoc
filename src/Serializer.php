@@ -173,11 +173,8 @@ final class Serializer
 		return $array;
 	}
 
-	/**
-	 * @return array|string|null
-	 * @throws SerializerException
-	 */
-	private function serializeProperty(Property $property)
+	/** @throws SerializerException */
+	private function serializeProperty(Property $property): array|string|null
 	{
 		if ($property instanceof MappedProperty) {
 			return $this->serializeMappedProperty($property);
@@ -186,11 +183,8 @@ final class Serializer
 		return null;
 	}
 
-	/**
-	 * @return array|string|null
-	 * @throws SerializerException
-	 */
-	private function serializeMappedProperty(MappedProperty $property)
+	/** @throws SerializerException */
+	private function serializeMappedProperty(MappedProperty $property): array|string|null
 	{
 		switch (true) {
 

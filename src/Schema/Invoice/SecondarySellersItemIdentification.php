@@ -18,11 +18,8 @@ class SecondarySellersItemIdentification implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/**
-	 * Unique identifier.
-	 *
-	 * @Map("ID")
-	 */
+	/** Unique identifier. */
+	#[Map('ID')]
 	private string $id;
 
 	public function __construct(string $id)

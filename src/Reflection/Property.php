@@ -9,8 +9,6 @@ use ReflectionProperty;
 use ReflectionException;
 use ReflectionNamedType;
 use DateTimeImmutable;
-use Reflector;
-use ReflectionClass;
 
 /**
  * Property reflection.
@@ -112,8 +110,7 @@ class Property
 		return is_a($type, $this->type->getName(), true);
 	}
 
-	/** @param mixed|null $value */
-	public function setValue($value): void
+	public function setValue(mixed $value): void
 	{
 		if ($value === null
 			&& $this->type !== null

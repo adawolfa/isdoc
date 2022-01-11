@@ -22,25 +22,16 @@ class DeliveryNote implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/**
-	 * Private identifier of delivery note at supplier.
-	 *
-	 * @Map("ID")
-	 */
+	/** Private identifier of delivery note at supplier. */
+	#[Map('ID')]
 	private string $id;
 
-	/**
-	 * Issue date.
-	 *
-	 * @Map("IssueDate")
-	 */
+	/** Issue date. */
+	#[Map('IssueDate')]
 	private ?DateTimeImmutable $issueDate = null;
 
-	/**
-	 * Unique GUID identifier.
-	 *
-	 * @Map("UUID")
-	 */
+	/** Unique GUID identifier. */
+	#[Map('UUID')]
 	private ?string $uuid = null;
 
 	public function __construct(string $id)

@@ -20,25 +20,16 @@ class Contact implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/**
-	 * Contact name.
-	 *
-	 * @Map("Name")
-	 */
+	/** Contact name. */
+	#[Map('Name')]
 	private ?string $name = null;
 
-	/**
-	 * Phone number.
-	 *
-	 * @Map("Telephone")
-	 */
+	/** Phone number. */
+	#[Map('Telephone')]
 	private ?string $telephone = null;
 
-	/**
-	 * E-mail address.
-	 *
-	 * @Map("ElectronicMail")
-	 */
+	/** E-mail address. */
+	#[Map('ElectronicMail')]
 	private ?string $electronicMail = null;
 
 	public function getName(): ?string

@@ -22,32 +22,20 @@ class RegisterIdentification implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/**
-	 * Commercial Register administrator.
-	 *
-	 * @Map("RegisterKeptAt")
-	 */
+	/** Commercial Register administrator. */
+	#[Map('RegisterKeptAt')]
 	private ?string $registerKeptAt = null;
 
-	/**
-	 * Commercial Register number.
-	 *
-	 * @Map("RegisterFileRef")
-	 */
+	/** Commercial Register number. */
+	#[Map('RegisterFileRef')]
 	private ?string $registerFileRef = null;
 
-	/**
-	 * Registration date.
-	 *
-	 * @Map("RegisterDate")
-	 */
+	/** Registration date. */
+	#[Map('RegisterDate')]
 	private ?DateTimeImmutable $registerDate = null;
 
-	/**
-	 * Preformatted information about registration in the Commerical Register.
-	 *
-	 * @Map("Preformatted")
-	 */
+	/** Preformatted information about registration in the Commerical Register. */
+	#[Map('Preformatted')]
 	private ?string $preformatted = null;
 
 	public function getRegisterKeptAt(): ?string

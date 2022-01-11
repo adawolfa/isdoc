@@ -9,9 +9,9 @@ use ArrayIterator;
 /**
  * Collection of document attachments. Exactly one attachment can be document preview marked by preview="true".
  *
- * @Map("Supplement")
  * @extends Collection<Supplement>
  */
+#[Map('Supplement', Supplement::class)]
 class SupplementsList extends Collection
 {
 

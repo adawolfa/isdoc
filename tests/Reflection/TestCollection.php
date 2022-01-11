@@ -7,9 +7,9 @@ use ArrayIterator;
 use Tests\Adawolfa\ISDOC\Reflection\TestCollectionItem as TCI;
 
 /**
- * @Adawolfa\ISDOC\Map("TestItem")
  * @extends ISDOC\Collection<TCI>
  */
+#[ISDOC\Map('TestItem', TCI::class)]
 final class TestCollection extends ISDOC\Collection
 {
 

@@ -2,14 +2,12 @@
 
 declare(strict_types=1);
 namespace Adawolfa\ISDOC;
-use Doctrine\Common\Annotations\Annotation;
+use Attribute;
 
 /**
  * Indicates a referenced element.
- *
- * @Annotation
- * @Annotation\Target({"PROPERTY"})
  */
+#[Attribute(Attribute::TARGET_PROPERTY)]
 final class Reference
 {
 }

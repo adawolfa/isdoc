@@ -3,7 +3,6 @@
 declare(strict_types=1);
 namespace Adawolfa\ISDOC;
 use Adawolfa\ISDOC\Reflection\Reflector;
-use Doctrine\Common\Annotations\AnnotationReader;
 use Nette\SmartObject;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 
@@ -45,8 +44,7 @@ final class Manager
 	public static function create(): self
 	{
 		$xmlEncoder       = new XmlEncoder([XmlEncoder::FORMAT_OUTPUT => true]);
-		$annotationReader = new AnnotationReader;
-		$reflector        = new Reflector($annotationReader);
+		$reflector        = new Reflector;
 		$hydrator         = new Hydrator($reflector);
 		$serializer       = new Serializer($reflector);
 		$decoder          = new Decoder($xmlEncoder, $hydrator);

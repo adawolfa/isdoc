@@ -23,46 +23,28 @@ class Party implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/**
-	 * Information about a party's identification.
-	 *
-	 * @Map("PartyIdentification")
-	 */
+	/** Information about a party's identification. */
+	#[Map('PartyIdentification')]
 	private PartyIdentification $partyIdentification;
 
-	/**
-	 * Information about a party's name.
-	 *
-	 * @Map("PartyName")
-	 */
+	/** Information about a party's name. */
+	#[Map('PartyName')]
 	private PartyName $partyName;
 
-	/**
-	 * Postal address.
-	 *
-	 * @Map("PostalAddress")
-	 */
+	/** Postal address. */
+	#[Map('PostalAddress')]
 	private PostalAddress $postalAddress;
 
-	/**
-	 * Information about a party's tax scheme.
-	 *
-	 * @Map("PartyTaxScheme")
-	 */
+	/** Information about a party's tax scheme. */
+	#[Map('PartyTaxScheme')]
 	private ?PartyTaxScheme $partyTaxScheme = null;
 
-	/**
-	 * Commercial Register record identification (in the Czech Republic).
-	 *
-	 * @Map("RegisterIdentification")
-	 */
+	/** Commercial Register record identification (in the Czech Republic). */
+	#[Map('RegisterIdentification')]
 	private ?RegisterIdentification $registerIdentification = null;
 
-	/**
-	 * Information about a contactable person or organization department.
-	 *
-	 * @Map("Contact")
-	 */
+	/** Information about a contactable person or organization department. */
+	#[Map('Contact')]
 	private ?Contact $contact = null;
 
 	public function __construct(

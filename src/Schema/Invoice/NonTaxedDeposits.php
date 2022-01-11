@@ -9,9 +9,9 @@ use ArrayIterator;
 /**
  * Collection of proforma invoices (without VAT).
  *
- * @Map("NonTaxedDeposit")
  * @extends Collection<NonTaxedDeposit>
  */
+#[Map('NonTaxedDeposit', NonTaxedDeposit::class)]
 class NonTaxedDeposits extends Collection
 {
 

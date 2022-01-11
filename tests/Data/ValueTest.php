@@ -88,8 +88,7 @@ final class ValueTest extends TestCase
 		$this->createValue(null)->cast((new ReflectionObject($this))->getProperty('self')->getType());
 	}
 
-	/** @param mixed|null $value */
-	private function createValue($value): Value
+	private function createValue(mixed $value): Value
 	{
 		$data = Data::create(['data' => ['value' => $value]]);
 		return new Value($value, $data->getChild('data'), 'value');

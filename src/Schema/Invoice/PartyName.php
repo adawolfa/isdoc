@@ -18,11 +18,8 @@ class PartyName implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/**
-	 * A character string that constitutes the distinctive designation of a person, place, thing or concept.
-	 *
-	 * @Map("Name")
-	 */
+	/** A character string that constitutes the distinctive designation of a person, place, thing or concept. */
+	#[Map('Name')]
 	private string $name;
 
 	public function __construct(string $name)

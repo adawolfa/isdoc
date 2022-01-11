@@ -9,9 +9,9 @@ use ArrayIterator;
 /**
  * Collection of alternative bank accounts.
  *
- * @Map("AlternateBankAccount")
  * @extends Collection<AlternateBankAccount>
  */
+#[Map('AlternateBankAccount', AlternateBankAccount::class)]
 class AlternateBankAccounts extends Collection
 {
 

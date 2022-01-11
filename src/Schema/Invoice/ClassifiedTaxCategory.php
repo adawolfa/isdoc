@@ -25,32 +25,20 @@ class ClassifiedTaxCategory implements Arrayable
 	public const VAT_CALCULATION_METHOD_FROM_THE_BOTTOM = 0;
 	public const VAT_CALCULATION_METHOD_FROM_THE_TOP    = 1;
 
-	/**
-	 * Percentage VAT rate.
-	 *
-	 * @Map("Percent")
-	 */
+	/** Percentage VAT rate. */
+	#[Map('Percent')]
 	private string $percent;
 
-	/**
-	 * VAT calculation method (there are two types in the Czech Republic).
-	 *
-	 * @Map("VATCalculationMethod")
-	 */
+	/** VAT calculation method (there are two types in the Czech Republic). */
+	#[Map('VATCalculationMethod')]
 	private int $vatCalculationMethod;
 
-	/**
-	 * VAT is applicable.
-	 *
-	 * @Map("VATApplicable")
-	 */
+	/** VAT is applicable. */
+	#[Map('VATApplicable')]
 	private ?bool $vatApplicable = null;
 
-	/**
-	 * Local reverse charge mode.
-	 *
-	 * @Map("LocalReverseCharge")
-	 */
+	/** Local reverse charge mode. */
+	#[Map('LocalReverseCharge')]
 	private ?LocalReverseCharge $localReverseCharge = null;
 
 	public function __construct(string $percent, int $vatCalculationMethod)

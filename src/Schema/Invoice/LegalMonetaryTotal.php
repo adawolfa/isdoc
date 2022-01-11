@@ -36,130 +36,76 @@ class LegalMonetaryTotal implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/**
-	 * Total amount without tax in a local currency.
-	 *
-	 * @Map("TaxExclusiveAmount")
-	 */
+	/** Total amount without tax in a local currency. */
+	#[Map('TaxExclusiveAmount')]
 	private string $taxExclusiveAmount;
 
-	/**
-	 * Total amount without tax in a foreign currency.
-	 *
-	 * @Map("TaxExclusiveAmountCurr")
-	 */
+	/** Total amount without tax in a foreign currency. */
+	#[Map('TaxExclusiveAmountCurr')]
 	private ?string $taxExclusiveAmountCurr = null;
 
-	/**
-	 * Total amount including tax in a local currency.
-	 *
-	 * @Map("TaxInclusiveAmount")
-	 */
+	/** Total amount including tax in a local currency. */
+	#[Map('TaxInclusiveAmount')]
 	private string $taxInclusiveAmount;
 
-	/**
-	 * Total amount including tax in a foreign currency.
-	 *
-	 * @Map("TaxInclusiveAmountCurr")
-	 */
+	/** Total amount including tax in a foreign currency. */
+	#[Map('TaxInclusiveAmountCurr')]
 	private ?string $taxInclusiveAmountCurr = null;
 
-	/**
-	 * Total amount of all already claimed advance invoices without tax in a local currency.
-	 *
-	 * @Map("AlreadyClaimedTaxExclusiveAmount")
-	 */
+	/** Total amount of all already claimed advance invoices without tax in a local currency. */
+	#[Map('AlreadyClaimedTaxExclusiveAmount')]
 	private string $alreadyClaimedTaxExclusiveAmount;
 
-	/**
-	 * Total amount of all already claimed advance invoices without tax in a foreign currency.
-	 *
-	 * @Map("AlreadyClaimedTaxExclusiveAmountCurr")
-	 */
+	/** Total amount of all already claimed advance invoices without tax in a foreign currency. */
+	#[Map('AlreadyClaimedTaxExclusiveAmountCurr')]
 	private ?string $alreadyClaimedTaxExclusiveAmountCurr = null;
 
-	/**
-	 * Total amount of all already claimed advance invoices including tax in a local currency.
-	 *
-	 * @Map("AlreadyClaimedTaxInclusiveAmount")
-	 */
+	/** Total amount of all already claimed advance invoices including tax in a local currency. */
+	#[Map('AlreadyClaimedTaxInclusiveAmount')]
 	private string $alreadyClaimedTaxInclusiveAmount;
 
-	/**
-	 * Total amount of all already claimed advance invoices including tax in a foreign currency.
-	 *
-	 * @Map("AlreadyClaimedTaxInclusiveAmountCurr")
-	 */
+	/** Total amount of all already claimed advance invoices including tax in a foreign currency. */
+	#[Map('AlreadyClaimedTaxInclusiveAmountCurr')]
 	private ?string $alreadyClaimedTaxInclusiveAmountCurr = null;
 
-	/**
-	 * Difference between precept and already claimed amount without tax in a local currency.
-	 *
-	 * @Map("DifferenceTaxExclusiveAmount")
-	 */
+	/** Difference between precept and already claimed amount without tax in a local currency. */
+	#[Map('DifferenceTaxExclusiveAmount')]
 	private string $differenceTaxExclusiveAmount;
 
-	/**
-	 * Difference between precept and already claimed amount without tax in a foreign currency.
-	 *
-	 * @Map("DifferenceTaxExclusiveAmountCurr")
-	 */
+	/** Difference between precept and already claimed amount without tax in a foreign currency. */
+	#[Map('DifferenceTaxExclusiveAmountCurr')]
 	private ?string $differenceTaxExclusiveAmountCurr = null;
 
-	/**
-	 * Difference between precept and already claimed amount including tax in a local currency.
-	 *
-	 * @Map("DifferenceTaxInclusiveAmount")
-	 */
+	/** Difference between precept and already claimed amount including tax in a local currency. */
+	#[Map('DifferenceTaxInclusiveAmount')]
 	private string $differenceTaxInclusiveAmount;
 
-	/**
-	 * Difference between precept and already claimed amount including tax in a foreign currency.
-	 *
-	 * @Map("DifferenceTaxInclusiveAmountCurr")
-	 */
+	/** Difference between precept and already claimed amount including tax in a foreign currency. */
+	#[Map('DifferenceTaxInclusiveAmountCurr')]
 	private ?string $differenceTaxInclusiveAmountCurr = null;
 
-	/**
-	 * Rounding of the total amount in a local currency.
-	 *
-	 * @Map("PayableRoundingAmount")
-	 */
+	/** Rounding of the total amount in a local currency. */
+	#[Map('PayableRoundingAmount')]
 	private ?string $payableRoundingAmount = null;
 
-	/**
-	 * Rounding of the total amount in a foreign currency.
-	 *
-	 * @Map("PayableRoundingAmountCurr")
-	 */
+	/** Rounding of the total amount in a foreign currency. */
+	#[Map('PayableRoundingAmountCurr')]
 	private ?string $payableRoundingAmountCurr = null;
 
-	/**
-	 * Paid non-taxable deposit in a local currency.
-	 *
-	 * @Map("PaidDepositsAmount")
-	 */
+	/** Paid non-taxable deposit in a local currency. */
+	#[Map('PaidDepositsAmount')]
 	private string $paidDepositsAmount;
 
-	/**
-	 * Paid non-taxable deposit in a foreign currency.
-	 *
-	 * @Map("PaidDepositsAmountCurr")
-	 */
+	/** Paid non-taxable deposit in a foreign currency. */
+	#[Map('PaidDepositsAmountCurr')]
 	private ?string $paidDepositsAmountCurr = null;
 
-	/**
-	 * Payable amount in a local currency.
-	 *
-	 * @Map("PayableAmount")
-	 */
+	/** Payable amount in a local currency. */
+	#[Map('PayableAmount')]
 	private string $payableAmount;
 
-	/**
-	 * Payable amount in a foreign currency.
-	 *
-	 * @Map("PayableAmountCurr")
-	 */
+	/** Payable amount in a foreign currency. */
+	#[Map('PayableAmountCurr')]
 	private ?string $payableAmountCurr = null;
 
 	public function __construct(

@@ -105,7 +105,7 @@ final class Reader
 
 		try {
 			$manifest = $this->xmlEncoder->decode($manifestXML, $this->xmlEncoder::FORMAT);
-		} catch (UnexpectedValueException $exception) {
+		} catch (UnexpectedValueException) {
 			return null;
 		}
 

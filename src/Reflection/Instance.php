@@ -2,10 +2,7 @@
 
 declare(strict_types=1);
 namespace Adawolfa\ISDOC\Reflection;
-use Adawolfa\ISDOC\RuntimeException;
 use ReflectionObject;
-use ReflectionProperty;
-use ReflectionException;
 
 /**
  * Element instance reflection.

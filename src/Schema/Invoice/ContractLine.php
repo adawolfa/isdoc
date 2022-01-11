@@ -20,14 +20,11 @@ class ContractLine implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/** @Reference */
+	#[Reference]
 	private Contract $contract;
 
-	/**
-	 * Identifier of paragraph in an agreement.
-	 *
-	 * @Map("ParagraphID")
-	 */
+	/** Identifier of paragraph in an agreement. */
+	#[Map('ParagraphID')]
 	private ?string $paragraphID = null;
 
 	public function __construct(Contract $contract)

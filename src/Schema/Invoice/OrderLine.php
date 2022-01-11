@@ -20,14 +20,11 @@ class OrderLine implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/** @Reference */
+	#[Reference]
 	private Order $order;
 
-	/**
-	 * Line number.
-	 *
-	 * @Map("LineID")
-	 */
+	/** Line number. */
+	#[Map('LineID')]
 	private ?string $lineID = null;
 
 	public function __construct(Order $order)

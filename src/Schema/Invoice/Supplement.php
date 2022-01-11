@@ -21,32 +21,20 @@ class Supplement implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	/**
-	 * File name and path.
-	 *
-	 * @Map("Filename")
-	 */
+	/** File name and path. */
+	#[Map('Filename')]
 	private string $filename;
 
-	/**
-	 * Attachment digest method identification.
-	 *
-	 * @Map("DigestMethod")
-	 */
+	/** Attachment digest method identification. */
+	#[Map('DigestMethod')]
 	private DigestMethod $digestMethod;
 
-	/**
-	 * Attachment digest value.
-	 *
-	 * @Map("DigestValue")
-	 */
+	/** Attachment digest value. */
+	#[Map('DigestValue')]
 	private string $digestValue;
 
-	/**
-	 * Is this attachment document preview.
-	 *
-	 * @Map("@preview")
-	 */
+	/** Is this attachment document preview. */
+	#[Map('@preview')]
 	private ?bool $preview = null;
 
 	public function __construct(string $filename, DigestMethod $digestMethod, string $digestValue)
