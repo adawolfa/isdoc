@@ -6,7 +6,7 @@ use Adawolfa\ISDOC\Arrayable;
 use Adawolfa\ISDOC\Map;
 use Adawolfa\ISDOC\Restriction;
 use Adawolfa\ISDOC\ToArray;
-use DateTimeImmutable;
+use DateTimeInterface;
 use Nette\SmartObject;
 
 /**
@@ -14,7 +14,7 @@ use Nette\SmartObject;
  *
  * @property string                 $name
  * @property Note|null              $note
- * @property DateTimeImmutable|null $expirationDate
+ * @property DateTimeInterface|null $expirationDate
  * @property string|null            $specification
  * @property Quantity               $quantity
  * @property string                 $batchOrSerialNumber
@@ -39,7 +39,7 @@ class StoreBatch implements Arrayable
 
 	/** Expiration date. */
 	#[Map('ExpirationDate')]
-	private ?DateTimeImmutable $expirationDate = null;
+	private ?DateTimeInterface $expirationDate = null;
 
 	/** Specification. */
 	#[Map('Specification')]
@@ -86,12 +86,12 @@ class StoreBatch implements Arrayable
 		return $this;
 	}
 
-	public function getExpirationDate(): ?DateTimeImmutable
+	public function getExpirationDate(): ?DateTimeInterface
 	{
 		return $this->expirationDate;
 	}
 
-	public function setExpirationDate(?DateTimeImmutable $expirationDate): self
+	public function setExpirationDate(?DateTimeInterface $expirationDate): self
 	{
 		$this->expirationDate = $expirationDate;
 		return $this;

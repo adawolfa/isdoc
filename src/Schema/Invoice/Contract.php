@@ -6,7 +6,7 @@ use Adawolfa\ISDOC\Arrayable;
 use Adawolfa\ISDOC\Map;
 use Adawolfa\ISDOC\Restriction;
 use Adawolfa\ISDOC\ToArray;
-use DateTimeImmutable;
+use DateTimeInterface;
 use Nette\SmartObject;
 
 /**
@@ -14,8 +14,8 @@ use Nette\SmartObject;
  *
  * @property string                      $id
  * @property string|null                 $uuid
- * @property DateTimeImmutable           $issueDate
- * @property DateTimeImmutable|null      $lastValidDate
+ * @property DateTimeInterface           $issueDate
+ * @property DateTimeInterface|null      $lastValidDate
  * @property LastValidDateUnbounded|null $lastValidDateUnbounded
  * @property string|null                 $isds_id
  * @property string|null                 $file
@@ -37,11 +37,11 @@ class Contract implements Arrayable
 
 	/** Date of contract signature. */
 	#[Map('IssueDate')]
-	private DateTimeImmutable $issueDate;
+	private DateTimeInterface $issueDate;
 
 	/** Date until contract is valid. */
 	#[Map('LastValidDate')]
-	private ?DateTimeImmutable $lastValidDate = null;
+	private ?DateTimeInterface $lastValidDate = null;
 
 	/** Contract for indefinite period. */
 	#[Map('LastValidDateUnbounded')]
@@ -59,7 +59,7 @@ class Contract implements Arrayable
 	#[Map('ReferenceNumber')]
 	private ?string $referenceNumber = null;
 
-	public function __construct(string $id, DateTimeImmutable $issueDate)
+	public function __construct(string $id, DateTimeInterface $issueDate)
 	{
 		$this->setId($id);
 		$this->setIssueDate($issueDate);
@@ -88,23 +88,23 @@ class Contract implements Arrayable
 		return $this;
 	}
 
-	public function getIssueDate(): DateTimeImmutable
+	public function getIssueDate(): DateTimeInterface
 	{
 		return $this->issueDate;
 	}
 
-	public function setIssueDate(DateTimeImmutable $issueDate): self
+	public function setIssueDate(DateTimeInterface $issueDate): self
 	{
 		$this->issueDate = $issueDate;
 		return $this;
 	}
 
-	public function getLastValidDate(): ?DateTimeImmutable
+	public function getLastValidDate(): ?DateTimeInterface
 	{
 		return $this->lastValidDate;
 	}
 
-	public function setLastValidDate(?DateTimeImmutable $lastValidDate): self
+	public function setLastValidDate(?DateTimeInterface $lastValidDate): self
 	{
 		$this->lastValidDate = $lastValidDate;
 		return $this;

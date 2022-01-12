@@ -6,7 +6,7 @@ use Adawolfa\ISDOC\Arrayable;
 use Adawolfa\ISDOC\Map;
 use Adawolfa\ISDOC\Restriction;
 use Adawolfa\ISDOC\ToArray;
-use DateTimeImmutable;
+use DateTimeInterface;
 use Nette\SmartObject;
 
 /**
@@ -26,8 +26,8 @@ use Nette\SmartObject;
  * @property string|null                             $referenceNumber
  * @property Invoice\EgovClassifiers|null            $egovClassifiers
  * @property string|null                             $issuingSystem
- * @property DateTimeImmutable                       $issueDate
- * @property DateTimeImmutable|null                  $taxPointDate
+ * @property DateTimeInterface                       $issueDate
+ * @property DateTimeInterface|null                  $taxPointDate
  * @property bool                                    $vatApplicable
  * @property Invoice\Note                            $electronicPossibilityAgreement
  * @property Invoice\Note|null                       $note
@@ -126,11 +126,11 @@ class Invoice implements Arrayable
 
 	/** Issue date. */
 	#[Map('IssueDate')]
-	private DateTimeImmutable $issueDate;
+	private DateTimeInterface $issueDate;
 
 	/** Tax point date. */
 	#[Map('TaxPointDate')]
-	private ?DateTimeImmutable $taxPointDate = null;
+	private ?DateTimeInterface $taxPointDate = null;
 
 	/** VAT is applicable. */
 	#[Map('VATApplicable')]
@@ -236,7 +236,7 @@ class Invoice implements Arrayable
 		int $documentType,
 		string $id,
 		string $uuid,
-		DateTimeImmutable $issueDate,
+		DateTimeInterface $issueDate,
 		bool $vatApplicable,
 		Invoice\Note $electronicPossibilityAgreement,
 		string $localCurrencyCode,
@@ -429,23 +429,23 @@ class Invoice implements Arrayable
 		return $this;
 	}
 
-	public function getIssueDate(): DateTimeImmutable
+	public function getIssueDate(): DateTimeInterface
 	{
 		return $this->issueDate;
 	}
 
-	public function setIssueDate(DateTimeImmutable $issueDate): self
+	public function setIssueDate(DateTimeInterface $issueDate): self
 	{
 		$this->issueDate = $issueDate;
 		return $this;
 	}
 
-	public function getTaxPointDate(): ?DateTimeImmutable
+	public function getTaxPointDate(): ?DateTimeInterface
 	{
 		return $this->taxPointDate;
 	}
 
-	public function setTaxPointDate(?DateTimeImmutable $taxPointDate): self
+	public function setTaxPointDate(?DateTimeInterface $taxPointDate): self
 	{
 		$this->taxPointDate = $taxPointDate;
 		return $this;

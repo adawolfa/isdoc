@@ -6,14 +6,14 @@ use Adawolfa\ISDOC\Arrayable;
 use Adawolfa\ISDOC\Map;
 use Adawolfa\ISDOC\Restriction;
 use Adawolfa\ISDOC\ToArray;
-use DateTimeImmutable;
+use DateTimeInterface;
 use Nette\SmartObject;
 
 /**
  * Information about referenced delivery note.
  *
  * @property string                 $id
- * @property DateTimeImmutable|null $issueDate
+ * @property DateTimeInterface|null $issueDate
  * @property string|null            $uuid
  */
 class DeliveryNote implements Arrayable
@@ -28,7 +28,7 @@ class DeliveryNote implements Arrayable
 
 	/** Issue date. */
 	#[Map('IssueDate')]
-	private ?DateTimeImmutable $issueDate = null;
+	private ?DateTimeInterface $issueDate = null;
 
 	/** Unique GUID identifier. */
 	#[Map('UUID')]
@@ -50,12 +50,12 @@ class DeliveryNote implements Arrayable
 		return $this;
 	}
 
-	public function getIssueDate(): ?DateTimeImmutable
+	public function getIssueDate(): ?DateTimeInterface
 	{
 		return $this->issueDate;
 	}
 
-	public function setIssueDate(?DateTimeImmutable $issueDate): self
+	public function setIssueDate(?DateTimeInterface $issueDate): self
 	{
 		$this->issueDate = $issueDate;
 		return $this;

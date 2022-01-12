@@ -56,7 +56,9 @@
             <IssueDate>2021-06-03</IssueDate>
         </OrderReference>
     </OrderReferences>
-    <TaxTotal/>
+    <TaxTotal>
+        <TaxAmount>0.0</TaxAmount>
+    </TaxTotal>
     <LegalMonetaryTotal>
         <TaxExclusiveAmount>100</TaxExclusiveAmount>
         <TaxInclusiveAmount>121</TaxInclusiveAmount>

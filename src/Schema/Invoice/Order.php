@@ -6,7 +6,7 @@ use Adawolfa\ISDOC\Arrayable;
 use Adawolfa\ISDOC\Map;
 use Adawolfa\ISDOC\Restriction;
 use Adawolfa\ISDOC\ToArray;
-use DateTimeImmutable;
+use DateTimeInterface;
 use Nette\SmartObject;
 
 /**
@@ -14,8 +14,8 @@ use Nette\SmartObject;
  *
  * @property string                 $salesOrderID
  * @property string|null            $externalOrderID
- * @property DateTimeImmutable|null $issueDate
- * @property DateTimeImmutable|null $externalOrderIssueDate
+ * @property DateTimeInterface|null $issueDate
+ * @property DateTimeInterface|null $externalOrderIssueDate
  * @property string|null            $uuid
  * @property string|null            $isds_id
  * @property string|null            $file
@@ -37,11 +37,11 @@ class Order implements Arrayable
 
 	/** Issue date of purchase order received at supplier. */
 	#[Map('IssueDate')]
-	private ?DateTimeImmutable $issueDate = null;
+	private ?DateTimeInterface $issueDate = null;
 
 	/** Issue date of purchase order. */
 	#[Map('ExternalOrderIssueDate')]
-	private ?DateTimeImmutable $externalOrderIssueDate = null;
+	private ?DateTimeInterface $externalOrderIssueDate = null;
 
 	/** Unique GUID identifier. */
 	#[Map('UUID')]
@@ -86,23 +86,23 @@ class Order implements Arrayable
 		return $this;
 	}
 
-	public function getIssueDate(): ?DateTimeImmutable
+	public function getIssueDate(): ?DateTimeInterface
 	{
 		return $this->issueDate;
 	}
 
-	public function setIssueDate(?DateTimeImmutable $issueDate): self
+	public function setIssueDate(?DateTimeInterface $issueDate): self
 	{
 		$this->issueDate = $issueDate;
 		return $this;
 	}
 
-	public function getExternalOrderIssueDate(): ?DateTimeImmutable
+	public function getExternalOrderIssueDate(): ?DateTimeInterface
 	{
 		return $this->externalOrderIssueDate;
 	}
 
-	public function setExternalOrderIssueDate(?DateTimeImmutable $externalOrderIssueDate): self
+	public function setExternalOrderIssueDate(?DateTimeInterface $externalOrderIssueDate): self
 	{
 		$this->externalOrderIssueDate = $externalOrderIssueDate;
 		return $this;

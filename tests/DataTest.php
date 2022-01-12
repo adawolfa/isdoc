@@ -59,13 +59,6 @@ final class DataTest extends TestCase
 		$this->assertSame('string2', $list[1]->getValue('a')->toString());
 	}
 
-	public function testNonExistentChildList(): void
-	{
-		$this->expectException(RuntimeException::class);
-		$data = Data::create([]);
-		$data->getChildList('child');
-	}
-
 	public function testPath(): void
 	{
 		$data = Data::create(['child' => ['child2' => ['value' => 'string']]]);

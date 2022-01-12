@@ -44,7 +44,9 @@
       </ClassifiedTaxCategory>
     </InvoiceLine>
   </InvoiceLines>
-  <TaxTotal/>
+  <TaxTotal>
+    <TaxAmount>0.0</TaxAmount>
+  </TaxTotal>
   <LegalMonetaryTotal>
     <TaxExclusiveAmount>100</TaxExclusiveAmount>
     <TaxInclusiveAmount>121</TaxInclusiveAmount>
