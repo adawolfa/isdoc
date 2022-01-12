@@ -3,3 +3,5 @@
 xsd export-ignore
 tests export-ignore
 bin export-ignore
+tests/fixtures/*.isdoc bin
+tests/snapshots/*.xml bin
