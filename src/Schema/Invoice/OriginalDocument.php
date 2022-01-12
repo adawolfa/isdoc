@@ -6,14 +6,14 @@ use Adawolfa\ISDOC\Arrayable;
 use Adawolfa\ISDOC\Map;
 use Adawolfa\ISDOC\Restriction;
 use Adawolfa\ISDOC\ToArray;
-use DateTimeImmutable;
+use DateTimeInterface;
 use Nette\SmartObject;
 
 /**
  * Reference to an original document which is being corrected by this document (only for document types 2, 3 and 6).
  *
  * @property string                 $id
- * @property DateTimeImmutable|null $issueDate
+ * @property DateTimeInterface|null $issueDate
  * @property string|null            $uuid
  */
 class OriginalDocument implements Arrayable
@@ -34,7 +34,7 @@ class OriginalDocument implements Arrayable
 	 *
 	 * @Map("IssueDate")
 	 */
-	private ?DateTimeImmutable $issueDate = null;
+	private ?DateTimeInterface $issueDate = null;
 
 	/**
 	 * Unique GUID identifier.
@@ -59,12 +59,12 @@ class OriginalDocument implements Arrayable
 		return $this;
 	}
 
-	public function getIssueDate(): ?DateTimeImmutable
+	public function getIssueDate(): ?DateTimeInterface
 	{
 		return $this->issueDate;
 	}
 
-	public function setIssueDate(?DateTimeImmutable $issueDate): self
+	public function setIssueDate(?DateTimeInterface $issueDate): self
 	{
 		$this->issueDate = $issueDate;
 		return $this;

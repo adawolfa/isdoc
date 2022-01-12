@@ -20,10 +20,10 @@ class LocalReverseCharge implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	public const LOCAL_REVERSE_CHARGE_CODE_DELIVERY_OF_GOLD                       = '1';
-	public const LOCAL_REVERSE_CHARGE_CODE_TRADE_WITH_EMISSION_ALLOWANCES         = '2';
+	public const LOCAL_REVERSE_CHARGE_CODE_DELIVERY_OF_GOLD = '1';
+	public const LOCAL_REVERSE_CHARGE_CODE_TRADE_WITH_EMISSION_ALLOWANCES = '2';
 	public const LOCAL_REVERSE_CHARGE_CODE_DELIVERY_OF_DEVELOPER_OR_ASSEMBLY_WORK = '4';
-	public const LOCAL_REVERSE_CHARGE_CODE_WASTE_SEE_APPENDIX_5_OF_VAT_BILL       = '5';
+	public const LOCAL_REVERSE_CHARGE_CODE_WASTE_SEE_APPENDIX_5_OF_VAT_BILL = '5';
 
 	/**
 	 * VAT subject code for local reverse charge mode.

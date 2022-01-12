@@ -22,13 +22,13 @@ class Payment implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	public const PAYMENT_MEANS_CODE_CASH_PAYMENT                 = 10;
-	public const PAYMENT_MEANS_CODE_CHEQUE_PAYMENT               = 20;
-	public const PAYMENT_MEANS_CODE_CREDIT_TRANSFER              = 31;
+	public const PAYMENT_MEANS_CODE_CASH_PAYMENT = 10;
+	public const PAYMENT_MEANS_CODE_CHEQUE_PAYMENT = 20;
+	public const PAYMENT_MEANS_CODE_CREDIT_TRANSFER = 31;
 	public const PAYMENT_MEANS_CODE_MONEY_TRANSFER_TO_AN_ACCOUNT = 42;
-	public const PAYMENT_MEANS_CODE_CARD_PAYMENT                 = 48;
-	public const PAYMENT_MEANS_CODE_DIRECT_DEBIT                 = 49;
-	public const PAYMENT_MEANS_CODE_PAYMENT_BY_POSTGIRO          = 50;
+	public const PAYMENT_MEANS_CODE_CARD_PAYMENT = 48;
+	public const PAYMENT_MEANS_CODE_DIRECT_DEBIT = 49;
+	public const PAYMENT_MEANS_CODE_PAYMENT_BY_POSTGIRO = 50;
 	public const PAYMENT_MEANS_CODE_COMPOSITION_BETWEEN_PARTNERS = 97;
 
 	/**

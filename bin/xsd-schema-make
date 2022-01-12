@@ -24,7 +24,7 @@ require(__DIR__ . '/../vendor/autoload.php');
 			private string $namespace;
 
 			private static array $simpleTypeMap = [
-				'date'          => DateTimeImmutable::class,
+				'date'          => DateTimeInterface::class,
 				'decimal'       => 'string',
 				'integer'       => 'int',
 				'string'        => 'string',
@@ -78,7 +78,7 @@ require(__DIR__ . '/../vendor/autoload.php');
 				$namespace = $file->addNamespace($namespaceName);
 				$namespace->addUse(Adawolfa\ISDOC\Map::class);
 				$namespace->addUse(Adawolfa\ISDOC\Reference::class);
-				$namespace->addUse(DateTimeImmutable::class);
+				$namespace->addUse(DateTimeInterface::class);
 				$namespace->addUse(Adawolfa\ISDOC\SimpleContentElement::class);
 				$namespace->addUse(Adawolfa\ISDOC\Collection::class);
 				$namespace->addUse(Adawolfa\ISDOC\Restriction::class);

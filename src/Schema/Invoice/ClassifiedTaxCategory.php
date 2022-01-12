@@ -23,7 +23,7 @@ class ClassifiedTaxCategory implements Arrayable
 	use ToArray;
 
 	public const VAT_CALCULATION_METHOD_FROM_THE_BOTTOM = 0;
-	public const VAT_CALCULATION_METHOD_FROM_THE_TOP    = 1;
+	public const VAT_CALCULATION_METHOD_FROM_THE_TOP = 1;
 
 	/**
 	 * Percentage VAT rate.

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 namespace Adawolfa\ISDOC;
-use DateTimeImmutable;
+use DateTimeInterface;
 
 /**
  * Decorated version of Invoice with more sane constructor.
@@ -15,7 +15,7 @@ class Invoice extends Schema\Invoice
 	public function __construct(
 		string                                 $id,
 		string                                 $uuid,
-		DateTimeImmutable                      $issueDate,
+		DateTimeInterface                      $issueDate,
 		bool                                   $vatApplicable,
 		string                                 $currencyCode,
 		Schema\Invoice\AccountingSupplierParty $accountingSupplierParty

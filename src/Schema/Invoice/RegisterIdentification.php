@@ -5,7 +5,7 @@ namespace Adawolfa\ISDOC\Schema\Invoice;
 use Adawolfa\ISDOC\Arrayable;
 use Adawolfa\ISDOC\Map;
 use Adawolfa\ISDOC\ToArray;
-use DateTimeImmutable;
+use DateTimeInterface;
 use Nette\SmartObject;
 
 /**
@@ -13,7 +13,7 @@ use Nette\SmartObject;
  *
  * @property string|null            $registerKeptAt
  * @property string|null            $registerFileRef
- * @property DateTimeImmutable|null $registerDate
+ * @property DateTimeInterface|null $registerDate
  * @property string|null            $preformatted
  */
 class RegisterIdentification implements Arrayable
@@ -41,7 +41,7 @@ class RegisterIdentification implements Arrayable
 	 *
 	 * @Map("RegisterDate")
 	 */
-	private ?DateTimeImmutable $registerDate = null;
+	private ?DateTimeInterface $registerDate = null;
 
 	/**
 	 * Preformatted information about registration in the Commerical Register.
@@ -72,12 +72,12 @@ class RegisterIdentification implements Arrayable
 		return $this;
 	}
 
-	public function getRegisterDate(): ?DateTimeImmutable
+	public function getRegisterDate(): ?DateTimeInterface
 	{
 		return $this->registerDate;
 	}
 
-	public function setRegisterDate(?DateTimeImmutable $registerDate): self
+	public function setRegisterDate(?DateTimeInterface $registerDate): self
 	{
 		$this->registerDate = $registerDate;
 		return $this;

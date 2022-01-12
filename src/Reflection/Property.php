@@ -8,9 +8,7 @@ use Adawolfa\ISDOC\SimpleContentElement;
 use ReflectionProperty;
 use ReflectionException;
 use ReflectionNamedType;
-use DateTimeImmutable;
-use Reflector;
-use ReflectionClass;
+use DateTimeInterface;
 
 /**
  * Property reflection.
@@ -40,7 +38,7 @@ class Property
 
 	public function isDate(): bool
 	{
-		return $this->isA(DateTimeImmutable::class);
+		return $this->isA(DateTimeInterface::class);
 	}
 
 	public function isSimpleContentElement(): bool

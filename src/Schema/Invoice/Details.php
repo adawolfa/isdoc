@@ -5,15 +5,15 @@ namespace Adawolfa\ISDOC\Schema\Invoice;
 use Adawolfa\ISDOC\Arrayable;
 use Adawolfa\ISDOC\Map;
 use Adawolfa\ISDOC\ToArray;
-use DateTimeImmutable;
+use DateTimeInterface;
 use Nette\SmartObject;
 
 /**
  * Payment details.
  *
  * @property string|null            $documentID
- * @property DateTimeImmutable|null $issueDate
- * @property DateTimeImmutable|null $paymentDueDate
+ * @property DateTimeInterface|null $issueDate
+ * @property DateTimeInterface|null $paymentDueDate
  * @property string|null            $id
  * @property string|null            $bankCode
  * @property string|null            $name
@@ -41,14 +41,14 @@ class Details implements Arrayable
 	 *
 	 * @Map("IssueDate")
 	 */
-	private ?DateTimeImmutable $issueDate = null;
+	private ?DateTimeInterface $issueDate = null;
 
 	/**
 	 * Due date.
 	 *
 	 * @Map("PaymentDueDate")
 	 */
-	private ?DateTimeImmutable $paymentDueDate = null;
+	private ?DateTimeInterface $paymentDueDate = null;
 
 	/**
 	 * Account number.
@@ -117,23 +117,23 @@ class Details implements Arrayable
 		return $this;
 	}
 
-	public function getIssueDate(): ?DateTimeImmutable
+	public function getIssueDate(): ?DateTimeInterface
 	{
 		return $this->issueDate;
 	}
 
-	public function setIssueDate(?DateTimeImmutable $issueDate): self
+	public function setIssueDate(?DateTimeInterface $issueDate): self
 	{
 		$this->issueDate = $issueDate;
 		return $this;
 	}
 
-	public function getPaymentDueDate(): ?DateTimeImmutable
+	public function getPaymentDueDate(): ?DateTimeInterface
 	{
 		return $this->paymentDueDate;
 	}
 
-	public function setPaymentDueDate(?DateTimeImmutable $paymentDueDate): self
+	public function setPaymentDueDate(?DateTimeInterface $paymentDueDate): self
 	{
 		$this->paymentDueDate = $paymentDueDate;
 		return $this;
