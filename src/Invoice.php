@@ -33,7 +33,7 @@ class Invoice extends Schema\Invoice
 			'1.0',
 			$accountingSupplierParty,
 			new Schema\Invoice\InvoiceLines,
-			new Schema\Invoice\TaxTotal,
+			new Schema\Invoice\TaxTotal('0.0'),
 			new Invoice\LegalMonetaryTotal($this),
 			self::VERSION,
 		);

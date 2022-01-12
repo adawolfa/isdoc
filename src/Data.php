@@ -54,7 +54,7 @@ final class Data
 	public function getChildList(string $name): array
 	{
 		if (!$this->hasChild($name)) {
-			throw new RuntimeException('Data does not contain such list.');
+			return [];
 		}
 
 		$list = $this->data[$name];

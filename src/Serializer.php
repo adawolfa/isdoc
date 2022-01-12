@@ -238,6 +238,18 @@ final class Serializer
 			$items[] = [$collectionReflection->getMap() => $this->serialize($item)];
 		}
 
+		foreach ($collectionReflection->getProperties() as $collectionProperty) {
+
+			if (!$collectionProperty instanceof MappedProperty) {
+				throw new RuntimeException('Collection properties are expected to be mapped.');
+			}
+
+			if (!$collectionProperty->isNullable() || $collectionProperty->getValue() !== null) {
+				$items[$collectionProperty->getMap()] = $this->serializeProperty($collectionProperty);
+			}
+
+		}
+
 		return $items;
 	}
 

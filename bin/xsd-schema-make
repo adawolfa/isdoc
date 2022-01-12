@@ -139,6 +139,10 @@ require(__DIR__ . '/../vendor/autoload.php');
 
 					}
 
+					for ($i = 1; isset($complexType->getElements()[$i]); $i++) {
+						$this->complexTypeElementsOne($class, $complexType->getElements()[$i]);
+					}
+
 				} elseif ($complexType instanceof XSDReader\Schema\Type\ComplexType) {
 					$class->addTrait(Nette\SmartObject::class);
 					$this->complexTypeElements($class, $complexType);
@@ -520,6 +524,7 @@ require(__DIR__ . '/../vendor/autoload.php');
 				$code = preg_replace('~}\n$~', "\n}", $code);
 				$code = preg_replace('~\n\n\n\tpublic~', "\n\n\tpublic", $code);
 				$code = preg_replace('~class (.*)\n{\n~', "class $1\n{\n\n", $code);
+				$code = str_replace("\n\n\n", "\n\n", $code);
 
 				if (preg_match_all('~ \* @property ([^ ]+) ~', $code, $matches)) {
 
