@@ -220,16 +220,16 @@ final class Serializer
 			throw new RuntimeException('Value is expected to be an instance of ' . Collection::class . '.');
 		}
 
-		$items = [];
-
 		$collectionReflection = $this->reflector->instance($value);
 
 		if (!$collectionReflection instanceof Reflection\Collection) {
 			throw new RuntimeException('Reflection is expected to be an instance of ' . Reflection\Collection::class . '.');
 		}
 
+		$root = [$collectionReflection->getMap() => []];
+
 		foreach ($value as $item) {
-			$items[] = [$collectionReflection->getMap() => $this->serialize($item)];
+			$root[$collectionReflection->getMap()][] = $this->serialize($item);
 		}
 
 		foreach ($collectionReflection->getProperties() as $collectionProperty) {
@@ -239,12 +239,12 @@ final class Serializer
 			}
 
 			if (!$collectionProperty->isNullable() || $collectionProperty->getValue() !== null) {
-				$items[$collectionProperty->getMap()] = $this->serializeProperty($collectionProperty);
+				$root[$collectionProperty->getMap()] = $this->serializeProperty($collectionProperty);
 			}
 
 		}
 
-		return $items;
+		return $root;
 	}
 
 	private function serializePrimitiveProperty(MappedProperty $property): ?string

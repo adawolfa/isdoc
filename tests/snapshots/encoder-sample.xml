@@ -32,7 +32,6 @@
   <InvoiceLines>
     <InvoiceLine>
       <ID>1</ID>
-      <InvoicedQuantity unitCode="ks">99</InvoicedQuantity>
       <LineExtensionAmount>100.0</LineExtensionAmount>
       <LineExtensionAmountTaxInclusive>121.0</LineExtensionAmountTaxInclusive>
       <LineExtensionTaxAmount>21.0</LineExtensionTaxAmount>
@@ -43,13 +42,27 @@
         <VATCalculationMethod>1</VATCalculationMethod>
       </ClassifiedTaxCategory>
     </InvoiceLine>
+    <InvoiceLine>
+      <ID>2</ID>
+      <InvoicedQuantity unitCode="ks">99</InvoicedQuantity>
+      <LineExtensionAmount>250.0</LineExtensionAmount>
+      <LineExtensionAmountTaxInclusive>250.0</LineExtensionAmountTaxInclusive>
+      <LineExtensionTaxAmount>0.0</LineExtensionTaxAmount>
+      <UnitPrice>250</UnitPrice>
+      <UnitPriceTaxInclusive>250.0</UnitPriceTaxInclusive>
+      <ClassifiedTaxCategory>
+        <Percent>0</Percent>
+        <VATCalculationMethod>1</VATCalculationMethod>
+      </ClassifiedTaxCategory>
+    </InvoiceLine>
   </InvoiceLines>
   <TaxTotal>
+    <TaxSubTotal/>
     <TaxAmount>0.0</TaxAmount>
   </TaxTotal>
   <LegalMonetaryTotal>
-    <TaxExclusiveAmount>100</TaxExclusiveAmount>
-    <TaxInclusiveAmount>121</TaxInclusiveAmount>
+    <TaxExclusiveAmount>350</TaxExclusiveAmount>
+    <TaxInclusiveAmount>371</TaxInclusiveAmount>
     <AlreadyClaimedTaxExclusiveAmount>0</AlreadyClaimedTaxExclusiveAmount>
     <AlreadyClaimedTaxInclusiveAmount>0</AlreadyClaimedTaxInclusiveAmount>
     <DifferenceTaxExclusiveAmount>0</DifferenceTaxExclusiveAmount>
