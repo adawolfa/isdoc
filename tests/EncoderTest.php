@@ -36,7 +36,7 @@ final class EncoderTest extends TestCase
 			)
 		);
 
-		$invoiceLine = new Adawolfa\ISDOC\Schema\Invoice\InvoiceLine(
+		$invoiceLine1 = new Adawolfa\ISDOC\Schema\Invoice\InvoiceLine(
 			'1',
 			'100.0',
 			'121.0',
@@ -49,12 +49,26 @@ final class EncoderTest extends TestCase
 			),
 		);
 
+		$invoiceLine2 = new Adawolfa\ISDOC\Schema\Invoice\InvoiceLine(
+			'2',
+			'250.0',
+			'250.0',
+			'0.0',
+			'250',
+			'250.0',
+			new Adawolfa\ISDOC\Schema\Invoice\ClassifiedTaxCategory(
+				'0',
+				Adawolfa\ISDOC\Schema\Invoice\ClassifiedTaxCategory::VAT_CALCULATION_METHOD_FROM_THE_TOP,
+			),
+		);
+
 		$quantity = new Adawolfa\ISDOC\Schema\Invoice\Quantity;
 		$quantity->setUnitCode('ks');
 		$quantity->setContent('99');
-		$invoiceLine->setInvoicedQuantity($quantity);
+		$invoiceLine2->setInvoicedQuantity($quantity);
 
-		$invoice->invoiceLines->add($invoiceLine);
+		$invoice->invoiceLines->add($invoiceLine1);
+		$invoice->invoiceLines->add($invoiceLine2);
 
 		$payment = new Adawolfa\ISDOC\Schema\Invoice\Payment(
 			'0.0',
