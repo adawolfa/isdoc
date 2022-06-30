@@ -114,3 +114,12 @@ foreach ($invoice->supplementsList as $supplement) {
 
 }
 ~~~
+
+## Development
+
+~~~bash
+make composer-install # run composer install (Docker)
+make composer-update # run composer update (Docker)
+make generate-schema # generate new schema after updating xsd file (Docker)
+make run-tests # run tests (Docker)
+~~~
