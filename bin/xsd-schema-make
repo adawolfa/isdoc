@@ -10,7 +10,7 @@ use Nette\PhpGenerator;
 require(__DIR__ . '/../vendor/autoload.php');
 
 (new Console\SingleCommandApplication)
-	->addArgument('xsd', Console\Input\InputArgument::OPTIONAL, '', __DIR__ . '/../xsd/isdoc-invoice-6.0.1.xsd')
+	->addArgument('xsd', Console\Input\InputArgument::OPTIONAL, '', __DIR__ . '/../xsd/isdoc-invoice-6.0.2.xsd')
 	->addArgument('folder', Console\Input\InputArgument::OPTIONAL, '', __DIR__ . '/../src/Schema')
 	->addArgument('namespace', Console\Input\InputArgument::OPTIONAL, '', 'Adawolfa\\ISDOC\\Schema')
 	->setCode(function (Console\Input\InputInterface $input, Console\Output\OutputInterface $output): void {
@@ -61,7 +61,7 @@ require(__DIR__ . '/../vendor/autoload.php');
 				foreach ($schema->getTypes() as $type) {
 
 					if ($type instanceof XSDReader\Schema\Type\BaseComplexType) {
-						$this->complexType($type, self::formatComplexTypeName('Invoice', $type));
+						$this->complexType($type, $this->formatComplexTypeName('Invoice', $type));
 					}
 
 				}
@@ -403,7 +403,7 @@ require(__DIR__ . '/../vendor/autoload.php');
 
 				if ($restriction !== null) {
 
-					if ($restriction->getBase()->getName() === 'decimal') {
+					if ($restriction->getBase() !== null && $restriction->getBase()->getName() === 'decimal') {
 						$method->addBody('Restriction::decimal($' . $property->getName() . ');');
 					}
 
@@ -606,9 +606,9 @@ require(__DIR__ . '/../vendor/autoload.php');
 
 				if ($full) {
 					return $this->namespace . '\\' . $namespace . '\\' . $className;
-				} else {
-					return $className;
 				}
+
+				return $className;
 			}
 
 			private function formatPropertyName(string $name): string
@@ -623,11 +623,13 @@ require(__DIR__ . '/../vendor/autoload.php');
 
 				if (strtoupper($name) === $name) {
 					return strtolower($name);
-				} elseif (preg_match('~^([A-Z]+)([A-Z][a-z].*)~', $name, $matches)) {
-					return strtolower($matches[1]) . $matches[2];
-				} else {
-					return lcfirst($name);
 				}
+
+				if (preg_match('~^([A-Z]+)([A-Z][a-z].*)~', $name, $matches)) {
+					return strtolower($matches[1]) . $matches[2];
+				}
+
+				return lcfirst($name);
 			}
 
 			private function formatDoc(string $doc): string
@@ -637,9 +639,9 @@ require(__DIR__ . '/../vendor/autoload.php');
 
 				if ($lines === 1) {
 					return rtrim(substr($doc, strpos($doc, "\n") + 1), '.') . ".\n";
-				} else {
-					throw new Exception('Weird doc.');
 				}
+
+				throw new Exception('Weird doc.');
 			}
 
 		};

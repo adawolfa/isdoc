@@ -4,6 +4,8 @@
   Schéma pro fakturu ISDOC
   Schema for ISDOC invoice
   
+  (c) 2022 MVČR, https://www.mvcr.cz/
+  
   (c) 2010-2014 ICT UNIE o.s., http://www.ictu.cz/
   (c) 2010-2014 ICT UNIE o.s. - ASSOCIATION FOR INFORMATION TECHNOLOGIES AND TELECOMMUNICATIONS, http://www.ictu.cz/ 
   
@@ -21,10 +23,8 @@
   endorse or promote products derived from this software without specific 
   prior written permission.
 
-  $Id: isdoc-invoice-6.0.1.xsd,v 1.1 2014/03/20 17:20:22 jkj Exp $
-
 -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://isdoc.cz/namespace/2013" xmlns:isdoc="http://isdoc.cz/namespace/2013" targetNamespace="http://isdoc.cz/namespace/2013" elementFormDefault="qualified" version="6.0.1" xml:lang="cs">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://isdoc.cz/namespace/2013" xmlns:isdoc="http://isdoc.cz/namespace/2013" targetNamespace="http://isdoc.cz/namespace/2013" elementFormDefault="qualified" version="6.0.2" xml:lang="cs">
   
   <xs:group name="Signature">
     <xs:annotation>
@@ -2177,7 +2177,7 @@
       </xs:enumeration>
       <xs:enumeration value="31">
         <xs:annotation>
-          <xs:documentation xml:lang="cs">Credit transfer</xs:documentation>
+          <xs:documentation xml:lang="cs">Uskutečněná kreditní transakce</xs:documentation>
           <xs:documentation xml:lang="en">Credit transfer</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
@@ -2195,7 +2195,7 @@
       </xs:enumeration>
       <xs:enumeration value="49">
         <xs:annotation>
-          <xs:documentation xml:lang="cs">Direct debit</xs:documentation>
+          <xs:documentation xml:lang="cs">Inkaso</xs:documentation>
           <xs:documentation xml:lang="en">Direct debit</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
@@ -2771,6 +2771,10 @@
       <xs:selector xpath="isdoc:InvoiceLines/isdoc:InvoiceLine/isdoc:ContractReference"/>
       <xs:field xpath="@ref"/>
     </xs:keyref>
+    <xs:key name="InvoiceLines">
+      <xs:selector xpath="isdoc:InvoiceLines/isdoc:InvoiceLine"/>
+      <xs:field xpath="isdoc:ID"/>
+    </xs:key>
   </xs:element>
   
 </xs:schema>
