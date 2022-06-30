@@ -1,0 +1,7 @@
+version: "3.1"
+services:
+  php:
+    build: .
+    working_dir: /code
+    volumes:
+      - .:/code
