@@ -5,3 +5,6 @@ tests export-ignore
 bin export-ignore
 tests/fixtures/*.isdoc bin
 tests/snapshots/*.xml bin
+docker-compose.yml export-ignore
+Dockerfile export-ignore
+Makefile export-ignore
