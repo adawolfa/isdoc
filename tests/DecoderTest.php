@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Tests\Adawolfa\ISDOC;
 use Nette\Utils\Json;
 use PHPUnit\Framework\TestCase;
+use ReflectionObject;
 use Symfony;
 use Adawolfa;
 use Doctrine;
@@ -43,5 +44,15 @@ final class DecoderTest extends TestCase
 		$this->assertSame($invoiceLineArray, $orderArray);
 		$this->assertNotSame($invoiceLine->order->order, $order);
 	}
+
+    public function testSkipMissingPrimitiveValuesHydration(): void
+    {
+        $invoice = Adawolfa\ISDOC\Manager::create(true)
+            ->getReader()
+            ->file(__DIR__ . '/fixtures/no-vat-applicable.isdoc');
+
+        $reflection = new ReflectionObject($invoice);
+        $this->assertFalse($reflection->getProperty('vatApplicable')->isInitialized($invoice));
+    }
 
 }

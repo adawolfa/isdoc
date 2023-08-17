@@ -45,7 +45,7 @@ final class Value
 		if ($this->value === null) {
 
 			if ($type !== null && !$type->allowsNull()) {
-				throw ValueException::missing($this);
+				throw MissingValueException::missing($this);
 			}
 
 			return null;

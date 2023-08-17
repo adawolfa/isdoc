@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 namespace Adawolfa\ISDOC;
+use Adawolfa\ISDOC\Data\MissingValueException;
 use Adawolfa\ISDOC\Data\Value;
 use Adawolfa\ISDOC\Data\ValueException;
 use Adawolfa\ISDOC\Reflection\Instance;
@@ -30,9 +31,15 @@ final class Hydrator
 	/** @var Instance[] */
 	private array $references = [];
 
-	public function __construct(Reflector $reflector)
+    private bool $skipMissingPrimitiveValues;
+
+	public function __construct(
+        Reflector $reflector,
+        bool      $skipMissingPrimitiveValues = false,
+    )
 	{
-		$this->reflector = $reflector;
+		$this->reflector                  = $reflector;
+        $this->skipMissingPrimitiveValues = $skipMissingPrimitiveValues;
 	}
 
 	/**
@@ -187,7 +194,15 @@ final class Hydrator
 	/** @throws ValueException */
 	private function hydratePrimitiveProperty(Data $data, MappedProperty $property): void
 	{
-		$property->setValue($data->getValue($property->getMap())->cast($property->getType()));
+        try {
+            $property->setValue($data->getValue($property->getMap())->cast($property->getType()));
+        } catch (MissingValueException $exception) {
+
+            if (!$this->skipMissingPrimitiveValues) {
+                throw $exception;
+            }
+
+        }
 	}
 
 	/** @throws Data\Exception */

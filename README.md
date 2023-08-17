@@ -115,6 +115,27 @@ foreach ($invoice->supplementsList as $supplement) {
 }
 ~~~
 
+## FAQ
+
+#### I have a non-conforming ISDOC file that's missing a required value.
+
+You might encounter an exception like this:
+
+~~~
+Fatal error: Uncaught Adawolfa\ISDOC\Data\ValueException: Value VATApplicable is missing.
+~~~
+
+By default, the decoder hydrates (that is, decodes and assigns) all declared properties unless they are not present in the ISDOC file and have a default value. Some values are always supposed to be there, but sometimes they simply aren't because of an incomplete implementation on the issuing side.
+
+One way to get around this is to enable the relaxed hydration mode, which causes the hydrator simply skip such properties.
+
+~~~php
+$manager = Adawolfa\ISDOC\Manager::create($skipMissingPrimitiveValuesHydration = true);
+$invoice = $manager->reader->file('filename.isdoc');
+~~~
+
+Do note, however, that such an object might have uninitialized properties, causing issues later on.
+
 ## Development
 
 ~~~bash

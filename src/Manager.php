@@ -41,11 +41,13 @@ final class Manager
 		return $this->writer;
 	}
 
-	public static function create(): self
+	public static function create(
+        bool $skipMissingPrimitiveValuesHydration = false,
+    ): self
 	{
 		$xmlEncoder       = new XmlEncoder([XmlEncoder::FORMAT_OUTPUT => true]);
 		$reflector        = new Reflector;
-		$hydrator         = new Hydrator($reflector);
+		$hydrator         = new Hydrator($reflector, $skipMissingPrimitiveValuesHydration);
 		$serializer       = new Serializer($reflector);
 		$decoder          = new Decoder($xmlEncoder, $hydrator);
 		$encoder          = new Encoder($xmlEncoder, $serializer);
