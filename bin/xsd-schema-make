@@ -95,7 +95,7 @@ require(__DIR__ . '/../vendor/autoload.php');
 				$class->addComment($this->formatDoc($doc ?? $complexType->getDoc()));
 
 				if ($complexType instanceof XSDReader\Schema\Type\ComplexTypeSimpleContent) {
-					$class->addExtend(Adawolfa\ISDOC\SimpleContentElement::class);
+					$class->setExtends(Adawolfa\ISDOC\SimpleContentElement::class);
 				}
 
 				$arrayable = true;
@@ -108,7 +108,7 @@ require(__DIR__ . '/../vendor/autoload.php');
 
 					$arrayable = false;
 
-					$class->addExtend(Adawolfa\ISDOC\Collection::class);
+					$class->setExtends(Adawolfa\ISDOC\Collection::class);
 
 					$collectionElementType = $collectionElement->getType();
 
