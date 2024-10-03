@@ -135,12 +135,3 @@ $invoice = $manager->reader->file('filename.isdoc');
 ~~~
 
 Do note, however, that such an object might have uninitialized properties, causing issues later on.
-
-## Development
-
-~~~bash
-make composer-install # run composer install (Docker)
-make composer-update # run composer update (Docker)
-make generate-schema # generate new schema after updating xsd file (Docker)
-make run-tests # run tests (Docker)
-~~~
