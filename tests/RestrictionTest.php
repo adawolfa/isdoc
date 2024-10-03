@@ -1,14 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Tests\Adawolfa\ISDOC;
+
 use Adawolfa\ISDOC\DecimalRestrictionException;
 use Adawolfa\ISDOC\EnumerationRestrictionException;
 use Adawolfa\ISDOC\LengthRestrictionException;
 use Adawolfa\ISDOC\PatternRestrictionException;
+use Adawolfa\ISDOC\Restriction;
 use Adawolfa\ISDOC\RuntimeException;
 use PHPUnit\Framework\TestCase;
-use Adawolfa\ISDOC\Restriction;
 
 final class RestrictionTest extends TestCase
 {

@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC;
+
 use Adawolfa\ISDOC\Reflection\MappedProperty;
 use Adawolfa\ISDOC\Reflection\Property;
 use Adawolfa\ISDOC\Reflection\ReferenceProperty;
@@ -17,14 +17,18 @@ final class Serializer
 {
 
 	private Reflector $reflector;
-	private int       $depth = 0;
+
+	private int $depth = 0;
 
 	public function __construct(Reflector $reflector)
 	{
 		$this->reflector = $reflector;
 	}
 
-	/** @throws SerializerException */
+	/**
+	 * @return array<string|int, mixed>
+	 * @throws SerializerException
+	 */
 	public function serialize(object $instance): array
 	{
 		$this->depth++;
@@ -82,16 +86,19 @@ final class Serializer
 		}
 	}
 
-	/** @throws SerializerException */
+	/**
+	 * @param array<string|int, mixed> $data
+	 * @throws SerializerException
+	 */
 	private function resolveReferences(array &$data): void
 	{
-		/** @var $elements Serializer\ID[] */
+		/** @var Serializer\ID[] $elements */
 		$elements = [];
 
-		/** @var $references Serializer\Reference[] */
+		/** @var Serializer\Reference[] $references */
 		$references = [];
 
-		array_walk_recursive($data, function($value) use(&$elements, &$references): void {
+		array_walk_recursive($data, function ($value) use (&$elements, &$references): void {
 
 			switch (true) {
 
@@ -127,7 +134,7 @@ final class Serializer
 
 		}
 
-		$data = self::mapRecursive($data, function($value) {
+		$data = self::mapRecursive($data, function ($value) {
 
 			switch (true) {
 
@@ -147,13 +154,18 @@ final class Serializer
 						$value['@id'] = (string) $value['@id']->getId();
 					}
 
-				default: return $value;
+				default:
+					return $value;
 
 			}
 
 		});
 	}
 
+	/**
+	 * @param array<int|string, mixed> $array
+	 * @return array<int|string, mixed>
+	 */
 	private static function mapRecursive(array $array, callable $callback, bool $top = true): array
 	{
 		if ($top) {
@@ -173,7 +185,11 @@ final class Serializer
 		return $array;
 	}
 
-	/** @throws SerializerException */
+	/**
+	 * @param Property<object> $property
+	 * @return array<string|int, mixed>|string|null
+	 * @throws SerializerException
+	 */
 	private function serializeProperty(Property $property): array|string|null
 	{
 		if ($property instanceof MappedProperty) {
@@ -183,7 +199,11 @@ final class Serializer
 		return null;
 	}
 
-	/** @throws SerializerException */
+	/**
+	 * @param MappedProperty<object> $property
+	 * @return array<string|int, mixed>|string|null
+	 * @throws SerializerException
+	 */
 	private function serializeMappedProperty(MappedProperty $property): array|string|null
 	{
 		switch (true) {
@@ -202,12 +222,17 @@ final class Serializer
 					return null;
 				}
 
+				assert(is_object($value));
 				return $this->serialize($value);
 
 		}
 	}
 
-	/** @throws SerializerException */
+	/**
+	 * @param MappedProperty<object> $property
+	 * @return array<string|int, mixed>|null
+	 * @throws SerializerException
+	 */
 	private function serializeCollectionProperty(MappedProperty $property): ?array
 	{
 		$value = $property->getValue();
@@ -229,6 +254,7 @@ final class Serializer
 		$root = [$collectionReflection->getMap() => []];
 
 		foreach ($value as $item) {
+			assert(is_object($item));
 			$root[$collectionReflection->getMap()][] = $this->serialize($item);
 		}
 
@@ -247,6 +273,9 @@ final class Serializer
 		return $root;
 	}
 
+	/**
+	 * @param MappedProperty<object> $property
+	 */
 	private function serializePrimitiveProperty(MappedProperty $property): ?string
 	{
 		$value = $property->getValue();

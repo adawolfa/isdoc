@@ -1,9 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC\X;
-use Adawolfa\ISDOC\Decoder;
+
 use Adawolfa\ISDOC;
+use Adawolfa\ISDOC\Decoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use ZipArchive;
@@ -17,7 +17,8 @@ final class Reader
 {
 
 	private XmlEncoder $xmlEncoder;
-	private Decoder    $decoder;
+
+	private Decoder $decoder;
 
 	public function __construct(XmlEncoder $encoder, Decoder $decoder)
 	{
@@ -25,7 +26,12 @@ final class Reader
 		$this->decoder    = $decoder;
 	}
 
-	/** @throws ISDOC\ReaderException */
+	/**
+	 * @template T of ISDOC\Schema\Invoice
+	 * @param class-string<T> $class
+	 * @return T&ISDOC\Schema\Invoice
+	 * @throws ISDOC\ReaderException
+	 */
 	public function file(string $filename, string $class = ISDOC\Schema\Invoice::class): ISDOC\Schema\Invoice
 	{
 		$zip = new ZipArchive;
@@ -49,7 +55,7 @@ final class Reader
 
 	private function createHook(ZipArchive $zip): callable
 	{
-		return function (object $instance) use($zip): object {
+		return function (object $instance) use ($zip): object {
 
 			if (!$instance instanceof ISDOC\Schema\Invoice\Supplement) {
 				return $instance;
@@ -82,7 +88,7 @@ final class Reader
 
 			$name = $zip->getNameIndex($i);
 
-			if (strcasecmp(pathinfo($name, PATHINFO_EXTENSION), ISDOC\Manager::FORMAT_ISDOC) === 0) {
+			if ($name !== false && strcasecmp(pathinfo($name, PATHINFO_EXTENSION), ISDOC\Manager::FORMAT_ISDOC) === 0) {
 				$files[] = $name;
 			}
 
@@ -92,7 +98,13 @@ final class Reader
 			return null;
 		}
 
-		return $zip->getFromName($files[0]);
+		$xml = $zip->getFromName($files[0]);
+
+		if ($xml === false) {
+			return null;
+		}
+
+		return $xml;
 	}
 
 	private function readXMLFromManifest(ZipArchive $zip): ?string

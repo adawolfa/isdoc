@@ -1,9 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC;
-use IteratorAggregate;
+
 use Countable;
+use IteratorAggregate;
 
 /**
  * Generic collection.
@@ -22,6 +22,9 @@ abstract class Collection implements IteratorAggregate, Countable, Arrayable
 		return count($this->items);
 	}
 
+	/**
+	 * @return array<int, array<string|int, mixed>|T>
+	 */
 	public function toArray(): array
 	{
 		return array_map(fn($value) => $value instanceof Arrayable ? $value->toArray() : $value, $this->items);

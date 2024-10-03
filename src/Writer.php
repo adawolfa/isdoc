@@ -1,6 +1,5 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC;
 
 /**
@@ -9,7 +8,8 @@ namespace Adawolfa\ISDOC;
 final class Writer
 {
 
-	private Encoder  $encoder;
+	private Encoder $encoder;
+
 	private X\Writer $xWriter;
 
 	public function __construct(Encoder $encoder, X\Writer $xWriter)

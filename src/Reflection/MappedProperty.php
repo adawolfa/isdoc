@@ -1,13 +1,16 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC\Reflection;
+
 use ReflectionProperty;
 
 /**
  * Mapped element property reflection.
  *
  * @internal
+ *
+ * @template T of object
+ * @extends Property<T>
  */
 class MappedProperty extends Property
 {

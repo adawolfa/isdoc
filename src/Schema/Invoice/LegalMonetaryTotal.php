@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC\Schema\Invoice;
+
 use Adawolfa\ISDOC\Arrayable;
 use Adawolfa\ISDOC\Map;
 use Adawolfa\ISDOC\Restriction;
@@ -116,7 +116,7 @@ class LegalMonetaryTotal implements Arrayable
 		string $differenceTaxExclusiveAmount,
 		string $differenceTaxInclusiveAmount,
 		string $paidDepositsAmount,
-		string $payableAmount
+		string $payableAmount,
 	) {
 		$this->setTaxExclusiveAmount($taxExclusiveAmount);
 		$this->setTaxInclusiveAmount($taxInclusiveAmount);

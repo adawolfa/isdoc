@@ -1,39 +1,59 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC\Reflection;
+
 use Adawolfa\ISDOC\Collection;
 use Adawolfa\ISDOC\RuntimeException;
 use Adawolfa\ISDOC\SimpleContentElement;
-use ReflectionProperty;
+use DateTimeInterface;
 use ReflectionException;
 use ReflectionNamedType;
-use DateTimeInterface;
+use ReflectionProperty;
 
 /**
  * Property reflection.
  *
+ * @template T of object
  * @internal
  */
 class Property
 {
 
-	private Instance             $instance;
-	private ReflectionProperty   $property;
+	/**
+	 * @var Instance<T>
+	 */
+	private Instance $instance;
+
+	private ReflectionProperty $property;
+
 	private ?ReflectionNamedType $type;
 
+	/**
+	 * @param Instance<T> $instance
+	 */
 	public function __construct(Instance $instance, ReflectionProperty $property)
 	{
 		$this->instance = $instance;
 		$this->property = $property;
-		$this->type     = $property->hasType() ? $property->getType() : null;
+
+		if ($property->hasType()) {
+
+			if (!$property->getType() instanceof ReflectionNamedType) {
+				throw new RuntimeException('Only named types are supported.');
+			}
+
+			$this->type = $property->getType();
+
+		} else {
+			$this->type = null;
+		}
 	}
 
 	public function isPrimitive(): bool
 	{
 		return $this->type !== null
-			&& $this->type->isBuiltin()
-			&& $this->type->getName() !== 'array';
+			   && $this->type->isBuiltin()
+			   && $this->type->getName() !== 'array';
 	}
 
 	public function isDate(): bool
@@ -54,8 +74,8 @@ class Property
 	private function isA(string $class): bool
 	{
 		return $this->type !== null
-			&& !$this->type->isBuiltin()
-			&& is_a($this->type->getName(), $class, true);
+			   && !$this->type->isBuiltin()
+			   && is_a($this->type->getName(), $class, true);
 	}
 
 	public function isNullable(): bool
@@ -66,6 +86,11 @@ class Property
 	public function getType(): ?ReflectionNamedType
 	{
 		return $this->type;
+	}
+
+	public function getExistingType(): ReflectionNamedType
+	{
+		return $this->getType() ?? throw new RuntimeException('Type was expected to be set.');
 	}
 
 	private function getMethod(string $name): ?callable
@@ -84,7 +109,9 @@ class Property
 			return null;
 		}
 
-		return [$this->instance->getInstance(), $name];
+		return function () use ($name) {
+			return $this->instance->getInstance()->$name(...func_get_args());
+		};
 	}
 
 	private function getSetter(): ?callable

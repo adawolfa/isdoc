@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC\Schema\Invoice;
+
 use Adawolfa\ISDOC\Arrayable;
 use Adawolfa\ISDOC\Map;
 use Adawolfa\ISDOC\ToArray;
@@ -10,8 +10,8 @@ use Nette\SmartObject;
 /**
  * Anonymous receiver of simplified tax document.
  *
- * @property string $id
- * @property  $idScheme
+ * @property string      $id
+ * @property string|null $idScheme
  */
 class AnonymousCustomerParty implements Arrayable
 {
@@ -25,12 +25,11 @@ class AnonymousCustomerParty implements Arrayable
 
 	/** Identification of schema used for identifier construction. */
 	#[Map('IDScheme')]
-	private $idScheme;
+	private ?string $idScheme = null;
 
-	public function __construct(string $id, $idScheme)
+	public function __construct(string $id)
 	{
 		$this->setId($id);
-		$this->setIdScheme($idScheme);
 	}
 
 	public function getId(): string
@@ -44,12 +43,12 @@ class AnonymousCustomerParty implements Arrayable
 		return $this;
 	}
 
-	public function getIdScheme()
+	public function getIdScheme(): ?string
 	{
 		return $this->idScheme;
 	}
 
-	public function setIdScheme($idScheme): self
+	public function setIdScheme(?string $idScheme): self
 	{
 		$this->idScheme = $idScheme;
 		return $this;

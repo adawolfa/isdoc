@@ -1,26 +1,31 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC\Reflection;
+
+use Adawolfa\ISDOC\Collection as TCollection;
 use Adawolfa\ISDOC\RuntimeException;
-use ReflectionObject;
+use ArrayAccess;
 use ReflectionException;
+use ReflectionNamedType;
+use ReflectionObject;
 
 /**
  * Collection reflection.
  *
- * @template T
+ * @template T of TCollection
+ * @extends Instance<T>
  * @internal
  */
 final class Collection extends Instance
 {
 
 	private string $map;
+
 	private string $type;
 
 	/**
-	 * @param T                         $instance
-	 * @param InstancePropertyFactory[] $properties
+	 * @param T&object                     $instance
+	 * @param InstancePropertyFactory<T>[] $properties
 	 */
 	public function __construct(
 		object           $instance,
@@ -35,7 +40,7 @@ final class Collection extends Instance
 		$this->type = $type;
 	}
 
-	public function getMap(): ?string
+	public function getMap(): string
 	{
 		return $this->map;
 	}
@@ -63,9 +68,12 @@ final class Collection extends Instance
 
 			$parameter = $method->getParameters()[0];
 
-			if (!$parameter->hasType() || !$parameter->getType()->isBuiltin() && is_a($item, $parameter->getType()->getName())) {
+			if (!$parameter->hasType()
+				|| $parameter->getType() instanceof ReflectionNamedType
+				   && !$parameter->getType()->isBuiltin()
+				   && is_a($item, $parameter->getType()->getName())) {
 				$instance = $this->getInstance();
-				$instance->add($item);
+				$instance->add($item); // @phpstan-ignore-line
 				return;
 			}
 
@@ -80,6 +88,8 @@ final class Collection extends Instance
 		$property->setAccessible(true);
 
 		$items = $property->getValue($this->getInstance());
+		assert(is_array($items) || $items instanceof ArrayAccess);
+
 		$items[] = $item;
 
 		$property->setValue($this->getInstance(), $items);

@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC\Schema;
+
 use Adawolfa\ISDOC\Arrayable;
 use Adawolfa\ISDOC\Map;
 use Adawolfa\ISDOC\Restriction;
@@ -246,7 +246,7 @@ class Invoice implements Arrayable
 		Invoice\InvoiceLines $invoiceLines,
 		Invoice\TaxTotal $taxTotal,
 		Invoice\LegalMonetaryTotal $legalMonetaryTotal,
-		string $version
+		string $version,
 	) {
 		$this->setDocumentType($documentType);
 		$this->setId($id);

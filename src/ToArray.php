@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC;
+
 use ReflectionClass;
 use ReflectionProperty;
 
@@ -11,6 +11,9 @@ use ReflectionProperty;
 trait ToArray
 {
 
+	/**
+	 * @return array<string, mixed>
+	 */
 	public function toArray(): array
 	{
 		$reflection = new ReflectionClass($this);
@@ -31,7 +34,7 @@ trait ToArray
 
 			$reflection = $reflection->getParentClass();
 
-		} while($reflection !== false);
+		} while ($reflection !== false);
 
 		foreach ($properties as $property) {
 

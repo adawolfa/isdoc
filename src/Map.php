@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC;
+
 use Attribute;
 
 /**
@@ -11,7 +11,8 @@ use Attribute;
 final class Map
 {
 
-	private string  $value;
+	private string $value;
+
 	private ?string $type;
 
 	public function __construct(string $value, string $type = null)

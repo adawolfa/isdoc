@@ -1,24 +1,28 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Tests\Adawolfa\ISDOC;
+
+use Adawolfa;
+use Adawolfa\ISDOC\WriterException;
+use DateTimeImmutable;
+use LogicException;
 use PHPUnit\Framework\TestCase;
 use Symfony;
-use Adawolfa;
-use Doctrine;
-use DateTimeImmutable;
 
 final class EncoderTest extends TestCase
 {
 
 	use Snapshot;
 
+	/**
+	 * @throws WriterException
+	 */
 	public function testSample(): void
 	{
 		$invoice = new Adawolfa\ISDOC\Invoice(
 			'12345',
 			'00000000-0000-0000-0000-000000001234',
-			DateTimeImmutable::createFromFormat('Y-m-d', '2021-08-16'),
+			DateTimeImmutable::createFromFormat('Y-m-d', '2021-08-16') ?: throw new LogicException,
 			false,
 			'CZK',
 			new Adawolfa\ISDOC\Schema\Invoice\AccountingSupplierParty(
@@ -75,12 +79,13 @@ final class EncoderTest extends TestCase
 			10,
 		);
 
-		$payment->details = new Adawolfa\ISDOC\Schema\Invoice\Details;
-		$payment->details->id = '12345678';
-		$payment->details->bankCode = '0800';
-		$payment->details->name = 'Česká spořitelna, a. s.';
+		$payment->details                 = new Adawolfa\ISDOC\Schema\Invoice\Details;
+		$payment->details->id             = '12345678';
+		$payment->details->bankCode       = '0800';
+		$payment->details->name           = 'Česká spořitelna, a. s.';
 		$payment->details->variableSymbol = '123456';
-		$payment->details->paymentDueDate = DateTimeImmutable::createFromFormat('Y-m-d', '2022-02-02');
+		$payment->details->paymentDueDate = DateTimeImmutable::createFromFormat('Y-m-d', '2022-02-02')
+			?: throw new LogicException;
 
 		$invoice->paymentMeans = new Adawolfa\ISDOC\Schema\Invoice\PaymentMeans;
 		$invoice->paymentMeans->add($payment);

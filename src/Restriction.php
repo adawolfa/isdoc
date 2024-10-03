@@ -1,6 +1,5 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC;
 
 /**
@@ -46,6 +45,9 @@ final class Restriction
 		}
 	}
 
+	/**
+	 * @param array<string|int> $options
+	 */
 	public static function enumeration(string|int|null $value, array $options): void
 	{
 		if ($value === null) {

@@ -1,29 +1,30 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC\Reflection;
+
 use ReflectionObject;
 
 /**
  * Element instance reflection.
  *
- * @template T
+ * @template T of object
  * @internal
  */
 class Instance
 {
 
-	/** @var T */
+	/** @var T&object */
 	private object $instance;
 
 	private ReflectionObject $reflection;
 
-	/** @var Property[] */
+	/** @var array<string, Property<object>> */
 	private array $properties = [];
 
 	/**
-	 * @param T                         $instance
-	 * @param InstancePropertyFactory[] $properties
+	 * @param T&object                     $instance
+	 * @param ReflectionObject             $reflection
+	 * @param InstancePropertyFactory<T>[] $properties
 	 */
 	public function __construct(
 		object           $instance,
@@ -39,13 +40,13 @@ class Instance
 		}
 	}
 
-	/** @return T */
+	/** @return T&object */
 	public function getInstance(): object
 	{
 		return $this->instance;
 	}
 
-	/** @return Property[] */
+	/** @return Property<object>[] */
 	public function getProperties(): array
 	{
 		return $this->properties;

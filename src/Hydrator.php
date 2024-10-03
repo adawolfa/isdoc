@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC;
+
 use Adawolfa\ISDOC\Data\MissingValueException;
 use Adawolfa\ISDOC\Data\Value;
 use Adawolfa\ISDOC\Data\ValueException;
@@ -22,33 +22,33 @@ final class Hydrator
 	private Reflector $reflector;
 
 	/** @var callable[] */
-	private array $finishers  = [];
-	private int   $depth      = 0;
+	private array $finishers = [];
+
+	private int $depth = 0;
 
 	/** @var callable|null */
 	private $hook;
 
-	/** @var Instance[] */
+	/** @var array<string, Instance<object>> */
 	private array $references = [];
 
-    private bool $skipMissingPrimitiveValues;
+	private bool $skipMissingPrimitiveValues;
 
 	public function __construct(
-        Reflector $reflector,
-        bool      $skipMissingPrimitiveValues = false,
-    )
+		Reflector $reflector,
+		bool      $skipMissingPrimitiveValues = false,
+	)
 	{
 		$this->reflector                  = $reflector;
-        $this->skipMissingPrimitiveValues = $skipMissingPrimitiveValues;
+		$this->skipMissingPrimitiveValues = $skipMissingPrimitiveValues;
 	}
 
 	/**
-	 * @template T
+	 * @template T of object
 	 * @param Data            $data
 	 * @param class-string<T> $class
 	 * @param callable|null   $hook
-	 * @return T
-	 * @throws Data\Exception
+	 * @return T&object
 	 */
 	public function hydrate(Data $data, string $class, callable $hook = null): object
 	{
@@ -105,10 +105,18 @@ final class Hydrator
 		}
 	}
 
-	/** @throws Data\Exception */
-	private function registerReference(Value $value, object $instance): void
+	/**
+	 * @template T of object
+	 * @param Instance<T> $instance
+	 * @throws Data\Exception
+	 */
+	private function registerReference(Value $value, Instance $instance): void
 	{
 		$id = $value->toString();
+
+		if ($id === null) {
+			throw Data\Exception::missingReferenceId($value->getPath());
+		}
 
 		if (isset($this->references[$id])) {
 			throw Data\Exception::duplicateReferenceId($id);
@@ -117,7 +125,11 @@ final class Hydrator
 		$this->references[$id] = $instance;
 	}
 
-	/** @throws Data\Exception */
+	/**
+	 * @template T of object
+	 * @param Property<T> $property
+	 * @throws Data\Exception
+	 */
 	private function hydrateProperty(Data $data, Property $property): void
 	{
 		switch (true) {
@@ -133,13 +145,19 @@ final class Hydrator
 		}
 	}
 
-	/** @throws Data\Exception */
+	/**
+	 * @template T of object
+	 * @param ReferenceProperty<T> $property
+	 * @throws Data\Exception
+	 */
 	private function hydrateReferenceProperty(Data $data, ReferenceProperty $property): void
 	{
 		if (!$data->hasValue('@ref')) {
 
 			if ($property->getType() !== null) {
-				$property->setValue($this->hydrate($data, $property->getType()->getName()));
+				/** @var class-string $type */
+				$type = $property->getExistingType()->getName();
+				$property->setValue($this->hydrate($data, $type));
 				return;
 			}
 
@@ -147,17 +165,17 @@ final class Hydrator
 
 		}
 
-		$this->finishers[] = function() use($data, $property): void {
+		$this->finishers[] = function () use ($data, $property): void {
 
 			$id = $data->getValue('@ref');
 
 			if (!isset($this->references[$id->toString()])) {
-				throw Data\Exception::referencedElementNotFound($id->toString(), $id->getPath());
+				throw Data\Exception::referencedElementNotFound($id->toString() ?? '', $id->getPath());
 			}
 
 			if (!$property->accepts($this->references[$id->toString()]->getReflection()->name)) {
 				throw Data\Exception::referencedElementTypeMismatch(
-					$property->getType()->getName(),
+					$property->getExistingType()->getName(),
 					$this->references[$id->toString()]->getReflection()->getName(),
 				);
 			}
@@ -167,7 +185,11 @@ final class Hydrator
 		};
 	}
 
-	/** @throws Data\Exception */
+	/**
+	 * @template T of object
+	 * @param MappedProperty<T> $property
+	 * @throws Data\Exception
+	 */
 	private function hydrateMappedProperty(Data $data, MappedProperty $property): void
 	{
 		switch (true) {
@@ -191,21 +213,29 @@ final class Hydrator
 		}
 	}
 
-	/** @throws ValueException */
+	/**
+	 * @template T of object
+	 * @param MappedProperty<T> $property
+	 * @throws ValueException
+	 */
 	private function hydratePrimitiveProperty(Data $data, MappedProperty $property): void
 	{
-        try {
-            $property->setValue($data->getValue($property->getMap())->cast($property->getType()));
-        } catch (MissingValueException $exception) {
+		try {
+			$property->setValue($data->getValue($property->getMap())->cast($property->getType()));
+		} catch (MissingValueException $exception) {
 
-            if (!$this->skipMissingPrimitiveValues) {
-                throw $exception;
-            }
+			if (!$this->skipMissingPrimitiveValues) {
+				throw $exception;
+			}
 
-        }
+		}
 	}
 
-	/** @throws Data\Exception */
+	/**
+	 * @template T of object
+	 * @param MappedProperty<T> $property
+	 * @throws Data\Exception
+	 */
 	private function hydrateDateProperty(Data $data, MappedProperty $property): void
 	{
 		$value = $data->getValue($property->getMap());
@@ -218,7 +248,11 @@ final class Hydrator
 		$property->setValue($date);
 	}
 
-	/** @throws Data\Exception */
+	/**
+	 * @template T of object
+	 * @param MappedProperty<T> $property
+	 * @throws Data\Exception
+	 */
 	private function hydrateSimpleContentElementProperty(Data $data, MappedProperty $property): void
 	{
 		if (!$data->hasChild($property->getMap()) && !$data->hasValue($property->getMap())) {
@@ -238,7 +272,9 @@ final class Hydrator
 			$child = Data::createEmpty($data, $property->getMap());
 		}
 
-		$value = $this->hydrate($child, $property->getType()->getName());
+		/** @var class-string $type */
+		$type  = $property->getExistingType()->getName();
+		$value = $this->hydrate($child, $type);
 
 		if (!$value instanceof SimpleContentElement) {
 			throw new RuntimeException('Value was expected to be an instance of ' . SimpleContentElement::class . '.');
@@ -253,7 +289,11 @@ final class Hydrator
 		$property->setValue($value);
 	}
 
-	/** @throws Data\Exception */
+	/**
+	 * @template T of object
+	 * @param MappedProperty<T> $property
+	 * @throws Data\Exception
+	 */
 	private function hydrateComplexProperty(Data $data, MappedProperty $property): void
 	{
 		if (!$data->hasChild($property->getMap())) {
@@ -263,10 +303,9 @@ final class Hydrator
 				&& $data->hasValue($property->getMap())
 				&& $data->getValue($property->getMap())->toString() === '') {
 
-				$value = $this->hydrate(
-					Data::createEmpty($data, $property->getMap()),
-					$property->getType()->getName()
-				);
+				/** @var class-string $type */
+				$type  = $property->getExistingType()->getName();
+				$value = $this->hydrate(Data::createEmpty($data, $property->getMap()), $type);
 
 				$property->setValue($value);
 				return;
@@ -283,7 +322,10 @@ final class Hydrator
 		}
 
 		$child = $data->getChild($property->getMap());
-		$value = $this->hydrate($child, $property->getType()->getName());
+
+		/** @var class-string $type */
+		$type  = $property->getExistingType()->getName();
+		$value = $this->hydrate($child, $type);
 
 		if ($value instanceof Collection) {
 
@@ -294,7 +336,9 @@ final class Hydrator
 			}
 
 			foreach ($child->getChildList($collection->getMap()) as $itemData) {
-				$collection->add($this->hydrate($itemData, $collection->getType()));
+				/** @var class-string $type */
+				$type = $collection->getType();
+				$collection->add($this->hydrate($itemData, $type));
 			}
 
 		}

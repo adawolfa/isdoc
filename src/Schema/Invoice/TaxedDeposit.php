@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC\Schema\Invoice;
+
 use Adawolfa\ISDOC\Arrayable;
 use Adawolfa\ISDOC\Map;
 use Adawolfa\ISDOC\Restriction;
@@ -58,7 +58,7 @@ class TaxedDeposit implements Arrayable
 		string $variableSymbol,
 		string $taxableDepositAmount,
 		string $taxInclusiveDepositAmount,
-		ClassifiedTaxCategory $classifiedTaxCategory
+		ClassifiedTaxCategory $classifiedTaxCategory,
 	) {
 		$this->setId($id);
 		$this->setVariableSymbol($variableSymbol);

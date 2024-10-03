@@ -1,10 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Tests\Adawolfa\ISDOC;
+
+use Adawolfa\ISDOC\Data;
 use Adawolfa\ISDOC\RuntimeException;
 use PHPUnit\Framework\TestCase;
-use Adawolfa\ISDOC\Data;
 
 final class DataTest extends TestCase
 {

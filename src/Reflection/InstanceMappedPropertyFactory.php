@@ -1,10 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC\Reflection;
+
 use ReflectionProperty;
 
-/** @internal */
+/**
+ * @template T of object
+ * @extends InstancePropertyFactory<T>
+ * @internal
+ */
 final class InstanceMappedPropertyFactory extends InstancePropertyFactory
 {
 
@@ -16,6 +20,10 @@ final class InstanceMappedPropertyFactory extends InstancePropertyFactory
 		$this->map = $map;
 	}
 
+	/**
+	 * @param Instance<T> $instance
+	 * @return Property<T>
+	 */
 	public function create(Instance $instance): Property
 	{
 		return new MappedProperty($instance, $this->property, $this->map);

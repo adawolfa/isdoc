@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC;
+
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 
 /**
@@ -13,6 +13,7 @@ final class Encoder
 {
 
 	private XmlEncoder $encoder;
+
 	private Serializer $serializer;
 
 	public function __construct(XmlEncoder $encoder, Serializer $serializer)
@@ -26,7 +27,7 @@ final class Encoder
 	{
 		try {
 
-			$data = $this->serializer->serialize($invoice);
+			$data           = $this->serializer->serialize($invoice);
 			$data['@xmlns'] = 'http://isdoc.cz/namespace/2013';
 
 			return $this->encoder->encode($data, $this->encoder::FORMAT, [

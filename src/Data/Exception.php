@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC\Data;
+
 use Adawolfa\ISDOC;
 
 class Exception extends ISDOC\Exception

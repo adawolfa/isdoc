@@ -1,12 +1,15 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC;
+
 use Adawolfa\ISDOC\Reflection\Property;
 
 final class SerializerException extends Exception
 {
 
+	/**
+	 * @param Property<object> $property
+	 */
 	public static function propertyNotNullable(Property $property): self
 	{
 		return new self("Property {$property->getClass()}::\${$property->getName()} is not nullable.");

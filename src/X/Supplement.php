@@ -1,11 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC\X;
+
 use Adawolfa\ISDOC;
 use Adawolfa\ISDOC\Schema\Invoice\DigestMethod;
-use ZipArchive;
 use Adawolfa\ISDOC\SupplementException;
+use ZipArchive;
 
 /**
  * ISDOCX attachment.
@@ -43,8 +43,8 @@ final class Supplement extends ISDOC\Schema\Invoice\Supplement
 	}
 
 	/**
-	 * @throws SupplementException
 	 * @return resource
+	 * @throws SupplementException
 	 */
 	public function getStream()
 	{
@@ -89,9 +89,10 @@ final class Supplement extends ISDOC\Schema\Invoice\Supplement
 			case 'http://www.w3.org/2000/09/xmldsig#sha1':
 				$contents = $this->contents;
 				return base64_encode(sha1($contents, true)) === $this->getDigestValue()
-					|| sha1($contents) === strtolower($this->getDigestValue());
+					   || sha1($contents) === strtolower($this->getDigestValue());
 
-			default: throw SupplementException::unsupportedDigestAlgo($this->getFilename(), $this->getDigestMethod()->algorithm);
+			default:
+				throw SupplementException::unsupportedDigestAlgo($this->getFilename(), $this->getDigestMethod()->algorithm);
 
 		}
 	}
@@ -107,7 +108,7 @@ final class Supplement extends ISDOC\Schema\Invoice\Supplement
 
 			$real = $this->zip->getNameIndex($i);
 
-			if (mb_strtolower($real) === $lName) {
+			if ($real !== false && mb_strtolower($real) === $lName) {
 				return $real;
 			}
 

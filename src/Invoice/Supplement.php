@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC\Invoice;
+
 use Adawolfa\ISDOC;
 use Adawolfa\ISDOC\Schema\Invoice\DigestMethod;
 

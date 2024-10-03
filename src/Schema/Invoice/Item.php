@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC\Schema\Invoice;
+
 use Adawolfa\ISDOC\Arrayable;
 use Adawolfa\ISDOC\Map;
 use Adawolfa\ISDOC\ToArray;
@@ -90,7 +90,9 @@ class Item implements Arrayable
 		return $this->secondarySellersItemIdentification;
 	}
 
-	public function setSecondarySellersItemIdentification(?SecondarySellersItemIdentification $secondarySellersItemIdentification): self
+	public function setSecondarySellersItemIdentification(
+		?SecondarySellersItemIdentification $secondarySellersItemIdentification,
+	): self
 	{
 		$this->secondarySellersItemIdentification = $secondarySellersItemIdentification;
 		return $this;
@@ -101,7 +103,9 @@ class Item implements Arrayable
 		return $this->tertiarySellersItemIdentification;
 	}
 
-	public function setTertiarySellersItemIdentification(?TertiarySellersItemIdentification $tertiarySellersItemIdentification): self
+	public function setTertiarySellersItemIdentification(
+		?TertiarySellersItemIdentification $tertiarySellersItemIdentification,
+	): self
 	{
 		$this->tertiarySellersItemIdentification = $tertiarySellersItemIdentification;
 		return $this;

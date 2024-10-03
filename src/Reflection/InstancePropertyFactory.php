@@ -1,10 +1,13 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC\Reflection;
+
 use ReflectionProperty;
 
-/** @internal */
+/**
+ * @template T of object
+ * @internal
+ */
 abstract class InstancePropertyFactory
 {
 
@@ -15,6 +18,10 @@ abstract class InstancePropertyFactory
 		$this->property = $property;
 	}
 
+	/**
+	 * @param Instance<T> $instance
+	 * @return Property<T>
+	 */
 	abstract public function create(Instance $instance): Property;
 
 	public function getName(): string

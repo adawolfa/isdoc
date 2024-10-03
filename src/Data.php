@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC;
+
 use Adawolfa\ISDOC\Data\Value;
 
 /**
@@ -10,10 +10,16 @@ use Adawolfa\ISDOC\Data\Value;
 final class Data
 {
 
-	private array   $data;
-	private ?self   $parent;
+	/** @var array<string, mixed> */
+	private array $data;
+
+	private ?self $parent;
+
 	private ?string $name;
 
+	/**
+	 * @param array<string, mixed> $data
+	 */
 	private function __construct(array $data, self $parent = null, string $name = null)
 	{
 		$this->data   = $data;
@@ -47,6 +53,10 @@ final class Data
 			throw new RuntimeException('Data does not contain such child.');
 		}
 
+		if (!is_array($this->data[$name])) {
+			throw new RuntimeException('Child is not an array.');
+		}
+
 		return new self($this->data[$name], $this, $name);
 	}
 
@@ -59,7 +69,7 @@ final class Data
 
 		$list = $this->data[$name];
 
-		if (count($list) === 0) {
+		if (!is_array($list) || count($list) === 0) {
 			return [];
 		}
 
@@ -70,6 +80,9 @@ final class Data
 		return array_map(fn(array $item): self => new self($item, $this, $name), $list);
 	}
 
+	/**
+	 * @param array<string, mixed> $data
+	 */
 	public static function create(array $data): self
 	{
 		return new self($data);

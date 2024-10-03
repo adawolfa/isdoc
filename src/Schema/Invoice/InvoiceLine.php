@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC\Schema\Invoice;
+
 use Adawolfa\ISDOC\Arrayable;
 use Adawolfa\ISDOC\Map;
 use Adawolfa\ISDOC\Restriction;
@@ -125,7 +125,7 @@ class InvoiceLine implements Arrayable
 		string $lineExtensionTaxAmount,
 		string $unitPrice,
 		string $unitPriceTaxInclusive,
-		ClassifiedTaxCategory $classifiedTaxCategory
+		ClassifiedTaxCategory $classifiedTaxCategory,
 	) {
 		$this->setId($id);
 		$this->setLineExtensionAmount($lineExtensionAmount);
@@ -279,7 +279,9 @@ class InvoiceLine implements Arrayable
 		return $this->lineExtensionAmountTaxInclusiveBeforeDiscount;
 	}
 
-	public function setLineExtensionAmountTaxInclusiveBeforeDiscount(?string $lineExtensionAmountTaxInclusiveBeforeDiscount): self
+	public function setLineExtensionAmountTaxInclusiveBeforeDiscount(
+		?string $lineExtensionAmountTaxInclusiveBeforeDiscount,
+	): self
 	{
 		Restriction::decimal($lineExtensionAmountTaxInclusiveBeforeDiscount);
 		$this->lineExtensionAmountTaxInclusiveBeforeDiscount = $lineExtensionAmountTaxInclusiveBeforeDiscount;

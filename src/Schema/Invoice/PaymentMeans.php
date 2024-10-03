@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC\Schema\Invoice;
+
 use Adawolfa\ISDOC\Collection;
 use Adawolfa\ISDOC\Map;
 use ArrayIterator;
@@ -20,7 +20,7 @@ class PaymentMeans extends Collection
 	#[Map('AlternateBankAccounts')]
 	private ?AlternateBankAccounts $alternateBankAccounts = null;
 
-	/** @return ArrayIterator|Payment[] */
+	/** @return ArrayIterator<int, Payment> */
 	public function getIterator(): ArrayIterator
 	{
 		return new ArrayIterator($this->items);

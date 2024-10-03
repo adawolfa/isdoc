@@ -1,10 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Tests\Adawolfa\ISDOC;
-use PHPUnit\Framework\TestCase;
+
 use Adawolfa;
 use DateTimeImmutable;
+use LogicException;
+use PHPUnit\Framework\TestCase;
 
 final class XTest extends TestCase
 {
@@ -16,7 +17,7 @@ final class XTest extends TestCase
 		$invoice = new Adawolfa\ISDOC\Invoice(
 			'12345',
 			'00000000-0000-0000-0000-000000001234',
-			DateTimeImmutable::createFromFormat('Y-m-d', '2021-08-16'),
+			DateTimeImmutable::createFromFormat('Y-m-d', '2021-08-16') ?: throw new LogicException,
 			false,
 			'CZK',
 			new Adawolfa\ISDOC\Schema\Invoice\AccountingSupplierParty(
@@ -59,9 +60,11 @@ final class XTest extends TestCase
 		$read = $manager->reader->file($this->temp);
 
 		$this->assertSame($invoice->id, $read->id);
+		$this->assertIsIterable($read->supplementsList);
+		$this->assertTrue(is_countable($read->supplementsList));
 		$this->assertCount(1, $read->supplementsList);
 
-		/** @var $readSupplement Adawolfa\ISDOC\X\Supplement */
+		/** @var Adawolfa\ISDOC\X\Supplement $readSupplement */
 		$readSupplement = iterator_to_array($read->supplementsList)[0];
 
 		$this->assertTrue($readSupplement->ok);

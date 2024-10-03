@@ -1,10 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC\X;
+
+use Adawolfa\ISDOC;
 use Adawolfa\ISDOC\Encoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
-use Adawolfa\ISDOC;
 use ZipArchive;
 
 /**
@@ -16,7 +16,8 @@ final class Writer
 {
 
 	private XmlEncoder $xmlEncoder;
-	private Encoder    $encoder;
+
+	private Encoder $encoder;
 
 	public function __construct(XmlEncoder $xmlEncoder, Encoder $encoder)
 	{
@@ -29,7 +30,7 @@ final class Writer
 	{
 		$zip = new ZipArchive;
 
-		if ($zip->open($filename, ZipArchive::CREATE) === false) {
+		if ($zip->open($filename, ZipArchive::CREATE) !== true) {
 			throw ISDOC\WriterException::zipCouldNotCreate($filename);
 		}
 
@@ -66,7 +67,7 @@ final class Writer
 	{
 		return $this->xmlEncoder->encode(
 			[
-				'@xmlns' => 'http://isdoc.cz/namespace/2013/manifest',
+				'@xmlns'       => 'http://isdoc.cz/namespace/2013/manifest',
 				'maindocument' => [
 					'@filename' => $filename,
 					'#'         => null,

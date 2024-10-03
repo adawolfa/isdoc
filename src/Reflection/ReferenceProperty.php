@@ -1,9 +1,12 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC\Reflection;
 
-/** @internal */
+/**
+ * @template T of object
+ * @extends Property<T>
+ * @internal
+ */
 class ReferenceProperty extends Property
 {
 }

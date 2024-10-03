@@ -1,12 +1,12 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC\Data;
+
 use Adawolfa\ISDOC\Data;
 use Adawolfa\ISDOC\RuntimeException;
-use ReflectionNamedType;
 use DateTimeImmutable;
 use Error;
+use ReflectionNamedType;
 
 /**
  * XML value wrapper.
@@ -19,8 +19,10 @@ final class Value
 	private const DATE_FORMAT = 'Y-m-d';
 
 	/** @var mixed */
-	private mixed  $value;
-	private Data   $parent;
+	private mixed $value;
+
+	private Data $parent;
+
 	private string $name;
 
 	public function __construct(mixed $value, Data $parent, string $name)
@@ -52,7 +54,7 @@ final class Value
 
 		}
 
-		return $this->as($type->getName());
+		return $type === null ? $this->value : $this->as($type->getName());
 	}
 
 	/** @throws ValueException */
@@ -62,7 +64,7 @@ final class Value
 			return null;
 		}
 
-		return $this->as('string');
+		return $this->as('string'); // @phpstan-ignore-line
 	}
 
 	/** @throws ValueException */
@@ -70,6 +72,10 @@ final class Value
 	{
 		if ($this->value === null || $this->value === '') {
 			return null;
+		}
+
+		if (!is_string($this->value)) {
+			throw ValueException::invalidDateFormat($this);
 		}
 
 		$parsed = DateTimeImmutable::createFromFormat(self::DATE_FORMAT, $this->value);

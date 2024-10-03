@@ -1,13 +1,13 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC\Reflection;
+
+use Adawolfa\ISDOC;
 use Adawolfa\ISDOC\Map;
 use Adawolfa\ISDOC\RuntimeException;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionObject;
-use Adawolfa\ISDOC;
 use ReflectionProperty;
 
 /**
@@ -19,7 +19,7 @@ final class Reflector
 {
 
 	/**
-	 * @template T
+	 * @template T of object
 	 * @param class-string<T> $class
 	 * @return Instance<T>
 	 */
@@ -36,9 +36,9 @@ final class Reflector
 	}
 
 	/**
-	 * @template T
-	 * @param T $instance
-	 * @return Instance<T>
+	 * @template T of object
+	 * @param T&object $instance
+	 * @return Instance<T&object>
 	 */
 	public function instance(object $instance): Instance
 	{
@@ -73,14 +73,19 @@ final class Reflector
 				throw new RuntimeException('Collection type must be specified.');
 			}
 
+			// @phpstan-ignore-next-line
 			return new Collection($instance, $object, $properties, $map->getValue(), $map->getType());
 
 		}
 
+		// @phpstan-ignore-next-line
 		return new Instance($instance, $object, $properties);
 	}
 
-	/** @return ReflectionProperty[] */
+	/**
+	 * @param ReflectionClass<object> $reflection
+	 * @return ReflectionProperty[]
+	 */
 	private function getProperties(ReflectionClass $reflection): array
 	{
 		$properties = $reflection->getParentClass() === false ? [] : $this->getProperties($reflection->getParentClass());

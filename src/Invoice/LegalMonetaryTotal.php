@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC\Invoice;
+
 use Adawolfa\ISDOC;
 
 /**
@@ -13,12 +13,13 @@ class LegalMonetaryTotal extends ISDOC\Schema\Invoice\LegalMonetaryTotal
 	private ISDOC\Schema\Invoice $invoice;
 
 	private bool $taxExclusiveAmountAssigned;
+
 	private bool $taxInclusiveAmountAssigned;
 
 	public function __construct(ISDOC\Schema\Invoice $invoice)
 	{
 		parent::__construct('0', '0', '0', '0', '0', '0', '0', '0');
-		$this->invoice = $invoice;
+		$this->invoice                    = $invoice;
 		$this->taxExclusiveAmountAssigned = false;
 		$this->taxInclusiveAmountAssigned = false;
 	}
@@ -46,7 +47,8 @@ class LegalMonetaryTotal extends ISDOC\Schema\Invoice\LegalMonetaryTotal
 	public function setTaxExclusiveAmount(string $taxExclusiveAmount): self
 	{
 		$this->taxExclusiveAmountAssigned = true;
-		return parent::setTaxExclusiveAmount($taxExclusiveAmount);
+		parent::setTaxExclusiveAmount($taxExclusiveAmount);
+		return $this;
 	}
 
 	public function getTaxInclusiveAmount(): string
@@ -61,7 +63,8 @@ class LegalMonetaryTotal extends ISDOC\Schema\Invoice\LegalMonetaryTotal
 	public function setTaxInclusiveAmount(string $taxInclusiveAmount): self
 	{
 		$this->taxInclusiveAmountAssigned = true;
-		return parent::setTaxInclusiveAmount($taxInclusiveAmount);
+		parent::setTaxInclusiveAmount($taxInclusiveAmount);
+		return $this;
 	}
 
 }

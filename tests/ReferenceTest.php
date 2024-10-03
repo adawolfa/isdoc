@@ -1,20 +1,27 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Tests\Adawolfa\ISDOC;
-use PHPUnit\Framework\TestCase;
+
 use Adawolfa;
+use Adawolfa\ISDOC\ReaderException;
+use Adawolfa\ISDOC\WriterException;
 use DateTimeImmutable;
+use LogicException;
+use PHPUnit\Framework\TestCase;
 
 final class ReferenceTest extends TestCase
 {
 
+	/**
+	 * @throws WriterException
+	 * @throws ReaderException
+	 */
 	public function testReference(): void
 	{
 		$invoice = new Adawolfa\ISDOC\Invoice(
 			'12345',
 			'00000000-0000-0000-0000-000000001234',
-			DateTimeImmutable::createFromFormat('Y-m-d', '2021-08-16'),
+			DateTimeImmutable::createFromFormat('Y-m-d', '2021-08-16') ?: throw new LogicException,
 			false,
 			'CZK',
 			new Adawolfa\ISDOC\Schema\Invoice\AccountingSupplierParty(
@@ -50,18 +57,19 @@ final class ReferenceTest extends TestCase
 			),
 		);
 
-		$line->order = new Adawolfa\ISDOC\Schema\Invoice\OrderLine($order);
+		$line->order         = new Adawolfa\ISDOC\Schema\Invoice\OrderLine($order);
 		$line->order->lineID = '10';
 
 		$invoice->invoiceLines->add($line);
 
-		$manager  = Adawolfa\ISDOC\Manager::create();
-		$read     = $manager->reader->xml($manager->writer->xml($invoice));
+		$manager = Adawolfa\ISDOC\Manager::create();
+		$read    = $manager->reader->xml($manager->writer->xml($invoice));
 
-		/** @var $readLine Adawolfa\ISDOC\Schema\Invoice\InvoiceLine */
+		/** @var Adawolfa\ISDOC\Schema\Invoice\InvoiceLine $readLine */
 		$readLine = iterator_to_array($read->invoiceLines)[0];
 
 		$this->assertNotNull($readLine->order);
+		$this->assertIsIterable($read->orderReferences);
 		$this->assertSame(iterator_to_array($read->orderReferences)[0], $readLine->order->order);
 		$this->assertSame('10', $readLine->order->lineID);
 	}

@@ -1,6 +1,5 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC\Serializer;
 
 /**
@@ -12,7 +11,8 @@ final class ID
 {
 
 	private object $instance;
-	private ?int   $id = null;
+
+	private ?int $id = null;
 
 	public function __construct(object $instance)
 	{

@@ -1,6 +1,5 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Adawolfa\ISDOC;
 
 /**
@@ -9,7 +8,8 @@ namespace Adawolfa\ISDOC;
 final class Reader
 {
 
-	private Decoder  $decoder;
+	private Decoder $decoder;
+
 	private X\Reader $xReader;
 
 	public function __construct(Decoder $decoder, X\Reader $xReader)
@@ -19,9 +19,9 @@ final class Reader
 	}
 
 	/**
-	 * @template T
+	 * @template T of Schema\Invoice
 	 * @param class-string<T> $class
-	 * @return T
+	 * @return T&Schema\Invoice
 	 * @throws ReaderException
 	 */
 	public function file(
@@ -50,9 +50,9 @@ final class Reader
 	}
 
 	/**
-	 * @template T
+	 * @template T of Schema\Invoice
 	 * @param class-string<T> $class
-	 * @return T
+	 * @return T&Schema\Invoice
 	 * @throws ReaderException
 	 */
 	public function xml(

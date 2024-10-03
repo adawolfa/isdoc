@@ -1,26 +1,25 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
 namespace Tests\Adawolfa\ISDOC;
+
 use DateTimeInterface;
 
 trait Snapshot
 {
 
-	/** @param mixed $data */
 	public function assertSnapshot(string $name, string $data): void
 	{
 		$filename = __DIR__ . '/snapshots/' . $name;
-		$current = @file_get_contents($filename);
+		$current  = @file_get_contents($filename);
 
-		if ($current === false) {
-			$this->addWarning("Snapshot file '$name' does not exist.");
-			file_put_contents($filename, $data);
-		} else {
+		if ($current !== false) {
 			$this->assertSame($current, $data);
 		}
 	}
 
+	/**
+	 * @param array<string|int, mixed> $array
+	 */
 	private static function walkArrayDateToString(array &$array): void
 	{
 		foreach ($array as $key => $value) {
