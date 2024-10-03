@@ -16,13 +16,13 @@
 		"ext-simplexml": "*",
 		"ext-zip": "*",
 		"nette/utils": "^3.2|^4.0",
-		"symfony/serializer": "^5.4|^6.0"
+		"symfony/serializer": "^5.4|^6.0|^7.0"
 	},
 	"require-dev": {
 		"goetas-webservices/xsd-reader": "^0.3|^0.4",
-		"symfony/console": "^5.4|^6.0",
+		"symfony/console": "^5.4|^6.0|^7.0",
 		"nette/php-generator": "^3.6|^4.0",
-		"phpunit/phpunit": "^9.5|^10.0"
+		"phpunit/phpunit": "^9.5|^10.0|^11.0"
 	},
 	"autoload": {
 		"psr-4": {
