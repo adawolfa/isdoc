@@ -7,7 +7,7 @@ use Throwable;
 final class ReaderException extends Exception
 {
 
-	private function __construct(string $message, Throwable $throwable = null)
+	private function __construct(string $message, ?Throwable $throwable = null)
 	{
 		parent::__construct($message, 0, $throwable);
 	}

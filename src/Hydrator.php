@@ -50,7 +50,7 @@ final class Hydrator
 	 * @param callable|null   $hook
 	 * @return T&object
 	 */
-	public function hydrate(Data $data, string $class, callable $hook = null): object
+	public function hydrate(Data $data, string $class, ?callable $hook = null): object
 	{
 		if ($this->depth > 0 && $hook !== null) {
 			throw new RuntimeException('Hook cannot be attached at this point.');

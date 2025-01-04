@@ -15,7 +15,7 @@ final class Map
 
 	private ?string $type;
 
-	public function __construct(string $value, string $type = null)
+	public function __construct(string $value, ?string $type = null)
 	{
 		$this->value = $value;
 		$this->type  = $type;
