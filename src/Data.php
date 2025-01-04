@@ -14,7 +14,7 @@ final class Data
 	private ?self   $parent;
 	private ?string $name;
 
-	private function __construct(array $data, self $parent = null, string $name = null)
+	private function __construct(array $data, ?self $parent = null, ?string $name = null)
 	{
 		$this->data   = $data;
 		$this->parent = $parent;

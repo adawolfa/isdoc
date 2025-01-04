@@ -28,7 +28,7 @@ final class Decoder
 	 * @return T
 	 * @throws DecoderException
 	 */
-	public function decode(string $xml, string $class = Schema\Invoice::class, callable $hook = null): Schema\Invoice
+	public function decode(string $xml, string $class = Schema\Invoice::class, ?callable $hook = null): Schema\Invoice
 	{
 		try {
 			$data = Data::create($this->encoder->decode($xml, $this->encoder::FORMAT));

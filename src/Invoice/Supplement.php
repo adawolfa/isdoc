@@ -44,7 +44,7 @@ class Supplement extends ISDOC\Schema\Invoice\Supplement
 	}
 
 	/** @throws ISDOC\SupplementException */
-	public static function fromPath(string $path, string $filename = null): self
+	public static function fromPath(string $path, ?string $filename = null): self
 	{
 		if ($filename === null) {
 			$filename = basename($path);
