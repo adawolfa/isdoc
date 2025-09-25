@@ -37,6 +37,11 @@ final class Value
 		return $this->parent->getPath() . ($this->parent->getPath() === '' ? '' : '/') . $this->name;
 	}
 
+	public function getParent(): Data
+	{
+		return $this->parent;
+	}
+
 	/** @throws ValueException */
 	public function cast(?ReflectionNamedType $type): mixed
 	{

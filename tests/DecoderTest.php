@@ -72,4 +72,32 @@ final class DecoderTest extends TestCase
 		$this->assertFalse($property->isInitialized($invoice));
 	}
 
+	public function testNamespacedReferences(): void
+	{
+		$invoice = Adawolfa\ISDOC\Manager::create()->getReader()->file(__DIR__ . '/fixtures/sample-namespaced-references.isdoc');
+
+		$orderReference = null;
+		foreach ($invoice->orderReferences ?? [] as $orderReference);
+		$this->assertNotNull($orderReference);
+
+		$deliveryNoteReference = null;
+		foreach ($invoice->deliveryNoteReferences ?? [] as $deliveryNoteReference);
+		$this->assertNotNull($deliveryNoteReference);
+
+		$this->assertNotSame($deliveryNoteReference, $orderReference);
+
+		$firstInvoiceLine = null;
+
+		foreach ($invoice->invoiceLines as $firstInvoiceLine) {
+			break;
+		}
+
+		$this->assertNotNull($firstInvoiceLine);
+
+		$this->assertNotNull($firstInvoiceLine->order);
+		$this->assertNotNull($firstInvoiceLine->deliveryNote);
+		$this->assertSame($firstInvoiceLine->order->order, $orderReference);
+		$this->assertSame($firstInvoiceLine->deliveryNote->deliveryNote, $deliveryNoteReference);
+	}
+
 }
