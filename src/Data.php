@@ -26,6 +26,11 @@ final class Data
 		return ($this->parent->name ?? '') . ($this->parent === null || $this->parent->getPath() === '' ? '' : '/') . $this->name;
 	}
 
+	public function getName(): ?string
+	{
+		return $this->name;
+	}
+
 	public function hasValue(string $name): bool
 	{
 		return array_key_exists($name, $this->data) && !is_array($this->data[$name]);

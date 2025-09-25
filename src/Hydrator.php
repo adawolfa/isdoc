@@ -28,7 +28,7 @@ final class Hydrator
 	/** @var callable|null */
 	private $hook;
 
-	/** @var Instance[] */
+	/** @var array<string, array<string, Instance>> */
 	private array $references = [];
 
     private bool $skipMissingPrimitiveValues;
@@ -109,12 +109,21 @@ final class Hydrator
 	private function registerReference(Value $value, object $instance): void
 	{
 		$id = $value->toString();
+		$namespace = $value->getParent()->getName();
 
-		if (isset($this->references[$id])) {
+		if ($namespace === null) {
+			throw new RuntimeException('Cannot register reference without namespace.');
+		}
+
+		if (isset($this->references[$namespace][$id])) {
 			throw Data\Exception::duplicateReferenceId($id);
 		}
 
-		$this->references[$id] = $instance;
+		if (!isset($this->references[$namespace])) {
+			$this->references[$namespace] = [];
+		}
+
+		$this->references[$namespace][$id] = $instance;
 	}
 
 	/** @throws Data\Exception */
@@ -151,18 +160,18 @@ final class Hydrator
 
 			$id = $data->getValue('@ref');
 
-			if (!isset($this->references[$id->toString()])) {
+			if (!isset($this->references[$data->getName()][$id->toString()])) {
 				throw Data\Exception::referencedElementNotFound($id->toString(), $id->getPath());
 			}
 
-			if (!$property->accepts($this->references[$id->toString()]->getReflection()->name)) {
+			if (!$property->accepts($this->references[$data->getName()][$id->toString()]->getReflection()->name)) {
 				throw Data\Exception::referencedElementTypeMismatch(
 					$property->getType()->getName(),
-					$this->references[$id->toString()]->getReflection()->getName(),
+					$this->references[$data->getName()][$id->toString()]->getReflection()->getName(),
 				);
 			}
 
-			$property->setValue($this->references[$id->toString()]->getInstance());
+			$property->setValue($this->references[$data->getName()][$id->toString()]->getInstance());
 
 		};
 	}
