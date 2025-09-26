@@ -10,6 +10,8 @@ use Adawolfa\ISDOC\Reflection\MappedProperty;
 use Adawolfa\ISDOC\Reflection\Property;
 use Adawolfa\ISDOC\Reflection\ReferenceProperty;
 use Adawolfa\ISDOC\Reflection\Reflector;
+use Adawolfa\ISDOC\Schema\Invoice\Party;
+use Adawolfa\ISDOC\Schema\Invoice\PartyTaxScheme;
 
 /**
  * Instantiates classes and hydrates them with data from XML decoder.
@@ -34,13 +36,17 @@ final class Hydrator
 
 	private bool $skipMissingPrimitiveValues;
 
+	private ?string $preferredTaxScheme = null;
+
 	public function __construct(
 		Reflector $reflector,
 		bool      $skipMissingPrimitiveValues = false,
+		?string   $preferredTaxScheme = null,
 	)
 	{
 		$this->reflector                  = $reflector;
 		$this->skipMissingPrimitiveValues = $skipMissingPrimitiveValues;
+		$this->preferredTaxScheme         = $preferredTaxScheme;
 	}
 
 	/**
@@ -229,6 +235,45 @@ final class Hydrator
 	 */
 	private function hydratePrimitiveProperty(Data $data, MappedProperty $property): void
 	{
+		// FIXME: Support elements with unbound max occurrences.
+		if (($property->getInstance()->getReflection()->getName() === PartyTaxScheme::class
+			 || $property->getInstance()->getReflection()->isSubclassOf(PartyTaxScheme::class))
+			&& $data->isList()) {
+
+			$found = false;
+
+			if ($this->preferredTaxScheme !== null) {
+
+				foreach ($data->getListElements() as $child) {
+
+					if (!$child->hasValue('TaxScheme')) {
+						continue;
+					}
+
+					$taxScheme = $child->getValue('TaxScheme')->toString();
+
+					if ($taxScheme === null || strcasecmp($taxScheme, $this->preferredTaxScheme) !== 0) {
+						continue;
+					}
+
+					$data  = $child;
+					$found = true;
+					break;
+
+				}
+
+			}
+
+			if (!$found) {
+				$data = $data->getFirstListElement();
+			}
+
+			if ($data === null) {
+				throw new RuntimeException('List element was expected.');
+			}
+
+		}
+
 		try {
 			$property->setValue($data->getValue($property->getMap())->cast($property->getType()));
 		} catch (MissingValueException $exception) {

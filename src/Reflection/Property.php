@@ -183,4 +183,12 @@ class Property
 		return $this->property->name;
 	}
 
+	/**
+	 * @return Instance<T>
+	 */
+	public function getInstance(): Instance
+	{
+		return $this->instance;
+	}
+
 }

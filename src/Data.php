@@ -10,7 +10,7 @@ use Adawolfa\ISDOC\Data\Value;
 final class Data
 {
 
-	/** @var array<string, mixed> */
+	/** @var array<string|int, mixed> */
 	private array $data;
 
 	private ?self $parent;
@@ -96,6 +96,46 @@ final class Data
 	public static function createEmpty(self $parent, string $name): self
 	{
 		return new self([], $parent, $name);
+	}
+
+	public function isList(): bool
+	{
+		return isset($this->data[0]);
+	}
+
+	public function getFirstListElement(): ?self
+	{
+		if (!$this->isList() || count($this->data) === 0) {
+			throw new RuntimeException('Data is not a list or is empty.');
+		}
+
+		if (!is_array($this->data[0])) {
+			throw new RuntimeException('First element is not an array.');
+		}
+
+		return new self($this->data[0], $this, $this->name);
+	}
+
+	/** @return self[] */
+	public function getListElements(): array
+	{
+		if (!$this->isList() || count($this->data) === 0) {
+			throw new RuntimeException('Data is not a list or is empty.');
+		}
+
+		$list = [];
+
+		foreach ($this->data as $item) {
+
+			if (!is_array($item)) {
+				throw new RuntimeException('List item is not an array.');
+			}
+
+			$list[] = new self($item, $this, $this->name);
+
+		}
+
+		return $list;
 	}
 
 }

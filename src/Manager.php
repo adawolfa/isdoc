@@ -43,12 +43,13 @@ final class Manager
 	}
 
 	public static function create(
-		bool $skipMissingPrimitiveValuesHydration = false,
+		bool    $skipMissingPrimitiveValuesHydration = false,
+		?string $preferredTaxScheme = null,
 	): self
 	{
 		$xmlEncoder = new XmlEncoder([XmlEncoder::FORMAT_OUTPUT => true]);
 		$reflector  = new Reflector;
-		$hydrator   = new Hydrator($reflector, $skipMissingPrimitiveValuesHydration);
+		$hydrator   = new Hydrator($reflector, $skipMissingPrimitiveValuesHydration, $preferredTaxScheme);
 		$serializer = new Serializer($reflector);
 		$decoder    = new Decoder($xmlEncoder, $hydrator);
 		$encoder    = new Encoder($xmlEncoder, $serializer);

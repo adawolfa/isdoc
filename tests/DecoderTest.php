@@ -100,4 +100,19 @@ final class DecoderTest extends TestCase
 		$this->assertSame($firstInvoiceLine->deliveryNote->deliveryNote, $deliveryNoteReference);
 	}
 
+	public function testMultiPartyTaxScheme(): void
+	{
+		$default = Adawolfa\ISDOC\Manager::create()->getReader()->file(__DIR__ . '/fixtures/multi-partytax.isdoc');
+		$this->assertNotNull($default->getAccountingSupplierParty()->getParty()->getPartyTaxScheme());
+		$this->assertSame($default->getAccountingSupplierParty()->getParty()->getPartyTaxScheme()->getCompanyID(), 'CZ25097563');
+
+		$vat = Adawolfa\ISDOC\Manager::create(false, 'vat')->getReader()->file(__DIR__ . '/fixtures/multi-partytax.isdoc');
+		$this->assertNotNull($vat->getAccountingSupplierParty()->getParty()->getPartyTaxScheme());
+		$this->assertSame($vat->getAccountingSupplierParty()->getParty()->getPartyTaxScheme()->getCompanyID(), 'CZ25097563');
+
+		$tin = Adawolfa\ISDOC\Manager::create(false, 'tin')->getReader()->file(__DIR__ . '/fixtures/multi-partytax.isdoc');
+		$this->assertNotNull($tin->getAccountingSupplierParty()->getParty()->getPartyTaxScheme());
+		$this->assertSame($tin->getAccountingSupplierParty()->getParty()->getPartyTaxScheme()->getCompanyID(), 'SK25097563');
+	}
+
 }
