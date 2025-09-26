@@ -136,6 +136,25 @@ $invoice = $manager->reader->file('filename.isdoc');
 
 Do note, however, that such an object might have uninitialized properties, causing issues later on.
 
+#### I have an international ISDOC file with multiple party tax schemes.
+
+Due to previous implementation mistake, the library only supports a single `PartyTaxScheme` per `Party`, manifesting in the following error:
+
+~~~
+Value Party/PartyTaxScheme/CompanyID is missing.
+~~~
+
+Currently, the only workaround is to specify the tax scheme you're interested in ahead of time. Individual tax schemes are identified using the `TaxScheme` element, usually containing `VAT` for Czech invoices and `TIN` for Slovak ones.
+
+~~~php
+// Reading Slovakian identifier.
+$manager = Adawolfa\ISDOC\Manager::create(false, $preferredTaxScheme = 'TIN');
+$invoice = $manager->reader->file('filename.isdoc');
+$invoice->getAccountingSupplierParty()->getParty()->getPartyTaxScheme()?->getCompanyID();
+~~~
+
+By default, the first tax scheme is being used.
+
 ## Development
 
 ~~~bash

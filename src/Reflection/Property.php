@@ -156,4 +156,9 @@ class Property
 		return $this->property->name;
 	}
 
+	public function getInstance(): Instance
+	{
+		return $this->instance;
+	}
+
 }

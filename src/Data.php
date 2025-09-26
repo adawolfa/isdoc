@@ -85,4 +85,28 @@ final class Data
 		return new self([], $parent, $name);
 	}
 
+	public function isList(): bool
+	{
+		return isset($this->data[0]);
+	}
+
+	public function getFirstListElement(): ?self
+	{
+		if (!$this->isList() || count($this->data) === 0) {
+			throw new RuntimeException('Data is not a list or is empty.');
+		}
+
+		return new self($this->data[0], $this, $this->name);
+	}
+
+	/** @return self[] */
+	public function getListElements(): array
+	{
+		if (!$this->isList() || count($this->data) === 0) {
+			throw new RuntimeException('Data is not a list or is empty.');
+		}
+
+		return array_map(fn (array $item): self => new self($item, $this, $this->name), $this->data);
+	}
+
 }
