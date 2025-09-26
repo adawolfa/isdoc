@@ -67,7 +67,7 @@ require(__DIR__ . '/../vendor/autoload.php');
 				}
 			}
 
-			private function complexType(XSDReader\Schema\Type\BaseComplexType $complexType, string $name, string $doc = null): void
+			private function complexType(XSDReader\Schema\Type\BaseComplexType $complexType, string $name, ?string $doc = null): void
 			{
 				$namespaceName = substr($name, 0, strrpos($name, '\\'));
 				$classBaseName = substr($name, strlen($namespaceName) + 1);
@@ -216,7 +216,7 @@ require(__DIR__ . '/../vendor/autoload.php');
 			private function complexTypeElementsOne(
 				PhpGenerator\ClassType $class,
 				XSDReader\Schema\Element\ElementItem $element,
-				bool $defaultNullable = null
+				?bool $defaultNullable = null
 			): void
 			{
 				switch (true) {
@@ -225,6 +225,7 @@ require(__DIR__ . '/../vendor/autoload.php');
 						&& $element->getName() === 'Extensions':
 
 					// Unsupported choices.
+                    case $element instanceof XSDReader\Schema\Element\Any\Any:
 					case $element instanceof XSDReader\Schema\Element\Element
 						&& $class->hasProperty($this->formatPropertyName($element->getName())):
 						break;
@@ -325,7 +326,7 @@ require(__DIR__ . '/../vendor/autoload.php');
                 $this->simpleTypeProperty($class, $property, $type, $attribute->getUse() === XSDReader\Schema\Attribute\AttributeSingle::USE_OPTIONAL);
             }
 
-			private function createProperty(PhpGenerator\ClassType $class, string $name, string $doc = null): PhpGenerator\Property
+			private function createProperty(PhpGenerator\ClassType $class, string $name, ?string $doc = null): PhpGenerator\Property
 			{
 				$property = $class->addProperty($name)
 					->setVisibility('private');
