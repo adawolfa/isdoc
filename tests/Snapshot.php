@@ -14,7 +14,6 @@ trait Snapshot
 		$current = @file_get_contents($filename);
 
 		if ($current === false) {
-			$this->addWarning("Snapshot file '$name' does not exist.");
 			file_put_contents($filename, $data);
 		} else {
 			$this->assertSame($current, $data);
