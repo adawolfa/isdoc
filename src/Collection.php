@@ -4,6 +4,7 @@ namespace Adawolfa\ISDOC;
 
 use Countable;
 use IteratorAggregate;
+use Nette\SmartObject;
 
 /**
  * Generic collection.
@@ -13,6 +14,8 @@ use IteratorAggregate;
  */
 abstract class Collection implements IteratorAggregate, Countable, Arrayable
 {
+
+	use SmartObject;
 
 	/** @var array<int, T> */
 	protected array $items = [];

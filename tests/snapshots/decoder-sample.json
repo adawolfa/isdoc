@@ -102,6 +102,7 @@
             }
         }
     },
+    "anonymousCustomerParty": null,
     "accountingCustomerParty": {
         "party": {
             "partyIdentification": {
@@ -134,7 +135,6 @@
             }
         }
     },
-    "anonymousCustomerParty": null,
     "buyerCustomerParty": {
         "party": {
             "partyIdentification": {
