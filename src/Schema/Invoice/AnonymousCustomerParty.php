@@ -25,9 +25,9 @@ class AnonymousCustomerParty implements Arrayable
 
 	/** Identification of schema used for identifier construction. */
 	#[Map('IDScheme')]
-	private $idScheme;
+	private string $idScheme;
 
-	public function __construct(string $id, $idScheme)
+	public function __construct(string $id, string $idScheme)
 	{
 		$this->setId($id);
 		$this->setIdScheme($idScheme);
@@ -44,12 +44,12 @@ class AnonymousCustomerParty implements Arrayable
 		return $this;
 	}
 
-	public function getIdScheme()
+	public function getIdScheme(): string
 	{
 		return $this->idScheme;
 	}
 
-	public function setIdScheme($idScheme): self
+	public function setIdScheme(string $idScheme): self
 	{
 		$this->idScheme = $idScheme;
 		return $this;
