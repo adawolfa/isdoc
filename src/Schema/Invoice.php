@@ -37,8 +37,8 @@ use Nette\SmartObject;
  * @property string                                  $refCurrRate
  * @property Invoice\AccountingSupplierParty         $accountingSupplierParty
  * @property Invoice\SellerSupplierParty|null        $sellerSupplierParty
- * @property Invoice\AccountingCustomerParty|null    $accountingCustomerParty
  * @property Invoice\AnonymousCustomerParty|null     $anonymousCustomerParty
+ * @property Invoice\AccountingCustomerParty|null    $accountingCustomerParty
  * @property Invoice\BuyerCustomerParty|null         $buyerCustomerParty
  * @property Invoice\OrderReferences|null            $orderReferences
  * @property Invoice\DeliveryNoteReferences|null     $deliveryNoteReferences
@@ -168,13 +168,13 @@ class Invoice implements Arrayable
 	#[Map('SellerSupplierParty')]
 	private ?Invoice\SellerSupplierParty $sellerSupplierParty = null;
 
-	/** Customer, accounting entity in Commercial Register. */
-	#[Map('AccountingCustomerParty')]
-	private ?Invoice\AccountingCustomerParty $accountingCustomerParty = null;
-
 	/** Anonymous receiver of simplified tax document. */
 	#[Map('AnonymousCustomerParty')]
 	private ?Invoice\AnonymousCustomerParty $anonymousCustomerParty = null;
+
+	/** Customer, accounting entity in Commercial Register. */
+	#[Map('AccountingCustomerParty')]
+	private ?Invoice\AccountingCustomerParty $accountingCustomerParty = null;
 
 	/** Purchaser, invoicing address. */
 	#[Map('BuyerCustomerParty')]
@@ -554,17 +554,6 @@ class Invoice implements Arrayable
 		return $this;
 	}
 
-	public function getAccountingCustomerParty(): ?Invoice\AccountingCustomerParty
-	{
-		return $this->accountingCustomerParty;
-	}
-
-	public function setAccountingCustomerParty(?Invoice\AccountingCustomerParty $accountingCustomerParty): self
-	{
-		$this->accountingCustomerParty = $accountingCustomerParty;
-		return $this;
-	}
-
 	public function getAnonymousCustomerParty(): ?Invoice\AnonymousCustomerParty
 	{
 		return $this->anonymousCustomerParty;
@@ -573,6 +562,17 @@ class Invoice implements Arrayable
 	public function setAnonymousCustomerParty(?Invoice\AnonymousCustomerParty $anonymousCustomerParty): self
 	{
 		$this->anonymousCustomerParty = $anonymousCustomerParty;
+		return $this;
+	}
+
+	public function getAccountingCustomerParty(): ?Invoice\AccountingCustomerParty
+	{
+		return $this->accountingCustomerParty;
+	}
+
+	public function setAccountingCustomerParty(?Invoice\AccountingCustomerParty $accountingCustomerParty): self
+	{
+		$this->accountingCustomerParty = $accountingCustomerParty;
 		return $this;
 	}
 

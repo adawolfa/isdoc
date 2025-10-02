@@ -89,4 +89,77 @@ final class EncoderTest extends TestCase
 		$this->assertSnapshot('encoder-sample.xml', $encoded);
 	}
 
+	public function testSimplifiedTaxDocument(): void
+	{
+		$invoice = new Adawolfa\ISDOC\Invoice(
+			'12345',
+			'00000000-0000-0000-0000-000000001234',
+			DateTimeImmutable::createFromFormat('Y-m-d', '2021-08-16'),
+			false,
+			'CZK',
+			new Adawolfa\ISDOC\Schema\Invoice\AccountingSupplierParty(
+				new Adawolfa\ISDOC\Schema\Invoice\Party(
+					new Adawolfa\ISDOC\Schema\Invoice\PartyIdentification('12345678'),
+					new Adawolfa\ISDOC\Schema\Invoice\PartyName('Firma, a. s.'),
+					new Adawolfa\ISDOC\Schema\Invoice\PostalAddress(
+						'Dlouhá',
+						'1234',
+						'Praha',
+						'100 01',
+						new Adawolfa\ISDOC\Schema\Invoice\Country('CZ', 'Česká republika')
+					)
+				)
+			)
+		);
+
+		$invoice->setAccountingCustomerParty(new Adawolfa\ISDOC\Schema\Invoice\AccountingCustomerParty(
+			new Adawolfa\ISDOC\Schema\Invoice\Party(
+				new Adawolfa\ISDOC\Schema\Invoice\PartyIdentification('87654321'),
+				new Adawolfa\ISDOC\Schema\Invoice\PartyName('Customer, a. s.'),
+				new Adawolfa\ISDOC\Schema\Invoice\PostalAddress(
+					'Dlouhá',
+					'1234',
+					'Praha',
+					'100 01',
+					new Adawolfa\ISDOC\Schema\Invoice\Country('CZ', 'Česká republika')
+				)
+			)
+		));
+
+		$invoice->invoiceLines->add(new Adawolfa\ISDOC\Schema\Invoice\InvoiceLine(
+			'1',
+			'100.0',
+			'121.0',
+			'21.0',
+			'100.0',
+			'121.0',
+			new Adawolfa\ISDOC\Schema\Invoice\ClassifiedTaxCategory(
+				'21',
+				Adawolfa\ISDOC\Schema\Invoice\ClassifiedTaxCategory::VAT_CALCULATION_METHOD_FROM_THE_TOP,
+			),
+		));
+
+		$invoice->taxTotal->taxAmount = '21.0';
+		$invoice->taxTotal->add(new Adawolfa\ISDOC\Schema\Invoice\TaxSubTotal(
+			'100.0',
+			'21.0',
+			'21.0',
+			'0.0',
+			'0.0',
+			'0.0',
+			'0.0',
+			'0.0',
+			'0.0',
+			new Adawolfa\ISDOC\Schema\Invoice\TaxCategory('21'),
+		));
+
+		$invoice->setAnonymousCustomerParty(new Adawolfa\ISDOC\Schema\Invoice\AnonymousCustomerParty(
+			'123',
+			'https://www.rfc-editor.org/rfc/rfc9562.html',
+		));
+
+		$encoded = Adawolfa\ISDOC\Manager::create()->getWriter()->xml($invoice);
+		$this->assertSnapshot('encoder-simplified-tax-document.xml', $encoded);
+	}
+
 }
