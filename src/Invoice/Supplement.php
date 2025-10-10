@@ -4,13 +4,16 @@ namespace Adawolfa\ISDOC\Invoice;
 
 use Adawolfa\ISDOC;
 use Adawolfa\ISDOC\Schema\Invoice\DigestMethod;
+use Adawolfa\ISDOC\SupplementException;
 
 /**
  * Supplement with an actual file.
  *
  * @property-read string $path
+ * @property-read string $contents
+ * @property-read bool   $ok
  */
-class Supplement extends ISDOC\Schema\Invoice\Supplement
+class Supplement extends ISDOC\Schema\Invoice\Supplement implements RemoteSupplement
 {
 
 	private string $path;
@@ -64,6 +67,35 @@ class Supplement extends ISDOC\Schema\Invoice\Supplement
 			$digestValue,
 			$path,
 		);
+	}
+
+	/**
+	 * @throws SupplementException
+	 */
+	public function isOk(): bool
+	{
+		return ISDOC\Utils::checkSupplementDigest($this);
+	}
+
+	/**
+	 * @throws SupplementException
+	 */
+	public function saveTo(string $filename): void
+	{
+		if (@copy($this->getPath(), $filename) === false) {
+			throw ISDOC\SupplementException::couldNotWriteFile($this->getFilename(), $filename);
+		}
+	}
+
+	public function getContents(): string
+	{
+		$contents = @file_get_contents($this->getPath());
+
+		if ($contents === false) {
+			throw new ISDOC\RuntimeException('Failed to read contents of the supplement.');
+		}
+
+		return $contents;
 	}
 
 }

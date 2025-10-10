@@ -12,10 +12,13 @@ final class Writer
 
 	private X\Writer $xWriter;
 
-	public function __construct(Encoder $encoder, X\Writer $xWriter)
+	private PDF\Writer $pdfWriter;
+
+	public function __construct(Encoder $encoder, X\Writer $xWriter, PDF\Writer $pdfWriter)
 	{
-		$this->encoder = $encoder;
-		$this->xWriter = $xWriter;
+		$this->encoder   = $encoder;
+		$this->xWriter   = $xWriter;
+		$this->pdfWriter = $pdfWriter;
 	}
 
 	/** @throws WriterException */
@@ -25,6 +28,11 @@ final class Writer
 
 		if ($format === Manager::FORMAT_ISDOCX) {
 			$this->xWriter->file($invoice, $filename);
+			return;
+		}
+
+		if ($format === Manager::FORMAT_PDF) {
+			$this->pdfWriter->file($invoice, $filename);
 			return;
 		}
 

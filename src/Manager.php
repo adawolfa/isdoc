@@ -4,6 +4,7 @@ namespace Adawolfa\ISDOC;
 
 use Adawolfa\ISDOC\Reflection\Reflector;
 use Nette\SmartObject;
+use Smalot\PdfParser\Parser;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 
 /**
@@ -20,7 +21,8 @@ final class Manager
 	public const
 		FORMAT_AUTO = null,
 		FORMAT_ISDOC = 'isdoc',
-		FORMAT_ISDOCX = 'isdocx';
+		FORMAT_ISDOCX = 'isdocx',
+		FORMAT_PDF = 'pdf';
 
 	private Reader $reader;
 
@@ -55,8 +57,18 @@ final class Manager
 		$encoder    = new Encoder($xmlEncoder, $serializer);
 		$xReader    = new X\Reader($xmlEncoder, $decoder);
 		$xWriter    = new X\Writer($xmlEncoder, $encoder);
-		$reader     = new Reader($decoder, $xReader);
-		$writer     = new Writer($encoder, $xWriter);
+
+		$pdfReader = null;
+		$pdfWriter = new PDF\Writer($encoder);
+
+		if (class_exists(Parser::class)) {
+			$pdfParser = new Parser();
+			$pdfReader = new PDF\Reader($decoder, $pdfParser);
+		}
+
+		$reader = new Reader($decoder, $xReader, $pdfReader);
+		$writer = new Writer($encoder, $xWriter, $pdfWriter);
+
 		return new self($reader, $writer);
 	}
 

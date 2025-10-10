@@ -14,7 +14,7 @@ use ZipArchive;
  * @property-read resource $stream
  * @property-read bool     $ok
  */
-final class Supplement extends ISDOC\Schema\Invoice\Supplement
+final class Supplement extends ISDOC\Schema\Invoice\Supplement implements ISDOC\Invoice\RemoteSupplement
 {
 
 	private ZipArchive $zip;
@@ -84,17 +84,7 @@ final class Supplement extends ISDOC\Schema\Invoice\Supplement
 	/** @throws SupplementException */
 	public function isOk(): bool
 	{
-		switch ($this->getDigestMethod()->algorithm) {
-
-			case 'http://www.w3.org/2000/09/xmldsig#sha1':
-				$contents = $this->contents;
-				return base64_encode(sha1($contents, true)) === $this->getDigestValue()
-					   || sha1($contents) === strtolower($this->getDigestValue());
-
-			default:
-				throw SupplementException::unsupportedDigestAlgo($this->getFilename(), $this->getDigestMethod()->algorithm);
-
-		}
+		return ISDOC\Utils::checkSupplementDigest($this);
 	}
 
 	/**

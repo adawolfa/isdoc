@@ -12,10 +12,13 @@ final class Reader
 
 	private X\Reader $xReader;
 
-	public function __construct(Decoder $decoder, X\Reader $xReader)
+	private ?PDF\Reader $pdfReader;
+
+	public function __construct(Decoder $decoder, X\Reader $xReader, ?PDF\Reader $pdfReader = null)
 	{
-		$this->decoder = $decoder;
-		$this->xReader = $xReader;
+		$this->decoder   = $decoder;
+		$this->xReader   = $xReader;
+		$this->pdfReader = $pdfReader;
 	}
 
 	/**
@@ -34,6 +37,16 @@ final class Reader
 
 		if ($format === Manager::FORMAT_ISDOCX) {
 			return $this->xReader->file($filename, $class);
+		}
+
+		if ($format === Manager::FORMAT_PDF) {
+
+			if ($this->pdfReader === null) {
+				throw ReaderException::pdfParsingNotAvailable();
+			}
+
+			return $this->pdfReader->file($filename, $class);
+
 		}
 
 		$xml = @file_get_contents($filename);

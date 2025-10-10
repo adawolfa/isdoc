@@ -37,4 +37,24 @@ final class ReaderException extends Exception
 		return new self("Could not find ISDOC data within ISDOCX file '$filename'.");
 	}
 
+	public static function pdfParsingNotAvailable(): self
+	{
+		return new self('PDF parser library is not installed. Please install "smalot/pdfparser" package.');
+	}
+
+	public static function pdfParsingFailed(Throwable $exception): self
+	{
+		return new self('Could not parse PDF.', $exception);
+	}
+
+	public static function pdfNoIsdocFound(): self
+	{
+		return new self('No ISDOC data found in PDF.');
+	}
+
+	public static function pdfCouldNotCreateSupplement(SupplementException $supplementException): self
+	{
+		return new self('Could not provide PDF as ISDOC supplement.', $supplementException);
+	}
+
 }
