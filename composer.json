@@ -36,6 +36,9 @@
 			"Tests\\Adawolfa\\ISDOC\\": "tests/"
 		}
 	},
+	"suggest": {
+		"smalot/pdfparser": "Support for reading PDF with embedded ISDOC"
+	},
 	"extra": {
 		"branch-alias": {
 			"dev-master": "1.4.x-dev"

@@ -2,6 +2,12 @@
 
 This is a PHP library for parsing and generating [ISDOC](http://www.isdoc.cz/) files.
 
+Supports:
+
+- ISDOC 6.0.2
+- ISDOCX (read/write)
+- PDF with embedded XML (read/write, requires [smalot/pdfparser](https://github.com/smalot/pdfparser))
+
 ## Installation
 
 ~~~bash
@@ -102,7 +108,7 @@ When reading, a different subclass is being used:
 ~~~php
 foreach ($invoice->supplementsList as $supplement) {
 
-    if ($supplement instanceof Adawolfa\ISDOC\X\Supplement) {
+    if ($supplement instanceof Adawolfa\ISDOC\Invoice\RemoteSupplement) {
         
         if (!$supplement->ok) {
             throw new Exception('Digest failed.');
@@ -114,6 +120,26 @@ foreach ($invoice->supplementsList as $supplement) {
 
 }
 ~~~
+
+## PDF
+
+PDF files with embedded ISDOC are supported. Either use the `.pdf` extension or specify the file format when reading/writing.
+
+~~~php
+$invoice = $manager->reader->file('filename.pdf', ISDOC\Schema\Invoice::class, $manager::FORMAT_PDF);
+$manager->writer->file('filename.pdf', $manager::FORMAT_PDF);
+~~~
+
+The PDF itself is added as a supplement automatically when reading. When writing, you need to add the PDF to the supplement list first:
+
+~~~php
+$supplements = new SupplementList();
+$supplements->add(Adawolfa\ISDOC\Invoice\Supplement::fromPath('invoice.pdf'));
+$invoice->supplementsList = $supplements;
+$manager->writer->file($invoice, 'filename.pdf');
+~~~
+
+The ISDOC will be appended as an embedded file in the resulting PDF, together with any other supplements.
 
 ## FAQ
 
