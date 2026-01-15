@@ -56,11 +56,23 @@
   <InvoiceLines>
     <InvoiceLine>
       <ID>1</ID>
-      <LineExtensionAmount>100.0</LineExtensionAmount>
-      <LineExtensionAmountTaxInclusive>121.0</LineExtensionAmountTaxInclusive>
-      <LineExtensionTaxAmount>21.0</LineExtensionTaxAmount>
-      <UnitPrice>100.0</UnitPrice>
-      <UnitPriceTaxInclusive>121.0</UnitPriceTaxInclusive>
+      <LineExtensionAmount>50.1</LineExtensionAmount>
+      <LineExtensionAmountTaxInclusive>60.621</LineExtensionAmountTaxInclusive>
+      <LineExtensionTaxAmount>10.521</LineExtensionTaxAmount>
+      <UnitPrice>50.1</UnitPrice>
+      <UnitPriceTaxInclusive>60.621</UnitPriceTaxInclusive>
+      <ClassifiedTaxCategory>
+        <Percent>21</Percent>
+        <VATCalculationMethod>1</VATCalculationMethod>
+      </ClassifiedTaxCategory>
+    </InvoiceLine>
+    <InvoiceLine>
+      <ID>2</ID>
+      <LineExtensionAmount>50.21</LineExtensionAmount>
+      <LineExtensionAmountTaxInclusive>60.7541</LineExtensionAmountTaxInclusive>
+      <LineExtensionTaxAmount>10.5441</LineExtensionTaxAmount>
+      <UnitPrice>50.21</UnitPrice>
+      <UnitPriceTaxInclusive>60.7541</UnitPriceTaxInclusive>
       <ClassifiedTaxCategory>
         <Percent>21</Percent>
         <VATCalculationMethod>1</VATCalculationMethod>
@@ -69,9 +81,9 @@
   </InvoiceLines>
   <TaxTotal>
     <TaxSubTotal>
-      <TaxableAmount>100.0</TaxableAmount>
-      <TaxAmount>21.0</TaxAmount>
-      <TaxInclusiveAmount>21.0</TaxInclusiveAmount>
+      <TaxableAmount>100.31</TaxableAmount>
+      <TaxAmount>21.0651</TaxAmount>
+      <TaxInclusiveAmount>121.3751</TaxInclusiveAmount>
       <AlreadyClaimedTaxableAmount>0.0</AlreadyClaimedTaxableAmount>
       <AlreadyClaimedTaxAmount>0.0</AlreadyClaimedTaxAmount>
       <AlreadyClaimedTaxInclusiveAmount>0.0</AlreadyClaimedTaxInclusiveAmount>
@@ -85,8 +97,8 @@
     <TaxAmount>21.0</TaxAmount>
   </TaxTotal>
   <LegalMonetaryTotal>
-    <TaxExclusiveAmount>100.0</TaxExclusiveAmount>
-    <TaxInclusiveAmount>121.0</TaxInclusiveAmount>
+    <TaxExclusiveAmount>100.31</TaxExclusiveAmount>
+    <TaxInclusiveAmount>121.3751</TaxInclusiveAmount>
     <AlreadyClaimedTaxExclusiveAmount>0</AlreadyClaimedTaxExclusiveAmount>
     <AlreadyClaimedTaxInclusiveAmount>0</AlreadyClaimedTaxInclusiveAmount>
     <DifferenceTaxExclusiveAmount>0</DifferenceTaxExclusiveAmount>
