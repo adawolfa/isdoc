@@ -27,9 +27,12 @@ class LegalMonetaryTotal extends ISDOC\Schema\Invoice\LegalMonetaryTotal
 	private function sum(callable $fn): string
 	{
 		$sum = '0';
+		$scale = 0;
 
 		foreach ($this->invoice->invoiceLines as $line) {
-			$sum = bcadd($sum, $fn($line));
+			$lineValue = $fn($line);
+			$scale = max($scale, strlen(substr(strrchr($lineValue, '.'), 1)));
+			$sum = bcadd($sum, $lineValue, $scale);
 		}
 
 		return $sum;
