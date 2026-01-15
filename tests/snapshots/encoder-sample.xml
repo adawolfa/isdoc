@@ -61,8 +61,8 @@
     <TaxAmount>0.0</TaxAmount>
   </TaxTotal>
   <LegalMonetaryTotal>
-    <TaxExclusiveAmount>350</TaxExclusiveAmount>
-    <TaxInclusiveAmount>371</TaxInclusiveAmount>
+    <TaxExclusiveAmount>350.0</TaxExclusiveAmount>
+    <TaxInclusiveAmount>371.0</TaxInclusiveAmount>
     <AlreadyClaimedTaxExclusiveAmount>0</AlreadyClaimedTaxExclusiveAmount>
     <AlreadyClaimedTaxInclusiveAmount>0</AlreadyClaimedTaxInclusiveAmount>
     <DifferenceTaxExclusiveAmount>0</DifferenceTaxExclusiveAmount>
