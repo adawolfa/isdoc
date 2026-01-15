@@ -23,15 +23,25 @@ class LegalMonetaryTotal extends ISDOC\Schema\Invoice\LegalMonetaryTotal
 		$this->taxInclusiveAmountAssigned = false;
 	}
 
+	/**
+	 * @param callable(ISDOC\Schema\Invoice\InvoiceLine): string $fn
+	 */
 	private function sum(callable $fn): string
 	{
 		$sum = '0';
 		$scale = 0;
 
 		foreach ($this->invoice->invoiceLines as $line) {
+
 			$lineValue = $fn($line);
-			$scale = max($scale, strlen(substr(strrchr($lineValue, '.'), 1)));
+
+			$r = strrchr($lineValue, '.');
+			if ($r !== false) {
+				$scale = max($scale, strlen(substr($r, 1)));
+			}
+
 			$sum = bcadd($sum, $lineValue, $scale);
+
 		}
 
 		return $sum;
