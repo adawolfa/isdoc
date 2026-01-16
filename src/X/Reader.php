@@ -121,7 +121,7 @@ final class Reader
 			return null;
 		}
 
-		if (!is_array($manifest)) {
+		if (!is_array($manifest) || !is_array($manifest['maindocument'] ?? null)) {
 			return null;
 		}
 

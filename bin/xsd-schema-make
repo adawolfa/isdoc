@@ -13,7 +13,7 @@ require(__DIR__ . '/../vendor/autoload.php');
 	->addArgument('xsd', Console\Input\InputArgument::OPTIONAL, '', __DIR__ . '/../xsd/isdoc-invoice-6.0.2.xsd')
 	->addArgument('folder', Console\Input\InputArgument::OPTIONAL, '', __DIR__ . '/../src/Schema')
 	->addArgument('namespace', Console\Input\InputArgument::OPTIONAL, '', 'Adawolfa\\ISDOC\\Schema')
-	->setCode(function (Console\Input\InputInterface $input, Console\Output\OutputInterface $output): void {
+	->setCode(function (Console\Input\InputInterface $input, Console\Output\OutputInterface $output): int {
 
 		$schema = (new GoetasWebservices\XML\XSDReader\SchemaReader)
 			->readFile($input->getArgument('xsd'));
@@ -713,6 +713,9 @@ require(__DIR__ . '/../vendor/autoload.php');
         chdir(__DIR__ . '/..');
         exec('git apply patches/PartyTaxSchemes.patch');
         exec('git apply patches/InvoiceParty.patch');
+        exec('git apply patches/InvoiceLineTypes.patch');
+
+        return 0;
 
 	})
 	->run();

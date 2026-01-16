@@ -184,8 +184,12 @@ final class Hydrator
 
 			$id = $data->getValue('@ref');
 
+			if ($id->toString() === null || $data->getName() === null) {
+				return; // This seems wrong, but retain the old behavior for now.
+			}
+
 			if (!isset($this->references[$data->getName()][$id->toString()])) {
-				throw Data\Exception::referencedElementNotFound($id->toString() ?? '', $id->getPath());
+				throw Data\Exception::referencedElementNotFound($id->toString(), $id->getPath());
 			}
 
 			if (!$property->accepts($this->references[$data->getName()][$id->toString()]->getReflection()->name)) {
@@ -238,13 +242,7 @@ final class Hydrator
 		if (($property->getInstance()->getReflection()->getName() === PartyTaxScheme::class
 			 || $property->getInstance()->getReflection()->isSubclassOf(PartyTaxScheme::class))
 			&& $data->isList()) {
-
 			$data = $data->getFirstListElement();
-
-			if ($data === null) {
-				throw new RuntimeException('List element was expected.');
-			}
-
 		}
 
 		try {

@@ -70,7 +70,10 @@ class InvoiceLine implements Arrayable
 	#[Map('LineExtensionAmountCurr')]
 	private ?string $lineExtensionAmountCurr = null;
 
-	/** Total line amount without tax in a local currency. */
+	/**
+	 * Total line amount without tax in a local currency.
+	 * @var numeric-string
+	 */
 	#[Map('LineExtensionAmount')]
 	private string $lineExtensionAmount;
 
@@ -82,7 +85,10 @@ class InvoiceLine implements Arrayable
 	#[Map('LineExtensionAmountTaxInclusiveCurr')]
 	private ?string $lineExtensionAmountTaxInclusiveCurr = null;
 
-	/** Total line amount including tax in a local currency. */
+	/**
+	 * Total line amount including tax in a local currency.
+	 * @var numeric-string
+	 */
 	#[Map('LineExtensionAmountTaxInclusive')]
 	private string $lineExtensionAmountTaxInclusive;
 
@@ -118,15 +124,20 @@ class InvoiceLine implements Arrayable
 	#[Map('Item')]
 	private ?Item $item = null;
 
+	/**
+	 * @param numeric-string $lineExtensionAmount
+	 * @param numeric-string $lineExtensionAmountTaxInclusive
+	 */
 	public function __construct(
-		string $id,
-		string $lineExtensionAmount,
-		string $lineExtensionAmountTaxInclusive,
-		string $lineExtensionTaxAmount,
-		string $unitPrice,
-		string $unitPriceTaxInclusive,
+		string                $id,
+		string                $lineExtensionAmount,
+		string                $lineExtensionAmountTaxInclusive,
+		string                $lineExtensionTaxAmount,
+		string                $unitPrice,
+		string                $unitPriceTaxInclusive,
 		ClassifiedTaxCategory $classifiedTaxCategory,
-	) {
+	)
+	{
 		$this->setId($id);
 		$this->setLineExtensionAmount($lineExtensionAmount);
 		$this->setLineExtensionAmountTaxInclusive($lineExtensionAmountTaxInclusive);
@@ -226,11 +237,15 @@ class InvoiceLine implements Arrayable
 		return $this;
 	}
 
+	/** @return numeric-string */
 	public function getLineExtensionAmount(): string
 	{
 		return $this->lineExtensionAmount;
 	}
 
+	/**
+	 * @param numeric-string $lineExtensionAmount
+	 */
 	public function setLineExtensionAmount(string $lineExtensionAmount): self
 	{
 		Restriction::decimal($lineExtensionAmount);
@@ -262,11 +277,15 @@ class InvoiceLine implements Arrayable
 		return $this;
 	}
 
+	/** @return numeric-string */
 	public function getLineExtensionAmountTaxInclusive(): string
 	{
 		return $this->lineExtensionAmountTaxInclusive;
 	}
 
+	/**
+	 * @param numeric-string $lineExtensionAmountTaxInclusive
+	 */
 	public function setLineExtensionAmountTaxInclusive(string $lineExtensionAmountTaxInclusive): self
 	{
 		Restriction::decimal($lineExtensionAmountTaxInclusive);

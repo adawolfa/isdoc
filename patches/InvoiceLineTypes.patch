@@ -1,0 +1,92 @@
+Index: src/Schema/Invoice/InvoiceLine.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/Schema/Invoice/InvoiceLine.php b/src/Schema/Invoice/InvoiceLine.php
+--- a/src/Schema/Invoice/InvoiceLine.php	(revision 3ab96efb80dac47220dfaf18141ad11f2b817bfd)
++++ b/src/Schema/Invoice/InvoiceLine.php	(date 1768533135878)
+@@ -70,7 +70,10 @@
+ 	#[Map('LineExtensionAmountCurr')]
+ 	private ?string $lineExtensionAmountCurr = null;
+
+-	/** Total line amount without tax in a local currency. */
++	/**
++	 * Total line amount without tax in a local currency.
++	 * @var numeric-string
++	 */
+ 	#[Map('LineExtensionAmount')]
+ 	private string $lineExtensionAmount;
+
+@@ -82,7 +85,10 @@
+ 	#[Map('LineExtensionAmountTaxInclusiveCurr')]
+ 	private ?string $lineExtensionAmountTaxInclusiveCurr = null;
+
+-	/** Total line amount including tax in a local currency. */
++	/**
++	 * Total line amount including tax in a local currency.
++	 * @var numeric-string
++	 */
+ 	#[Map('LineExtensionAmountTaxInclusive')]
+ 	private string $lineExtensionAmountTaxInclusive;
+
+@@ -118,15 +124,20 @@
+ 	#[Map('Item')]
+ 	private ?Item $item = null;
+
++	/**
++	 * @param numeric-string $lineExtensionAmount
++	 * @param numeric-string $lineExtensionAmountTaxInclusive
++	 */
+ 	public function __construct(
+-		string $id,
+-		string $lineExtensionAmount,
+-		string $lineExtensionAmountTaxInclusive,
+-		string $lineExtensionTaxAmount,
+-		string $unitPrice,
+-		string $unitPriceTaxInclusive,
++		string                $id,
++		string                $lineExtensionAmount,
++		string                $lineExtensionAmountTaxInclusive,
++		string                $lineExtensionTaxAmount,
++		string                $unitPrice,
++		string                $unitPriceTaxInclusive,
+ 		ClassifiedTaxCategory $classifiedTaxCategory,
+-	) {
++	)
++	{
+ 		$this->setId($id);
+ 		$this->setLineExtensionAmount($lineExtensionAmount);
+ 		$this->setLineExtensionAmountTaxInclusive($lineExtensionAmountTaxInclusive);
+@@ -226,11 +237,15 @@
+ 		return $this;
+ 	}
+
++	/** @return numeric-string */
+ 	public function getLineExtensionAmount(): string
+ 	{
+ 		return $this->lineExtensionAmount;
+ 	}
+
++	/**
++	 * @param numeric-string $lineExtensionAmount
++	 */
+ 	public function setLineExtensionAmount(string $lineExtensionAmount): self
+ 	{
+ 		Restriction::decimal($lineExtensionAmount);
+@@ -262,11 +277,15 @@
+ 		return $this;
+ 	}
+
++	/** @return numeric-string */
+ 	public function getLineExtensionAmountTaxInclusive(): string
+ 	{
+ 		return $this->lineExtensionAmountTaxInclusive;
+ 	}
+
++	/**
++	 * @param numeric-string $lineExtensionAmountTaxInclusive
++	 */
+ 	public function setLineExtensionAmountTaxInclusive(string $lineExtensionAmountTaxInclusive): self
+ 	{
+ 		Restriction::decimal($lineExtensionAmountTaxInclusive);

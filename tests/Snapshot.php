@@ -29,7 +29,9 @@ trait Snapshot
 
 			if ($value instanceof DateTimeInterface) {
 				$array[$key] = $value->format('Y-m-d H:i:s');
-			} elseif (is_array($value)) {
+			}
+			/** @noinspection PhpArrayAccessCanBeReplacedWithForeachValueInspection */
+			elseif (is_array($value) && is_array($array[$key])) {
 				self::walkArrayDateToString($array[$key]);
 			}
 

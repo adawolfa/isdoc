@@ -25,7 +25,7 @@ class LegalMonetaryTotal extends ISDOC\Schema\Invoice\LegalMonetaryTotal
 	}
 
 	/**
-	 * @param callable(ISDOC\Schema\Invoice\InvoiceLine): string $fn
+	 * @param callable(ISDOC\Schema\Invoice\InvoiceLine): numeric-string $fn
 	 */
 	private function sum(callable $fn): string
 	{

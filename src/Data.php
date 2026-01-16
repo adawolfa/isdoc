@@ -18,7 +18,7 @@ final class Data
 	private ?string $name;
 
 	/**
-	 * @param array<string, mixed> $data
+	 * @param array<string|int, mixed> $data
 	 */
 	private function __construct(array $data, ?self $parent = null, ?string $name = null)
 	{
@@ -86,7 +86,7 @@ final class Data
 	}
 
 	/**
-	 * @param array<string, mixed> $data
+	 * @param array<string|int, mixed> $data
 	 */
 	public static function create(array $data): self
 	{
@@ -108,7 +108,7 @@ final class Data
 		return count($this->data) === 0;
 	}
 
-	public function getFirstListElement(): ?self
+	public function getFirstListElement(): self
 	{
 		if (!$this->isList() || $this->isEmpty()) {
 			throw new RuntimeException('Data is not a list or is empty.');

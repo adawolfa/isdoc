@@ -24,7 +24,6 @@ final class PDFTest extends TestCase
 	{
 		$manager = Adawolfa\ISDOC\Manager::create();
 		$invoice = $manager->reader->file($filename);
-		$this->assertNotNull($invoice);
 		$this->assertNotNull($invoice->supplementsList);
 		$this->assertGreaterThanOrEqual(1, $invoice->supplementsList->count());
 	}
@@ -58,7 +57,6 @@ final class PDFTest extends TestCase
 		$manager->writer->file($invoice, $this->temp);
 
 		$read = $manager->reader->file($this->temp);
-		$this->assertNotNull($read);
 		$this->assertGreaterThanOrEqual(1, $invoice->supplementsList?->count() ?? 0);
 	}
 
@@ -92,7 +90,6 @@ final class PDFTest extends TestCase
 		$manager->writer->file($invoice, $this->temp);
 
 		$read = $manager->reader->file($this->temp);
-		$this->assertNotNull($read);
 		$this->assertNotNull($read->supplementsList);
 		$this->assertCount(2, $read->supplementsList);
 
