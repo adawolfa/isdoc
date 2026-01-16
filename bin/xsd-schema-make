@@ -710,5 +710,9 @@ require(__DIR__ . '/../vendor/autoload.php');
 
 		$maker->make($schema);
 
+        chdir(__DIR__ . '/..');
+        exec('git apply patches/PartyTaxSchemes.patch');
+        exec('git apply patches/InvoiceParty.patch');
+
 	})
 	->run();

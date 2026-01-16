@@ -23,6 +23,8 @@ final class Collection extends Instance
 
 	private string $type;
 
+	private bool $unwrap;
+
 	/**
 	 * @param T&object                     $instance
 	 * @param InstancePropertyFactory<T>[] $properties
@@ -33,11 +35,13 @@ final class Collection extends Instance
 		array            $properties,
 		string           $map,
 		string           $type,
+		bool             $unwrap = false,
 	)
 	{
 		parent::__construct($instance, $reflection, $properties);
-		$this->map  = $map;
-		$this->type = $type;
+		$this->map    = $map;
+		$this->type   = $type;
+		$this->unwrap = $unwrap;
 	}
 
 	public function getMap(): string
@@ -48,6 +52,11 @@ final class Collection extends Instance
 	public function getType(): string
 	{
 		return $this->type;
+	}
+
+	public function getUnwrap(): bool
+	{
+		return $this->unwrap;
 	}
 
 	public function add(object $item): void

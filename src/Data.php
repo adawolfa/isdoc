@@ -103,9 +103,14 @@ final class Data
 		return isset($this->data[0]);
 	}
 
+	public function isEmpty(): bool
+	{
+		return count($this->data) === 0;
+	}
+
 	public function getFirstListElement(): ?self
 	{
-		if (!$this->isList() || count($this->data) === 0) {
+		if (!$this->isList() || $this->isEmpty()) {
 			throw new RuntimeException('Data is not a list or is empty.');
 		}
 
@@ -119,7 +124,7 @@ final class Data
 	/** @return self[] */
 	public function getListElements(): array
 	{
-		if (!$this->isList() || count($this->data) === 0) {
+		if (!$this->isList() || $this->isEmpty()) {
 			throw new RuntimeException('Data is not a list or is empty.');
 		}
 

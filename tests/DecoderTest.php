@@ -106,6 +106,15 @@ final class DecoderTest extends TestCase
 		$this->assertNotNull($default->getAccountingSupplierParty()->getParty()->getPartyTaxScheme());
 		$this->assertSame($default->getAccountingSupplierParty()->getParty()->getPartyTaxScheme()->getCompanyID(), 'CZ25097563');
 
+		$this->assertNotNull($default->getAccountingSupplierParty()->getParty()->getPartyTaxSchemes());
+		$this->assertCount(2, $default->getAccountingSupplierParty()->getParty()->getPartyTaxSchemes());
+		/** @var Adawolfa\ISDOC\Schema\Invoice\PartyTaxScheme[] $taxSchemes */
+		$taxSchemes = iterator_to_array($default->getAccountingSupplierParty()->getParty()->getPartyTaxSchemes());
+		$this->assertSame($taxSchemes[0]->getTaxScheme(), 'VAT');
+		$this->assertSame($taxSchemes[0]->getCompanyID(), 'CZ25097563');
+		$this->assertSame($taxSchemes[1]->getTaxScheme(), 'TIN');
+		$this->assertSame($taxSchemes[1]->getCompanyID(), 'SK25097563');
+
 		$vat = Adawolfa\ISDOC\Manager::create(false, 'vat')->getReader()->file(__DIR__ . '/fixtures/multi-partytax.isdoc');
 		$this->assertNotNull($vat->getAccountingSupplierParty()->getParty()->getPartyTaxScheme());
 		$this->assertSame($vat->getAccountingSupplierParty()->getParty()->getPartyTaxScheme()->getCompanyID(), 'CZ25097563');

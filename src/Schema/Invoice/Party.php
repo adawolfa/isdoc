@@ -21,7 +21,9 @@ class Party implements Arrayable
 {
 
 	use SmartObject;
-	use ToArray;
+	use ToArray {
+		ToArray::toArray as private traitToArray;
+	}
 
 	/** Information about a party's identification. */
 	#[Map('PartyIdentification')]
@@ -37,7 +39,7 @@ class Party implements Arrayable
 
 	/** Information about a party's tax scheme. */
 	#[Map('PartyTaxScheme')]
-	private ?PartyTaxScheme $partyTaxScheme = null;
+	private ?PartyTaxSchemes $partyTaxSchemes = null;
 
 	/** Commercial Register record identification (in the Czech Republic). */
 	#[Map('RegisterIdentification')]
@@ -90,14 +92,49 @@ class Party implements Arrayable
 		return $this;
 	}
 
+	/**
+	 * @deprecated use getPartyTaxSchemes() instead
+	 */
 	public function getPartyTaxScheme(): ?PartyTaxScheme
 	{
-		return $this->partyTaxScheme;
+		@trigger_error('Party::getPartyTaxScheme() is deprecated, use Party::getPartyTaxSchemes() instead', E_USER_DEPRECATED);
+
+		if ($this->partyTaxSchemes === null) {
+			return null;
+		}
+
+		foreach ($this->partyTaxSchemes as $partyTaxScheme) {
+			return $partyTaxScheme;
+		}
+
+		return null;
 	}
 
+	/**
+	 * @deprecated use setPartyTaxSchemes() instead
+	 */
 	public function setPartyTaxScheme(?PartyTaxScheme $partyTaxScheme): self
 	{
-		$this->partyTaxScheme = $partyTaxScheme;
+		@trigger_error('Party::setPartyTaxScheme() is deprecated, use Party::setPartyTaxSchemes() instead', E_USER_DEPRECATED);
+
+		if ($partyTaxScheme === null) {
+			$this->partyTaxSchemes = null;
+			return $this;
+		}
+
+		$this->partyTaxSchemes = new PartyTaxSchemes;
+		$this->partyTaxSchemes->add($partyTaxScheme);
+		return $this;
+	}
+
+	public function getPartyTaxSchemes(): ?PartyTaxSchemes
+	{
+		return $this->partyTaxSchemes;
+	}
+
+	public function setPartyTaxSchemes(?PartyTaxSchemes $partyTaxSchemes): self
+	{
+		$this->partyTaxSchemes = $partyTaxSchemes;
 		return $this;
 	}
 
@@ -121,6 +158,14 @@ class Party implements Arrayable
 	{
 		$this->contact = $contact;
 		return $this;
+	}
+
+	public function toArray(): array
+	{
+		$data = $this->traitToArray();
+		$data['partyTaxScheme'] = $this->getPartyTaxScheme()?->toArray();
+		$data['partyTaxSchemes'] = $this->getPartyTaxSchemes()?->toArray();
+		return $data;
 	}
 
 }

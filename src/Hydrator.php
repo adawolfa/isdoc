@@ -70,7 +70,7 @@ final class Hydrator
 
 		try {
 
-			$instance = $this->reflector->class($class);
+			$instance = $this->reflector->class($class, $data->getName());
 
 			if ($data->hasValue('@id')) {
 				$this->registerReference($data->getValue('@id'), $instance);
@@ -235,38 +235,11 @@ final class Hydrator
 	 */
 	private function hydratePrimitiveProperty(Data $data, MappedProperty $property): void
 	{
-		// FIXME: Support elements with unbound max occurrences.
 		if (($property->getInstance()->getReflection()->getName() === PartyTaxScheme::class
 			 || $property->getInstance()->getReflection()->isSubclassOf(PartyTaxScheme::class))
 			&& $data->isList()) {
 
-			$found = false;
-
-			if ($this->preferredTaxScheme !== null) {
-
-				foreach ($data->getListElements() as $child) {
-
-					if (!$child->hasValue('TaxScheme')) {
-						continue;
-					}
-
-					$taxScheme = $child->getValue('TaxScheme')->toString();
-
-					if ($taxScheme === null || strcasecmp($taxScheme, $this->preferredTaxScheme) !== 0) {
-						continue;
-					}
-
-					$data  = $child;
-					$found = true;
-					break;
-
-				}
-
-			}
-
-			if (!$found) {
-				$data = $data->getFirstListElement();
-			}
+			$data = $data->getFirstListElement();
 
 			if ($data === null) {
 				throw new RuntimeException('List element was expected.');
@@ -383,16 +356,49 @@ final class Hydrator
 
 		if ($value instanceof Collection) {
 
-			$collection = $this->reflector->instance($value);
+			$collection = $this->reflector->instance($value, $property->getMap());
 
 			if (!$collection instanceof Reflection\Collection) {
 				throw new RuntimeException('Collection reflection was expected to be instance of ' . Reflection\Collection::class . '.');
 			}
 
-			foreach ($child->getChildList($collection->getMap()) as $itemData) {
+			if ($collection->getUnwrap() && !$child->isEmpty() && !$child->isList()) {
 				/** @var class-string $type */
 				$type = $collection->getType();
-				$collection->add($this->hydrate($itemData, $type));
+				$collection->add($this->hydrate($child, $type));
+			} else {
+
+				$children = $collection->getUnwrap()
+					? $child->getListElements()
+					: $child->getChildList($collection->getMap());
+
+				if ($collection->getMap() === 'PartyTaxScheme' && $this->preferredTaxScheme !== null) {
+
+					foreach ($children as $child) {
+
+						if (!$child->hasValue('TaxScheme')) {
+							continue;
+						}
+
+						$taxScheme = $child->getValue('TaxScheme')->toString();
+
+						if ($taxScheme === null || strcasecmp($taxScheme, $this->preferredTaxScheme) !== 0) {
+							continue;
+						}
+
+						$children = [$child];
+						break;
+
+					}
+
+				}
+
+				foreach ($children as $itemData) {
+					/** @var class-string $type */
+					$type = $collection->getType();
+					$collection->add($this->hydrate($itemData, $type));
+				}
+
 			}
 
 		}

@@ -14,6 +14,9 @@ trait Snapshot
 
 		if ($current !== false) {
 			$this->assertSame($current, $data);
+		} else {
+			file_put_contents($filename, $data);
+			$this->addToAssertionCount(1);
 		}
 	}
 

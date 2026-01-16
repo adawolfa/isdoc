@@ -1,0 +1,95 @@
+Index: src/Schema/Invoice/Party.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/Schema/Invoice/Party.php b/src/Schema/Invoice/Party.php
+--- a/src/Schema/Invoice/Party.php	(revision 743291b4ac0c1be4e75abdc783eb384d85945ed9)
++++ b/src/Schema/Invoice/Party.php	(date 1768529880179)
+@@ -21,7 +21,9 @@
+ {
+
+ 	use SmartObject;
+-	use ToArray;
++	use ToArray {
++		ToArray::toArray as private traitToArray;
++	}
+
+ 	/** Information about a party's identification. */
+ 	#[Map('PartyIdentification')]
+@@ -37,7 +39,7 @@
+
+ 	/** Information about a party's tax scheme. */
+ 	#[Map('PartyTaxScheme')]
+-	private ?PartyTaxScheme $partyTaxScheme = null;
++	private ?PartyTaxSchemes $partyTaxSchemes = null;
+
+ 	/** Commercial Register record identification (in the Czech Republic). */
+ 	#[Map('RegisterIdentification')]
+@@ -90,14 +92,49 @@
+ 		return $this;
+ 	}
+
++	/**
++	 * @deprecated use getPartyTaxSchemes() instead
++	 */
+ 	public function getPartyTaxScheme(): ?PartyTaxScheme
+ 	{
+-		return $this->partyTaxScheme;
+-	}
++		@trigger_error('Party::getPartyTaxScheme() is deprecated, use Party::getPartyTaxSchemes() instead', E_USER_DEPRECATED);
++
++		if ($this->partyTaxSchemes === null) {
++			return null;
++		}
+
++		foreach ($this->partyTaxSchemes as $partyTaxScheme) {
++			return $partyTaxScheme;
++		}
++
++		return null;
++	}
++
++	/**
++	 * @deprecated use setPartyTaxSchemes() instead
++	 */
+ 	public function setPartyTaxScheme(?PartyTaxScheme $partyTaxScheme): self
+ 	{
+-		$this->partyTaxScheme = $partyTaxScheme;
++		@trigger_error('Party::setPartyTaxScheme() is deprecated, use Party::setPartyTaxSchemes() instead', E_USER_DEPRECATED);
++
++		if ($partyTaxScheme === null) {
++			$this->partyTaxSchemes = null;
++			return $this;
++		}
++
++		$this->partyTaxSchemes = new PartyTaxSchemes;
++		$this->partyTaxSchemes->add($partyTaxScheme);
++		return $this;
++	}
++
++	public function getPartyTaxSchemes(): ?PartyTaxSchemes
++	{
++		return $this->partyTaxSchemes;
++	}
++
++	public function setPartyTaxSchemes(?PartyTaxSchemes $partyTaxSchemes): self
++	{
++		$this->partyTaxSchemes = $partyTaxSchemes;
+ 		return $this;
+ 	}
+
+@@ -123,4 +160,12 @@
+ 		return $this;
+ 	}
+
++	public function toArray(): array
++	{
++		$data = $this->traitToArray();
++		$data['partyTaxScheme'] = $this->getPartyTaxScheme()?->toArray();
++		$data['partyTaxSchemes'] = $this->getPartyTaxSchemes()?->toArray();
++		return $data;
++	}
++
+ }
+\ No newline at end of file

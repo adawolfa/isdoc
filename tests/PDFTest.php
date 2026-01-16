@@ -91,8 +91,6 @@ final class PDFTest extends TestCase
 
 		$manager->writer->file($invoice, $this->temp);
 
-		copy($this->temp, __DIR__ . '/../test.pdf');
-
 		$read = $manager->reader->file($this->temp);
 		$this->assertNotNull($read);
 		$this->assertNotNull($read->supplementsList);

@@ -20,27 +20,10 @@ final class Reflector
 
 	/**
 	 * @template T of object
-	 * @param class-string<T> $class
-	 * @return Instance<T>
-	 */
-	public function class(string $class): Instance
-	{
-		try {
-			$reflection = new ReflectionClass($class);
-			$instance   = $reflection->newInstanceWithoutConstructor();
-		} catch (ReflectionException $reflectionException) {
-			throw new RuntimeException('Failed to instantiate the class.', 0, $reflectionException);
-		}
-
-		return $this->instance($instance);
-	}
-
-	/**
-	 * @template T of object
 	 * @param T&object $instance
 	 * @return Instance<T&object>
 	 */
-	public function instance(object $instance): Instance
+	public function instance(object $instance, ?string $name = null): Instance
 	{
 		$object     = new ReflectionObject($instance);
 		$properties = [];
@@ -50,7 +33,13 @@ final class Reflector
 			$map = ($reflectionProperty->getAttributes(Map::class)[0] ?? null)?->newInstance();
 
 			if ($map instanceof Map) {
+
+				if ($map->getValue() === null) {
+					throw new RuntimeException('Mapped property must have a value specified in ' . Map::class . ' attribute.');
+				}
+
 				$properties[] = new InstanceMappedPropertyFactory($reflectionProperty, $map->getValue());
+
 			}
 
 			$reference = ($reflectionProperty->getAttributes(ISDOC\Reference::class)[0] ?? null)?->newInstance();
@@ -73,13 +62,34 @@ final class Reflector
 				throw new RuntimeException('Collection type must be specified.');
 			}
 
+			if ($map->getValue() === null && $name === null) {
+				throw new RuntimeException('Collection map name must be specified.');
+			}
+
 			// @phpstan-ignore-next-line
-			return new Collection($instance, $object, $properties, $map->getValue(), $map->getType());
+			return new Collection($instance, $object, $properties, $map->getValue() ?? $name, $map->getType(), $map->getValue() === null);
 
 		}
 
 		// @phpstan-ignore-next-line
 		return new Instance($instance, $object, $properties);
+	}
+
+	/**
+	 * @template T of object
+	 * @param class-string<T> $class
+	 * @return Instance<T>
+	 */
+	public function class(string $class, ?string $name = null): Instance
+	{
+		try {
+			$reflection = new ReflectionClass($class);
+			$instance   = $reflection->newInstanceWithoutConstructor();
+		} catch (ReflectionException $reflectionException) {
+			throw new RuntimeException('Failed to instantiate the class.', 0, $reflectionException);
+		}
+
+		return $this->instance($instance, $name);
 	}
 
 	/**

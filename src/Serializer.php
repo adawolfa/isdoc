@@ -245,7 +245,7 @@ final class Serializer
 			throw new RuntimeException('Value is expected to be an instance of ' . Collection::class . '.');
 		}
 
-		$collectionReflection = $this->reflector->instance($value);
+		$collectionReflection = $this->reflector->instance($value, $property->getMap());
 
 		if (!$collectionReflection instanceof Reflection\Collection) {
 			throw new RuntimeException('Reflection is expected to be an instance of ' . Reflection\Collection::class . '.');
@@ -268,6 +268,11 @@ final class Serializer
 				$root[$collectionProperty->getMap()] = $this->serializeProperty($collectionProperty);
 			}
 
+		}
+
+		if ($collectionReflection->getUnwrap()) {
+			/** @var array<int, mixed> $root */
+			$root = $root[$collectionReflection->getMap()];
 		}
 
 		return $root;

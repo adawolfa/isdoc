@@ -48,10 +48,12 @@
                     "name": "Česká republika"
                 }
             },
-            "partyTaxScheme": {
-                "companyID": "CZ25097563",
-                "taxScheme": "VAT"
-            },
+            "partyTaxSchemes": [
+                {
+                    "companyID": "CZ25097563",
+                    "taxScheme": "VAT"
+                }
+            ],
             "registerIdentification": {
                 "registerKeptAt": "Městského soudu v Praze",
                 "registerFileRef": "odd. B, vl. 4475",
@@ -62,6 +64,10 @@
                 "name": "Josef Novák",
                 "telephone": "123456789",
                 "electronicMail": "novak@abra.eu"
+            },
+            "partyTaxScheme": {
+                "companyID": "CZ25097563",
+                "taxScheme": "VAT"
             }
         }
     },
@@ -85,10 +91,12 @@
                     "name": "Česká republika"
                 }
             },
-            "partyTaxScheme": {
-                "companyID": "CZ25097563",
-                "taxScheme": "VAT"
-            },
+            "partyTaxSchemes": [
+                {
+                    "companyID": "CZ25097563",
+                    "taxScheme": "VAT"
+                }
+            ],
             "registerIdentification": {
                 "registerKeptAt": "Městského soudu v Praze",
                 "registerFileRef": "odd. B, vl. 4475",
@@ -99,6 +107,10 @@
                 "name": "Josef Novák",
                 "telephone": "123456789",
                 "electronicMail": "novak@abra.eu"
+            },
+            "partyTaxScheme": {
+                "companyID": "CZ25097563",
+                "taxScheme": "VAT"
             }
         }
     },
@@ -123,15 +135,21 @@
                     "name": "Česká republika"
                 }
             },
-            "partyTaxScheme": {
-                "companyID": "CZ00006947",
-                "taxScheme": "VAT"
-            },
+            "partyTaxSchemes": [
+                {
+                    "companyID": "CZ00006947",
+                    "taxScheme": "VAT"
+                }
+            ],
             "registerIdentification": null,
             "contact": {
                 "name": "Jan Novák",
                 "telephone": "987654321",
                 "electronicMail": "novotny@mfcr.cz"
+            },
+            "partyTaxScheme": {
+                "companyID": "CZ00006947",
+                "taxScheme": "VAT"
             }
         }
     },
@@ -155,15 +173,21 @@
                     "name": "Česká republika"
                 }
             },
-            "partyTaxScheme": {
-                "companyID": "CZ00006947",
-                "taxScheme": "VAT"
-            },
+            "partyTaxSchemes": [
+                {
+                    "companyID": "CZ00006947",
+                    "taxScheme": "VAT"
+                }
+            ],
             "registerIdentification": null,
             "contact": {
                 "name": "Jan Novák",
                 "telephone": "987654321",
                 "electronicMail": "novotny@mfcr.cz"
+            },
+            "partyTaxScheme": {
+                "companyID": "CZ00006947",
+                "taxScheme": "VAT"
             }
         }
     },
@@ -224,15 +248,21 @@
                     "name": "Česká republika"
                 }
             },
-            "partyTaxScheme": {
-                "companyID": "CZ00006947",
-                "taxScheme": "VAT"
-            },
+            "partyTaxSchemes": [
+                {
+                    "companyID": "CZ00006947",
+                    "taxScheme": "VAT"
+                }
+            ],
             "registerIdentification": null,
             "contact": {
                 "name": "Jan Novák",
                 "telephone": "987654321",
                 "electronicMail": "novotny@mfcr.cz"
+            },
+            "partyTaxScheme": {
+                "companyID": "CZ00006947",
+                "taxScheme": "VAT"
             }
         }
     },
