@@ -32,11 +32,13 @@ class PaymentMeans extends Collection
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $alternateBankAccounts} property instead. */
 	public function getAlternateBankAccounts(): ?AlternateBankAccounts
 	{
 		return $this->alternateBankAccounts;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $alternateBankAccounts} property instead. */
 	public function setAlternateBankAccounts(?AlternateBankAccounts $alternateBankAccounts): self
 	{
 		$this->alternateBankAccounts = $alternateBankAccounts;

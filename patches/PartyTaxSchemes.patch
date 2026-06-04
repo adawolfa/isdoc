@@ -1,55 +1,52 @@
-Index: src/Schema/Invoice/Party.php
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
 diff --git a/src/Schema/Invoice/Party.php b/src/Schema/Invoice/Party.php
---- a/src/Schema/Invoice/Party.php	(revision 743291b4ac0c1be4e75abdc783eb384d85945ed9)
-+++ b/src/Schema/Invoice/Party.php	(date 1768529880179)
-@@ -21,7 +21,9 @@
+index 28d60f6..e6448eb 100644
+--- a/src/Schema/Invoice/Party.php
++++ b/src/Schema/Invoice/Party.php
+@@ -21,7 +21,9 @@ class Party implements Arrayable
  {
-
+ 
  	use SmartObject;
 -	use ToArray;
 +	use ToArray {
 +		ToArray::toArray as private traitToArray;
 +	}
-
+ 
  	/** Information about a party's identification. */
  	#[Map('PartyIdentification')]
-@@ -37,7 +39,7 @@
-
+@@ -37,7 +39,7 @@ class Party implements Arrayable
+ 
  	/** Information about a party's tax scheme. */
  	#[Map('PartyTaxScheme')]
 -	private ?PartyTaxScheme $partyTaxScheme = null;
 +	private ?PartyTaxSchemes $partyTaxSchemes = null;
-
+ 
  	/** Commercial Register record identification (in the Czech Republic). */
  	#[Map('RegisterIdentification')]
-@@ -90,14 +92,49 @@
+@@ -96,16 +98,51 @@ class Party implements Arrayable
  		return $this;
  	}
-
+ 
+-	/** @deprecated Method accessors are deprecated, use {@see $partyTaxScheme} property instead. */
 +	/**
 +	 * @deprecated use getPartyTaxSchemes() instead
 +	 */
  	public function getPartyTaxScheme(): ?PartyTaxScheme
  	{
 -		return $this->partyTaxScheme;
--	}
 +		@trigger_error('Party::getPartyTaxScheme() is deprecated, use Party::getPartyTaxSchemes() instead', E_USER_DEPRECATED);
 +
 +		if ($this->partyTaxSchemes === null) {
 +			return null;
 +		}
-
++
 +		foreach ($this->partyTaxSchemes as $partyTaxScheme) {
 +			return $partyTaxScheme;
 +		}
 +
 +		return null;
-+	}
-+
+ 	}
+ 
+-	/** @deprecated Method accessors are deprecated, use {@see $partyTaxScheme} property instead. */
 +	/**
 +	 * @deprecated use setPartyTaxSchemes() instead
 +	 */
@@ -68,21 +65,23 @@ diff --git a/src/Schema/Invoice/Party.php b/src/Schema/Invoice/Party.php
 +		return $this;
 +	}
 +
++	/** @deprecated Method accessors are deprecated, use {@see $partyTaxSchemes} property instead. */
 +	public function getPartyTaxSchemes(): ?PartyTaxSchemes
 +	{
 +		return $this->partyTaxSchemes;
 +	}
 +
++	/** @deprecated Method accessors are deprecated, use {@see $partyTaxSchemes} property instead. */
 +	public function setPartyTaxSchemes(?PartyTaxSchemes $partyTaxSchemes): self
 +	{
 +		$this->partyTaxSchemes = $partyTaxSchemes;
  		return $this;
  	}
-
-@@ -123,4 +160,12 @@
+ 
+@@ -135,4 +172,12 @@ class Party implements Arrayable
  		return $this;
  	}
-
+ 
 +	public function toArray(): array
 +	{
 +		$data = $this->traitToArray();

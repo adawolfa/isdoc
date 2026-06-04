@@ -32,33 +32,39 @@ class Contact implements Arrayable
 	#[Map('ElectronicMail')]
 	private ?string $electronicMail = null;
 
+	/** @deprecated Method accessors are deprecated, use {@see $name} property instead. */
 	public function getName(): ?string
 	{
 		return $this->name;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $name} property instead. */
 	public function setName(?string $name): self
 	{
 		$this->name = $name;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $telephone} property instead. */
 	public function getTelephone(): ?string
 	{
 		return $this->telephone;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $telephone} property instead. */
 	public function setTelephone(?string $telephone): self
 	{
 		$this->telephone = $telephone;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $electronicMail} property instead. */
 	public function getElectronicMail(): ?string
 	{
 		return $this->electronicMail;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $electronicMail} property instead. */
 	public function setElectronicMail(?string $electronicMail): self
 	{
 		$this->electronicMail = $electronicMail;

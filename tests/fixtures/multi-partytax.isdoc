@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Formát Faktury ISDOC -->
-<Invoice xmlns="http://isdoc.cz/namespace/2013" version="6.0.1">
+<Invoice xmlns="http://isdoc.cz/namespace/2013" version="6.0.2">
   <!--číslo verze ISDOC -->
 
   <DocumentType>1</DocumentType>

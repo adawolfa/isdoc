@@ -39,33 +39,39 @@ class DeliveryNote implements Arrayable
 		$this->setId($id);
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $id} property instead. */
 	public function getId(): string
 	{
 		return $this->id;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $id} property instead. */
 	public function setId(string $id): self
 	{
 		$this->id = $id;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $issueDate} property instead. */
 	public function getIssueDate(): ?DateTimeInterface
 	{
 		return $this->issueDate;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $issueDate} property instead. */
 	public function setIssueDate(?DateTimeInterface $issueDate): self
 	{
 		$this->issueDate = $issueDate;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $uuid} property instead. */
 	public function getUuid(): ?string
 	{
 		return $this->uuid;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $uuid} property instead. */
 	public function setUuid(?string $uuid): self
 	{
 		Restriction::pattern($uuid, '[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}');

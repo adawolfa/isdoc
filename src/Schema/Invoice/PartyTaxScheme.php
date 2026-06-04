@@ -33,22 +33,26 @@ class PartyTaxScheme implements Arrayable
 		$this->setTaxScheme($taxScheme);
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $companyID} property instead. */
 	public function getCompanyID(): string
 	{
 		return $this->companyID;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $companyID} property instead. */
 	public function setCompanyID(string $companyID): self
 	{
 		$this->companyID = $companyID;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $taxScheme} property instead. */
 	public function getTaxScheme(): string
 	{
 		return $this->taxScheme;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $taxScheme} property instead. */
 	public function setTaxScheme(string $taxScheme): self
 	{
 		$this->taxScheme = $taxScheme;

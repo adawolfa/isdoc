@@ -37,33 +37,39 @@ class PartyIdentification implements Arrayable
 		$this->setId($id);
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $userID} property instead. */
 	public function getUserID(): ?string
 	{
 		return $this->userID;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $userID} property instead. */
 	public function setUserID(?string $userID): self
 	{
 		$this->userID = $userID;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $catalogFirmIdentification} property instead. */
 	public function getCatalogFirmIdentification(): ?string
 	{
 		return $this->catalogFirmIdentification;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $catalogFirmIdentification} property instead. */
 	public function setCatalogFirmIdentification(?string $catalogFirmIdentification): self
 	{
 		$this->catalogFirmIdentification = $catalogFirmIdentification;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $id} property instead. */
 	public function getId(): string
 	{
 		return $this->id;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $id} property instead. */
 	public function setId(string $id): self
 	{
 		$this->id = $id;

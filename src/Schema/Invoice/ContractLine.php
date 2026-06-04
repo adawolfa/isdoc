@@ -32,22 +32,26 @@ class ContractLine implements Arrayable
 		$this->setContract($contract);
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $contract} property instead. */
 	public function getContract(): Contract
 	{
 		return $this->contract;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $contract} property instead. */
 	public function setContract(Contract $contract): self
 	{
 		$this->contract = $contract;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $paragraphID} property instead. */
 	public function getParagraphID(): ?string
 	{
 		return $this->paragraphID;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $paragraphID} property instead. */
 	public function setParagraphID(?string $paragraphID): self
 	{
 		$this->paragraphID = $paragraphID;

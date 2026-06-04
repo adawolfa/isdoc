@@ -27,11 +27,13 @@ class PartyName implements Arrayable
 		$this->setName($name);
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $name} property instead. */
 	public function getName(): string
 	{
 		return $this->name;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $name} property instead. */
 	public function setName(string $name): self
 	{
 		$this->name = $name;

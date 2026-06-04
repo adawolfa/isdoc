@@ -32,22 +32,26 @@ class DeliveryNoteLine implements Arrayable
 		$this->setDeliveryNote($deliveryNote);
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $deliveryNote} property instead. */
 	public function getDeliveryNote(): DeliveryNote
 	{
 		return $this->deliveryNote;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $deliveryNote} property instead. */
 	public function setDeliveryNote(DeliveryNote $deliveryNote): self
 	{
 		$this->deliveryNote = $deliveryNote;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $lineID} property instead. */
 	public function getLineID(): ?string
 	{
 		return $this->lineID;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $lineID} property instead. */
 	public function setLineID(?string $lineID): self
 	{
 		$this->lineID = $lineID;

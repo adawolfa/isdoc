@@ -3,18 +3,20 @@
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
 use Adawolfa\ISDOC\Arrayable;
+use Adawolfa\ISDOC\Deprecations;
 use Adawolfa\ISDOC\Map;
 use Adawolfa\ISDOC\Restriction;
 use Adawolfa\ISDOC\ToArray;
+use BcMath;
 use Nette\SmartObject;
 
 /**
  * Information about a tax rate.
  *
- * @property string      $percent
- * @property string|null $taxScheme
- * @property bool|null   $vatApplicable
- * @property bool|null   $localReverseChargeFlag
+ * @property string|BcMath\Number $percent
+ * @property string|null          $taxScheme
+ * @property bool|null            $vatApplicable
+ * @property bool|null            $localReverseChargeFlag
  */
 class TaxCategory implements Arrayable
 {
@@ -38,50 +40,60 @@ class TaxCategory implements Arrayable
 	#[Map('LocalReverseChargeFlag')]
 	private ?bool $localReverseChargeFlag = null;
 
-	public function __construct(string $percent)
+	public function __construct(string|BcMath\Number $percent)
 	{
 		$this->setPercent($percent);
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $percent} property instead. */
 	public function getPercent(): string
 	{
 		return $this->percent;
 	}
 
-	public function setPercent(string $percent): self
+	/** @deprecated Method accessors are deprecated, use {@see $percent} property instead. */
+	public function setPercent(string|BcMath\Number $percent): self
 	{
+		Deprecations::number($percent);
+		$percent = (string) $percent;
 		Restriction::decimal($percent);
 		$this->percent = $percent;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $taxScheme} property instead. */
 	public function getTaxScheme(): ?string
 	{
 		return $this->taxScheme;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $taxScheme} property instead. */
 	public function setTaxScheme(?string $taxScheme): self
 	{
 		$this->taxScheme = $taxScheme;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $vatApplicable} property instead. */
 	public function getVatApplicable(): ?bool
 	{
 		return $this->vatApplicable;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $vatApplicable} property instead. */
 	public function setVatApplicable(?bool $vatApplicable): self
 	{
 		$this->vatApplicable = $vatApplicable;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $localReverseChargeFlag} property instead. */
 	public function getLocalReverseChargeFlag(): ?bool
 	{
 		return $this->localReverseChargeFlag;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $localReverseChargeFlag} property instead. */
 	public function setLocalReverseChargeFlag(?bool $localReverseChargeFlag): self
 	{
 		$this->localReverseChargeFlag = $localReverseChargeFlag;

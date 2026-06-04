@@ -13,6 +13,7 @@ trait ToArray
 
 	/**
 	 * @return array<string, mixed>
+	 * @deprecated 2.0 will no longer provide {@code toArray()}
 	 */
 	public function toArray(): array
 	{

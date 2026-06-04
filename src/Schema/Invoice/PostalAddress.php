@@ -56,55 +56,65 @@ class PostalAddress implements Arrayable
 		$this->setCountry($country);
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $streetName} property instead. */
 	public function getStreetName(): string
 	{
 		return $this->streetName;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $streetName} property instead. */
 	public function setStreetName(string $streetName): self
 	{
 		$this->streetName = $streetName;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $buildingNumber} property instead. */
 	public function getBuildingNumber(): string
 	{
 		return $this->buildingNumber;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $buildingNumber} property instead. */
 	public function setBuildingNumber(string $buildingNumber): self
 	{
 		$this->buildingNumber = $buildingNumber;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $cityName} property instead. */
 	public function getCityName(): string
 	{
 		return $this->cityName;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $cityName} property instead. */
 	public function setCityName(string $cityName): self
 	{
 		$this->cityName = $cityName;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $postalZone} property instead. */
 	public function getPostalZone(): string
 	{
 		return $this->postalZone;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $postalZone} property instead. */
 	public function setPostalZone(string $postalZone): self
 	{
 		$this->postalZone = $postalZone;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $country} property instead. */
 	public function getCountry(): Country
 	{
 		return $this->country;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $country} property instead. */
 	public function setCountry(Country $country): self
 	{
 		$this->country = $country;

@@ -22,16 +22,16 @@ final class Writer
 	}
 
 	/** @throws WriterException */
-	public function file(Schema\Invoice $invoice, string $filename, ?string $format = Manager::FORMAT_AUTO): void
+	public function file(Schema\Invoice $invoice, string $filename, ?string $format = null): void
 	{
 		$format = $format ?? Utils::detectFormat($filename);
 
-		if ($format === Manager::FORMAT_ISDOCX) {
+		if ($format === Format::ISDOCX) {
 			$this->xWriter->file($invoice, $filename);
 			return;
 		}
 
-		if ($format === Manager::FORMAT_PDF) {
+		if ($format === Format::PDF) {
 			$this->pdfWriter->file($invoice, $filename);
 			return;
 		}

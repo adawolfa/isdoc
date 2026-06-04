@@ -10,7 +10,10 @@ use DateTimeInterface;
 class Invoice extends Schema\Invoice
 {
 
-	public const VERSION = '6.0.1';
+	/** @deprecated use {@see Invoice::Version} instead */
+	public const string VERSION = self::Version;
+
+	public const string Version = '6.0.2';
 
 	public function __construct(
 		string                                 $id,
@@ -22,7 +25,7 @@ class Invoice extends Schema\Invoice
 	)
 	{
 		parent::__construct(
-			self::DOCUMENT_TYPE_INVOICE,
+			Schema\Invoice\DocumentType::Invoice,
 			$id,
 			$uuid,
 			$issueDate,
@@ -35,7 +38,7 @@ class Invoice extends Schema\Invoice
 			new Schema\Invoice\InvoiceLines,
 			new Schema\Invoice\TaxTotal('0.0'),
 			new Invoice\LegalMonetaryTotal($this),
-			self::VERSION,
+			self::Version,
 		);
 	}
 

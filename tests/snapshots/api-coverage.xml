@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Invoice xmlns="http://isdoc.cz/namespace/2013" version="6.0.2">
+  <DocumentType>1</DocumentType>
+  <SubDocumentType>TAX</SubDocumentType>
+  <SubDocumentTypeOrigin>CZ-GFR</SubDocumentTypeOrigin>
+  <TargetConsolidator>0800</TargetConsolidator>
+  <ClientOnTargetConsolidator>CLIENT-1</ClientOnTargetConsolidator>
+  <ClientBankAccount>123456789/0800</ClientBankAccount>
+  <ID>2021-0001</ID>
+  <UUID>00000000-0000-0000-0000-000000001234</UUID>
+  <EgovFlag>true</EgovFlag>
+  <ISDS_ID>abcdefgh</ISDS_ID>
+  <FileReference>FILE-2021-0001</FileReference>
+  <ReferenceNumber>REF-2021-0001</ReferenceNumber>
+  <IssuingSystem>Acme Billing 1.0</IssuingSystem>
+  <IssueDate>2021-08-16</IssueDate>
+  <TaxPointDate>2021-08-15</TaxPointDate>
+  <VATApplicable>true</VATApplicable>
+  <ElectronicPossibilityAgreementReference languageID="cs">Agreed electronically.</ElectronicPossibilityAgreementReference>
+  <Note languageID="en">Thank you for your business.</Note>
+  <LocalCurrencyCode>CZK</LocalCurrencyCode>
+  <ForeignCurrencyCode>EUR</ForeignCurrencyCode>
+  <CurrRate>25.5</CurrRate>
+  <RefCurrRate>1.0</RefCurrRate>
+  <AccountingSupplierParty>
+    <Party>
+      <PartyIdentification>
+        <UserID>USER-12345678</UserID>
+        <CatalogFirmIdentification>CAT-FIRM-12345678</CatalogFirmIdentification>
+        <ID>12345678</ID>
+      </PartyIdentification>
+      <PartyName>
+        <Name>Dodavatel, a. s.</Name>
+      </PartyName>
+      <PostalAddress>
+        <StreetName>Dlouhá</StreetName>
+        <BuildingNumber>1234</BuildingNumber>
+        <CityName>Praha</CityName>
+        <PostalZone>100 01</PostalZone>
+        <Country>
+          <IdentificationCode>CZ</IdentificationCode>
+          <Name>Česká republika</Name>
+        </Country>
+      </PostalAddress>
+      <PartyTaxScheme>
+        <CompanyID>CZ12345678</CompanyID>
+        <TaxScheme>VAT</TaxScheme>
+      </PartyTaxScheme>
+      <PartyTaxScheme>
+        <CompanyID>SK12345678</CompanyID>
+        <TaxScheme>TIN</TaxScheme>
+      </PartyTaxScheme>
+      <RegisterIdentification>
+        <RegisterKeptAt>Městský soud v Praze</RegisterKeptAt>
+        <RegisterFileRef>B 1234</RegisterFileRef>
+        <RegisterDate>2001-03-14</RegisterDate>
+        <Preformatted>Spisová značka B 1234 vedená u Městského soudu v Praze</Preformatted>
+      </RegisterIdentification>
+      <Contact>
+        <Name>Jan Novák</Name>
+        <Telephone>+420123456789</Telephone>
+        <ElectronicMail>jan.novak@example.com</ElectronicMail>
+      </Contact>
+    </Party>
+  </AccountingSupplierParty>
+  <SellerSupplierParty>
+    <Party>
+      <PartyIdentification>
+        <ID>11111111</ID>
+      </PartyIdentification>
+      <PartyName>
+        <Name>Prodejce, a. s.</Name>
+      </PartyName>
+      <PostalAddress>
+        <StreetName>Dlouhá</StreetName>
+        <BuildingNumber>1234</BuildingNumber>
+        <CityName>Praha</CityName>
+        <PostalZone>100 01</PostalZone>
+        <Country>
+          <IdentificationCode>CZ</IdentificationCode>
+          <Name>Česká republika</Name>
+        </Country>
+      </PostalAddress>
+    </Party>
+  </SellerSupplierParty>
+  <AnonymousCustomerParty>
+    <ID>ANON-1</ID>
+    <IDScheme>https://www.rfc-editor.org/rfc/rfc9562.html</IDScheme>
+  </AnonymousCustomerParty>
+  <AccountingCustomerParty>
+    <Party>
+      <PartyIdentification>
+        <UserID>USER-87654321</UserID>
+        <CatalogFirmIdentification>CAT-FIRM-87654321</CatalogFirmIdentification>
+        <ID>87654321</ID>
+      </PartyIdentification>
+      <PartyName>
+        <Name>Odběratel, a. s.</Name>
+      </PartyName>
+      <PostalAddress>
+        <StreetName>Dlouhá</StreetName>
+        <BuildingNumber>1234</BuildingNumber>
+        <CityName>Praha</CityName>
+        <PostalZone>100 01</PostalZone>
+        <Country>
+          <IdentificationCode>CZ</IdentificationCode>
+          <Name>Česká republika</Name>
+        </Country>
+      </PostalAddress>
+      <PartyTaxScheme>
+        <CompanyID>CZ87654321</CompanyID>
+        <TaxScheme>VAT</TaxScheme>
+      </PartyTaxScheme>
+      <PartyTaxScheme>
+        <CompanyID>SK87654321</CompanyID>
+        <TaxScheme>TIN</TaxScheme>
+      </PartyTaxScheme>
+      <RegisterIdentification>
+        <RegisterKeptAt>Městský soud v Praze</RegisterKeptAt>
+        <RegisterFileRef>B 1234</RegisterFileRef>
+        <RegisterDate>2001-03-14</RegisterDate>
+        <Preformatted>Spisová značka B 1234 vedená u Městského soudu v Praze</Preformatted>
+      </RegisterIdentification>
+      <Contact>
+        <Name>Jan Novák</Name>
+        <Telephone>+420123456789</Telephone>
+        <ElectronicMail>jan.novak@example.com</ElectronicMail>
+      </Contact>
+    </Party>
+  </AccountingCustomerParty>
+  <BuyerCustomerParty>
+    <Party>
+      <PartyIdentification>
+        <ID>22222222</ID>
+      </PartyIdentification>
+      <PartyName>
+        <Name>Kupující, a. s.</Name>
+      </PartyName>
+      <PostalAddress>
+        <StreetName>Dlouhá</StreetName>
+        <BuildingNumber>1234</BuildingNumber>
+        <CityName>Praha</CityName>
+        <PostalZone>100 01</PostalZone>
+        <Country>
+          <IdentificationCode>CZ</IdentificationCode>
+          <Name>Česká republika</Name>
+        </Country>
+      </PostalAddress>
+    </Party>
+  </BuyerCustomerParty>
+  <OrderReferences>
+    <OrderReference id="1">
+      <SalesOrderID>SO-1</SalesOrderID>
+      <ExternalOrderID>PO-1</ExternalOrderID>
+      <IssueDate>2021-07-01</IssueDate>
+      <ExternalOrderIssueDate>2021-06-30</ExternalOrderIssueDate>
+      <UUID>00000000-0000-0000-0000-0000000000a1</UUID>
+      <ISDS_ID>order001</ISDS_ID>
+      <FileReference>ORDER-FILE</FileReference>
+      <ReferenceNumber>ORDER-REF</ReferenceNumber>
+    </OrderReference>
+  </OrderReferences>
+  <DeliveryNoteReferences>
+    <DeliveryNoteReference id="2">
+      <ID>DN-1</ID>
+      <IssueDate>2021-07-10</IssueDate>
+      <UUID>00000000-0000-0000-0000-0000000000a2</UUID>
+    </DeliveryNoteReference>
+  </DeliveryNoteReferences>
+  <OriginalDocumentReferences>
+    <OriginalDocumentReference id="3">
+      <ID>OD-1</ID>
+      <IssueDate>2021-05-01</IssueDate>
+      <UUID>00000000-0000-0000-0000-0000000000a3</UUID>
+    </OriginalDocumentReference>
+  </OriginalDocumentReferences>
+  <ContractReferences>
+    <ContractReference id="4">
+      <ID>CT-1</ID>
+      <UUID>00000000-0000-0000-0000-0000000000a4</UUID>
+      <IssueDate>2021-01-01</IssueDate>
+      <LastValidDate>2022-01-01</LastValidDate>
+      <ISDS_ID>contract1</ISDS_ID>
+      <FileReference>CONTRACT-FILE</FileReference>
+      <ReferenceNumber>CONTRACT-REF</ReferenceNumber>
+    </ContractReference>
+  </ContractReferences>
+  <Delivery>
+    <Party>
+      <PartyIdentification>
+        <ID>33333333</ID>
+      </PartyIdentification>
+      <PartyName>
+        <Name>Místo dodání, a. s.</Name>
+      </PartyName>
+      <PostalAddress>
+        <StreetName>Dlouhá</StreetName>
+        <BuildingNumber>1234</BuildingNumber>
+        <CityName>Praha</CityName>
+        <PostalZone>100 01</PostalZone>
+        <Country>
+          <IdentificationCode>CZ</IdentificationCode>
+          <Name>Česká republika</Name>
+        </Country>
+      </PostalAddress>
+    </Party>
+  </Delivery>
+  <InvoiceLines>
+    <InvoiceLine>
+      <ID>1</ID>
+      <OrderReference ref="1">
+        <LineID>OL-1</LineID>
+      </OrderReference>
+      <DeliveryNoteReference ref="2">
+        <LineID>DNL-1</LineID>
+      </DeliveryNoteReference>
+      <OriginalDocumentReference ref="3">
+        <LineID>ODL-1</LineID>
+      </OriginalDocumentReference>
+      <ContractReference ref="4">
+        <ParagraphID>PAR-1</ParagraphID>
+      </ContractReference>
+      <EgovClassifier>00000099</EgovClassifier>
+      <InvoicedQuantity unitCode="ks">1</InvoicedQuantity>
+      <LineExtensionAmountCurr>3.92</LineExtensionAmountCurr>
+      <LineExtensionAmount>100.0</LineExtensionAmount>
+      <LineExtensionAmountBeforeDiscount>110.0</LineExtensionAmountBeforeDiscount>
+      <LineExtensionAmountTaxInclusiveCurr>4.75</LineExtensionAmountTaxInclusiveCurr>
+      <LineExtensionAmountTaxInclusive>121.0</LineExtensionAmountTaxInclusive>
+      <LineExtensionAmountTaxInclusiveBeforeDiscount>133.1</LineExtensionAmountTaxInclusiveBeforeDiscount>
+      <LineExtensionTaxAmount>21.0</LineExtensionTaxAmount>
+      <UnitPrice>100.0</UnitPrice>
+      <UnitPriceTaxInclusive>121.0</UnitPriceTaxInclusive>
+      <ClassifiedTaxCategory>
+        <Percent>21</Percent>
+        <VATCalculationMethod>1</VATCalculationMethod>
+        <VATApplicable>true</VATApplicable>
+        <LocalReverseCharge>
+          <LocalReverseChargeCode>1</LocalReverseChargeCode>
+          <LocalReverseChargeQuantity unitCode="g">5</LocalReverseChargeQuantity>
+        </LocalReverseCharge>
+      </ClassifiedTaxCategory>
+      <Note>Line note.</Note>
+      <VATNote>§ 47 zákona o DPH</VATNote>
+      <Item>
+        <Description>Premium widget</Description>
+        <CatalogueItemIdentification>
+          <ID>CAT-1</ID>
+        </CatalogueItemIdentification>
+        <SellersItemIdentification>
+          <ID>SELLER-1</ID>
+        </SellersItemIdentification>
+        <SecondarySellersItemIdentification>
+          <ID>SELLER-2</ID>
+        </SecondarySellersItemIdentification>
+        <TertiarySellersItemIdentification>
+          <ID>SELLER-3</ID>
+        </TertiarySellersItemIdentification>
+        <BuyersItemIdentification>
+          <ID>BUYER-1</ID>
+        </BuyersItemIdentification>
+        <StoreBatches>
+          <StoreBatch>
+            <Name>BATCH-1</Name>
+            <Note>Handle with care.</Note>
+            <ExpirationDate>2025-12-31</ExpirationDate>
+            <Specification>Cold storage</Specification>
+            <Quantity unitCode="ks">10</Quantity>
+            <BatchOrSerialNumber>B</BatchOrSerialNumber>
+            <SealSeriesID>SEAL-1</SealSeriesID>
+          </StoreBatch>
+        </StoreBatches>
+      </Item>
+    </InvoiceLine>
+    <InvoiceLine>
+      <ID>2</ID>
+      <LineExtensionAmount>250.0</LineExtensionAmount>
+      <LineExtensionAmountTaxInclusive>302.5</LineExtensionAmountTaxInclusive>
+      <LineExtensionTaxAmount>52.5</LineExtensionTaxAmount>
+      <UnitPrice>250.0</UnitPrice>
+      <UnitPriceTaxInclusive>302.5</UnitPriceTaxInclusive>
+      <ClassifiedTaxCategory>
+        <Percent>21</Percent>
+        <VATCalculationMethod>0</VATCalculationMethod>
+      </ClassifiedTaxCategory>
+    </InvoiceLine>
+  </InvoiceLines>
+  <NonTaxedDeposits>
+    <NonTaxedDeposit>
+      <ID>NTD-1</ID>
+      <VariableSymbol>555</VariableSymbol>
+      <DepositAmountCurr>4.0</DepositAmountCurr>
+      <DepositAmount>100.0</DepositAmount>
+    </NonTaxedDeposit>
+  </NonTaxedDeposits>
+  <TaxedDeposits>
+    <TaxedDeposit>
+      <ID>TD-1</ID>
+      <VariableSymbol>556</VariableSymbol>
+      <TaxableDepositAmountCurr>8.0</TaxableDepositAmountCurr>
+      <TaxableDepositAmount>200.0</TaxableDepositAmount>
+      <TaxInclusiveDepositAmountCurr>9.68</TaxInclusiveDepositAmountCurr>
+      <TaxInclusiveDepositAmount>242.0</TaxInclusiveDepositAmount>
+      <ClassifiedTaxCategory>
+        <Percent>21</Percent>
+        <VATCalculationMethod>1</VATCalculationMethod>
+      </ClassifiedTaxCategory>
+    </TaxedDeposit>
+  </TaxedDeposits>
+  <TaxTotal>
+    <TaxSubTotal>
+      <TaxableAmountCurr>13.72</TaxableAmountCurr>
+      <TaxableAmount>350.0</TaxableAmount>
+      <TaxAmountCurr>2.88</TaxAmountCurr>
+      <TaxAmount>73.5</TaxAmount>
+      <TaxInclusiveAmountCurr>16.6</TaxInclusiveAmountCurr>
+      <TaxInclusiveAmount>423.5</TaxInclusiveAmount>
+      <AlreadyClaimedTaxableAmountCurr>0.0</AlreadyClaimedTaxableAmountCurr>
+      <AlreadyClaimedTaxableAmount>0.0</AlreadyClaimedTaxableAmount>
+      <AlreadyClaimedTaxAmountCurr>0.0</AlreadyClaimedTaxAmountCurr>
+      <AlreadyClaimedTaxAmount>0.0</AlreadyClaimedTaxAmount>
+      <AlreadyClaimedTaxInclusiveAmountCurr>0.0</AlreadyClaimedTaxInclusiveAmountCurr>
+      <AlreadyClaimedTaxInclusiveAmount>0.0</AlreadyClaimedTaxInclusiveAmount>
+      <DifferenceTaxableAmountCurr>0.0</DifferenceTaxableAmountCurr>
+      <DifferenceTaxableAmount>0.0</DifferenceTaxableAmount>
+      <DifferenceTaxAmountCurr>0.0</DifferenceTaxAmountCurr>
+      <DifferenceTaxAmount>0.0</DifferenceTaxAmount>
+      <DifferenceTaxInclusiveAmountCurr>0.0</DifferenceTaxInclusiveAmountCurr>
+      <DifferenceTaxInclusiveAmount>0.0</DifferenceTaxInclusiveAmount>
+      <TaxCategory>
+        <Percent>21</Percent>
+        <TaxScheme>VAT</TaxScheme>
+        <VATApplicable>true</VATApplicable>
+        <LocalReverseChargeFlag>true</LocalReverseChargeFlag>
+      </TaxCategory>
+    </TaxSubTotal>
+    <TaxAmountCurr>2.88</TaxAmountCurr>
+    <TaxAmount>73.5</TaxAmount>
+  </TaxTotal>
+  <LegalMonetaryTotal>
+    <TaxExclusiveAmount>350.0</TaxExclusiveAmount>
+    <TaxExclusiveAmountCurr>13.72</TaxExclusiveAmountCurr>
+    <TaxInclusiveAmount>423.5</TaxInclusiveAmount>
+    <TaxInclusiveAmountCurr>16.6</TaxInclusiveAmountCurr>
+    <AlreadyClaimedTaxExclusiveAmount>0.0</AlreadyClaimedTaxExclusiveAmount>
+    <AlreadyClaimedTaxExclusiveAmountCurr>0.0</AlreadyClaimedTaxExclusiveAmountCurr>
+    <AlreadyClaimedTaxInclusiveAmount>0.0</AlreadyClaimedTaxInclusiveAmount>
+    <AlreadyClaimedTaxInclusiveAmountCurr>0.0</AlreadyClaimedTaxInclusiveAmountCurr>
+    <DifferenceTaxExclusiveAmount>0.0</DifferenceTaxExclusiveAmount>
+    <DifferenceTaxExclusiveAmountCurr>0.0</DifferenceTaxExclusiveAmountCurr>
+    <DifferenceTaxInclusiveAmount>0.0</DifferenceTaxInclusiveAmount>
+    <DifferenceTaxInclusiveAmountCurr>0.0</DifferenceTaxInclusiveAmountCurr>
+    <PayableRoundingAmount>0.5</PayableRoundingAmount>
+    <PayableRoundingAmountCurr>0.02</PayableRoundingAmountCurr>
+    <PaidDepositsAmount>0.0</PaidDepositsAmount>
+    <PaidDepositsAmountCurr>0.0</PaidDepositsAmountCurr>
+    <PayableAmount>424.0</PayableAmount>
+    <PayableAmountCurr>16.62</PayableAmountCurr>
+  </LegalMonetaryTotal>
+  <PaymentMeans>
+    <Payment partialPayment="true">
+      <PaidAmount>424.0</PaidAmount>
+      <PaymentMeansCode>31</PaymentMeansCode>
+      <Details>
+        <DocumentID>PAY-1</DocumentID>
+        <IssueDate>2021-08-16</IssueDate>
+        <PaymentDueDate>2021-08-30</PaymentDueDate>
+        <ID>123456789</ID>
+        <BankCode>0800</BankCode>
+        <Name>Česká spořitelna, a. s.</Name>
+        <IBAN>CZ6508000000192000145399</IBAN>
+        <BIC>GIBACZPX</BIC>
+        <VariableSymbol>20210001</VariableSymbol>
+        <ConstantSymbol>0308</ConstantSymbol>
+        <SpecificSymbol>12345</SpecificSymbol>
+      </Details>
+    </Payment>
+    <AlternateBankAccounts>
+      <AlternateBankAccount>
+        <ID>987654321</ID>
+        <BankCode>0100</BankCode>
+        <Name>Komerční banka, a. s.</Name>
+        <IBAN>CZ6501000000000987654321</IBAN>
+        <BIC>KOMBCZPP</BIC>
+      </AlternateBankAccount>
+    </AlternateBankAccounts>
+  </PaymentMeans>
+  <SupplementsList>
+    <Supplement preview="true">
+      <Filename>invoice.pdf</Filename>
+      <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+      <DigestValue>2jmj7l5rSw0yVb/vlWAYkK/YBwk=</DigestValue>
+    </Supplement>
+  </SupplementsList>
+</Invoice>

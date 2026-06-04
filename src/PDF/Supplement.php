@@ -38,12 +38,14 @@ final class Supplement extends ISDOC\Schema\Invoice\Supplement implements ISDOC\
 		}
 	}
 
+	/** {@inheritDoc} */
 	public function getContents(): string
 	{
 		return $this->object->getContent()
 			   ?? throw new ISDOC\RuntimeException('Failed to get contents of the PDF embedded file.');
 	}
 
+	/** {@inheritDoc} */
 	public function isOk(): bool
 	{
 		return true;

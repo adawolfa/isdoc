@@ -22,11 +22,13 @@ class Note extends SimpleContentElement implements Arrayable
 	#[Map('@languageID')]
 	private ?string $languageID = null;
 
+	/** @deprecated Method accessors are deprecated, use {@see $languageID} property instead. */
 	public function getLanguageID(): ?string
 	{
 		return $this->languageID;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $languageID} property instead. */
 	public function setLanguageID(?string $languageID): self
 	{
 		Restriction::pattern($languageID, '[a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})*');

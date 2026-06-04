@@ -32,22 +32,26 @@ class AnonymousCustomerParty implements Arrayable
 		$this->setId($id);
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $id} property instead. */
 	public function getId(): string
 	{
 		return $this->id;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $id} property instead. */
 	public function setId(string $id): self
 	{
 		$this->id = $id;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $idScheme} property instead. */
 	public function getIdScheme(): ?string
 	{
 		return $this->idScheme;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $idScheme} property instead. */
 	public function setIdScheme(?string $idScheme): self
 	{
 		$this->idScheme = $idScheme;

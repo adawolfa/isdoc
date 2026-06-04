@@ -32,22 +32,26 @@ class OrderLine implements Arrayable
 		$this->setOrder($order);
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $order} property instead. */
 	public function getOrder(): Order
 	{
 		return $this->order;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $order} property instead. */
 	public function setOrder(Order $order): self
 	{
 		$this->order = $order;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $lineID} property instead. */
 	public function getLineID(): ?string
 	{
 		return $this->lineID;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $lineID} property instead. */
 	public function setLineID(?string $lineID): self
 	{
 		$this->lineID = $lineID;

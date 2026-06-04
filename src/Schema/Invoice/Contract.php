@@ -65,22 +65,26 @@ class Contract implements Arrayable
 		$this->setIssueDate($issueDate);
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $id} property instead. */
 	public function getId(): string
 	{
 		return $this->id;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $id} property instead. */
 	public function setId(string $id): self
 	{
 		$this->id = $id;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $uuid} property instead. */
 	public function getUuid(): ?string
 	{
 		return $this->uuid;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $uuid} property instead. */
 	public function setUuid(?string $uuid): self
 	{
 		Restriction::pattern($uuid, '[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}');
@@ -88,66 +92,78 @@ class Contract implements Arrayable
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $issueDate} property instead. */
 	public function getIssueDate(): DateTimeInterface
 	{
 		return $this->issueDate;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $issueDate} property instead. */
 	public function setIssueDate(DateTimeInterface $issueDate): self
 	{
 		$this->issueDate = $issueDate;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $lastValidDate} property instead. */
 	public function getLastValidDate(): ?DateTimeInterface
 	{
 		return $this->lastValidDate;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $lastValidDate} property instead. */
 	public function setLastValidDate(?DateTimeInterface $lastValidDate): self
 	{
 		$this->lastValidDate = $lastValidDate;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $lastValidDateUnbounded} property instead. */
 	public function getLastValidDateUnbounded(): ?LastValidDateUnbounded
 	{
 		return $this->lastValidDateUnbounded;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $lastValidDateUnbounded} property instead. */
 	public function setLastValidDateUnbounded(?LastValidDateUnbounded $lastValidDateUnbounded): self
 	{
 		$this->lastValidDateUnbounded = $lastValidDateUnbounded;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $isds_id} property instead. */
 	public function getIsds_id(): ?string
 	{
 		return $this->isds_id;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $isds_id} property instead. */
 	public function setIsds_id(?string $isds_id): self
 	{
 		$this->isds_id = $isds_id;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $file} property instead. */
 	public function getFile(): ?string
 	{
 		return $this->file;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $file} property instead. */
 	public function setFile(?string $file): self
 	{
 		$this->file = $file;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $referenceNumber} property instead. */
 	public function getReferenceNumber(): ?string
 	{
 		return $this->referenceNumber;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $referenceNumber} property instead. */
 	public function setReferenceNumber(?string $referenceNumber): self
 	{
 		$this->referenceNumber = $referenceNumber;

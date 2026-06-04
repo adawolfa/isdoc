@@ -52,44 +52,52 @@ class Item implements Arrayable
 	#[Map('StoreBatches')]
 	private ?StoreBatches $storeBatches = null;
 
+	/** @deprecated Method accessors are deprecated, use {@see $description} property instead. */
 	public function getDescription(): ?string
 	{
 		return $this->description;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $description} property instead. */
 	public function setDescription(?string $description): self
 	{
 		$this->description = $description;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $catalogueItemIdentification} property instead. */
 	public function getCatalogueItemIdentification(): ?CatalogueItemIdentification
 	{
 		return $this->catalogueItemIdentification;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $catalogueItemIdentification} property instead. */
 	public function setCatalogueItemIdentification(?CatalogueItemIdentification $catalogueItemIdentification): self
 	{
 		$this->catalogueItemIdentification = $catalogueItemIdentification;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $sellersItemIdentification} property instead. */
 	public function getSellersItemIdentification(): ?SellersItemIdentification
 	{
 		return $this->sellersItemIdentification;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $sellersItemIdentification} property instead. */
 	public function setSellersItemIdentification(?SellersItemIdentification $sellersItemIdentification): self
 	{
 		$this->sellersItemIdentification = $sellersItemIdentification;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $secondarySellersItemIdentification} property instead. */
 	public function getSecondarySellersItemIdentification(): ?SecondarySellersItemIdentification
 	{
 		return $this->secondarySellersItemIdentification;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $secondarySellersItemIdentification} property instead. */
 	public function setSecondarySellersItemIdentification(
 		?SecondarySellersItemIdentification $secondarySellersItemIdentification,
 	): self
@@ -98,11 +106,13 @@ class Item implements Arrayable
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $tertiarySellersItemIdentification} property instead. */
 	public function getTertiarySellersItemIdentification(): ?TertiarySellersItemIdentification
 	{
 		return $this->tertiarySellersItemIdentification;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $tertiarySellersItemIdentification} property instead. */
 	public function setTertiarySellersItemIdentification(
 		?TertiarySellersItemIdentification $tertiarySellersItemIdentification,
 	): self
@@ -111,22 +121,26 @@ class Item implements Arrayable
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $buyersItemIdentification} property instead. */
 	public function getBuyersItemIdentification(): ?BuyersItemIdentification
 	{
 		return $this->buyersItemIdentification;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $buyersItemIdentification} property instead. */
 	public function setBuyersItemIdentification(?BuyersItemIdentification $buyersItemIdentification): self
 	{
 		$this->buyersItemIdentification = $buyersItemIdentification;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $storeBatches} property instead. */
 	public function getStoreBatches(): ?StoreBatches
 	{
 		return $this->storeBatches;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $storeBatches} property instead. */
 	public function setStoreBatches(?StoreBatches $storeBatches): self
 	{
 		$this->storeBatches = $storeBatches;

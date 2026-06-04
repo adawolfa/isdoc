@@ -26,8 +26,11 @@ class StoreBatch implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	public const BATCH_OR_SERIAL_NUMBER_BATCH         = 'B';
-	public const BATCH_OR_SERIAL_NUMBER_SERIAL_NUMBER = 'S';
+	/** @deprecated use {@see BatchOrSerialNumber::Batch} instead */
+	public const string BATCH_OR_SERIAL_NUMBER_BATCH = BatchOrSerialNumber::Batch;
+
+	/** @deprecated use {@see BatchOrSerialNumber::SerialNumber} instead */
+	public const string BATCH_OR_SERIAL_NUMBER_SERIAL_NUMBER = BatchOrSerialNumber::SerialNumber;
 
 	/** Batch name/serial number. */
 	#[Map('Name')]
@@ -64,81 +67,95 @@ class StoreBatch implements Arrayable
 		$this->setBatchOrSerialNumber($batchOrSerialNumber);
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $name} property instead. */
 	public function getName(): string
 	{
 		return $this->name;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $name} property instead. */
 	public function setName(string $name): self
 	{
 		$this->name = $name;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $note} property instead. */
 	public function getNote(): ?Note
 	{
 		return $this->note;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $note} property instead. */
 	public function setNote(?Note $note): self
 	{
 		$this->note = $note;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $expirationDate} property instead. */
 	public function getExpirationDate(): ?DateTimeInterface
 	{
 		return $this->expirationDate;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $expirationDate} property instead. */
 	public function setExpirationDate(?DateTimeInterface $expirationDate): self
 	{
 		$this->expirationDate = $expirationDate;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $specification} property instead. */
 	public function getSpecification(): ?string
 	{
 		return $this->specification;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $specification} property instead. */
 	public function setSpecification(?string $specification): self
 	{
 		$this->specification = $specification;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $quantity} property instead. */
 	public function getQuantity(): Quantity
 	{
 		return $this->quantity;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $quantity} property instead. */
 	public function setQuantity(Quantity $quantity): self
 	{
 		$this->quantity = $quantity;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $batchOrSerialNumber} property instead. */
 	public function getBatchOrSerialNumber(): string
 	{
 		return $this->batchOrSerialNumber;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $batchOrSerialNumber} property instead. */
 	public function setBatchOrSerialNumber(string $batchOrSerialNumber): self
 	{
 		Restriction::enumeration($batchOrSerialNumber, [
-			self::BATCH_OR_SERIAL_NUMBER_BATCH,
-			self::BATCH_OR_SERIAL_NUMBER_SERIAL_NUMBER,
+			BatchOrSerialNumber::Batch,
+			BatchOrSerialNumber::SerialNumber,
 		]);
 		$this->batchOrSerialNumber = $batchOrSerialNumber;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $sealSeriesID} property instead. */
 	public function getSealSeriesID(): ?string
 	{
 		return $this->sealSeriesID;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $sealSeriesID} property instead. */
 	public function setSealSeriesID(?string $sealSeriesID): self
 	{
 		$this->sealSeriesID = $sealSeriesID;

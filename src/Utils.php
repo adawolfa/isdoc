@@ -13,8 +13,8 @@ final class Utils
 		$extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
 		return match ($extension) {
-			Manager::FORMAT_ISDOCX, Manager::FORMAT_PDF => $extension,
-			default                                     => Manager::FORMAT_ISDOC,
+			Format::ISDOCX, Format::PDF => $extension,
+			default                     => Format::ISDOC,
 		};
 	}
 

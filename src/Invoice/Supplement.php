@@ -29,6 +29,9 @@ class Supplement extends ISDOC\Schema\Invoice\Supplement implements RemoteSupple
 		$this->path = $path;
 	}
 
+	/**
+	 * @deprecated use {@see $path} instead
+	 */
 	public function getPath(): string
 	{
 		return $this->path;
@@ -71,6 +74,7 @@ class Supplement extends ISDOC\Schema\Invoice\Supplement implements RemoteSupple
 
 	/**
 	 * @throws SupplementException
+	 * @deprecated use {@see $ok} instead
 	 */
 	public function isOk(): bool
 	{
@@ -87,6 +91,9 @@ class Supplement extends ISDOC\Schema\Invoice\Supplement implements RemoteSupple
 		}
 	}
 
+	/**
+	 * @deprecated use {@see $contents} instead
+	 */
 	public function getContents(): string
 	{
 		$contents = @file_get_contents($this->getPath());

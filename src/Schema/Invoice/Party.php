@@ -59,33 +59,39 @@ class Party implements Arrayable
 		$this->setPostalAddress($postalAddress);
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $partyIdentification} property instead. */
 	public function getPartyIdentification(): PartyIdentification
 	{
 		return $this->partyIdentification;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $partyIdentification} property instead. */
 	public function setPartyIdentification(PartyIdentification $partyIdentification): self
 	{
 		$this->partyIdentification = $partyIdentification;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $partyName} property instead. */
 	public function getPartyName(): PartyName
 	{
 		return $this->partyName;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $partyName} property instead. */
 	public function setPartyName(PartyName $partyName): self
 	{
 		$this->partyName = $partyName;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $postalAddress} property instead. */
 	public function getPostalAddress(): PostalAddress
 	{
 		return $this->postalAddress;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $postalAddress} property instead. */
 	public function setPostalAddress(PostalAddress $postalAddress): self
 	{
 		$this->postalAddress = $postalAddress;
@@ -127,33 +133,39 @@ class Party implements Arrayable
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $partyTaxSchemes} property instead. */
 	public function getPartyTaxSchemes(): ?PartyTaxSchemes
 	{
 		return $this->partyTaxSchemes;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $partyTaxSchemes} property instead. */
 	public function setPartyTaxSchemes(?PartyTaxSchemes $partyTaxSchemes): self
 	{
 		$this->partyTaxSchemes = $partyTaxSchemes;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $registerIdentification} property instead. */
 	public function getRegisterIdentification(): ?RegisterIdentification
 	{
 		return $this->registerIdentification;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $registerIdentification} property instead. */
 	public function setRegisterIdentification(?RegisterIdentification $registerIdentification): self
 	{
 		$this->registerIdentification = $registerIdentification;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $contact} property instead. */
 	public function getContact(): ?Contact
 	{
 		return $this->contact;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $contact} property instead. */
 	public function setContact(?Contact $contact): self
 	{
 		$this->contact = $contact;

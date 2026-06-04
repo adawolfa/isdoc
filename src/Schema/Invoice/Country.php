@@ -33,22 +33,26 @@ class Country implements Arrayable
 		$this->setName($name);
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $identificationCode} property instead. */
 	public function getIdentificationCode(): string
 	{
 		return $this->identificationCode;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $identificationCode} property instead. */
 	public function setIdentificationCode(string $identificationCode): self
 	{
 		$this->identificationCode = $identificationCode;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $name} property instead. */
 	public function getName(): string
 	{
 		return $this->name;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $name} property instead. */
 	public function setName(string $name): self
 	{
 		$this->name = $name;

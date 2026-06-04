@@ -32,22 +32,26 @@ class OriginalDocumentLine implements Arrayable
 		$this->setOriginalDocument($originalDocument);
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $originalDocument} property instead. */
 	public function getOriginalDocument(): OriginalDocument
 	{
 		return $this->originalDocument;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $originalDocument} property instead. */
 	public function setOriginalDocument(OriginalDocument $originalDocument): self
 	{
 		$this->originalDocument = $originalDocument;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $lineID} property instead. */
 	public function getLineID(): ?string
 	{
 		return $this->lineID;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $lineID} property instead. */
 	public function setLineID(?string $lineID): self
 	{
 		$this->lineID = $lineID;

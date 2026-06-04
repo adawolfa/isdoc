@@ -36,6 +36,8 @@ require(__DIR__ . '/../vendor/autoload.php');
 				'BooleanType'   => 'bool',
 			];
 
+			private const array Abbreviations = ['ISDOC', 'ISDOCX', 'PDF', 'VAT'];
+
 			public function __construct(string $folder, string $namespace)
 			{
 				$this->folder    = $folder;
@@ -86,6 +88,8 @@ require(__DIR__ . '/../vendor/autoload.php');
 				$namespace->addUse(Adawolfa\ISDOC\SimpleContentElement::class);
 				$namespace->addUse(Adawolfa\ISDOC\Collection::class);
 				$namespace->addUse(Adawolfa\ISDOC\Restriction::class);
+				$namespace->addUse(Adawolfa\ISDOC\Deprecations::class);
+				$namespace->addUse('BcMath');
 				$namespace->addUse(Nette\SmartObject::class);
 				$namespace->addUse(ArrayIterator::class);
 				$namespace->addUse(Adawolfa\ISDOC\ToArray::class);
@@ -411,6 +415,13 @@ require(__DIR__ . '/../vendor/autoload.php');
 					$typeHint = substr($typeHint, strlen('Invoice') + 1);
 				}
 
+				// Decimal and monetary values also accept BcMath\Number through the setter (see generateSetter);
+				// the magic property hint must advertise it too, otherwise reading or writing the property forces
+				// a deprecated string either way.
+				if ($restriction !== null && $restriction->getBase()?->getName() === 'decimal') {
+					$typeHint .= '|BcMath\\Number';
+				}
+
 				$comment = '@property ' . $typeHint;
 
 				if ($nullable) {
@@ -439,6 +450,7 @@ require(__DIR__ . '/../vendor/autoload.php');
 				$method->setVisibility('public');
 				$method->setReturnType($property->getType());
 				$method->setReturnNullable($property->isNullable());
+				$method->addComment('@deprecated Method accessors are deprecated, use {@see $' . $property->getName() . '} property instead.');
 				$method->addBody('return $this->' . $property->getName() . ';');
 			}
 
@@ -450,10 +462,27 @@ require(__DIR__ . '/../vendor/autoload.php');
 				$method = $class->addMethod('set' . ucfirst($property->getName()));
 				$method->setVisibility('public');
 				$method->setReturnType('self');
+				$method->addComment('@deprecated Method accessors are deprecated, use {@see $' . $property->getName() . '} property instead.');
+
+				$decimal = $restriction !== null && $restriction->getBase()?->getName() === 'decimal';
+
+				if ($decimal) {
+
+					// Decimal and monetary values become BcMath\Number in 2.0; warn when a string is passed on
+					// a runtime that already provides the class, then normalize to a string for storage.
+					$method->addBody('Deprecations::number($' . $property->getName() . ');');
+
+					if ($property->isNullable()) {
+						$method->addBody('$' . $property->getName() . ' = $' . $property->getName() . ' === null ? null : (string) $' . $property->getName() . ';');
+					} else {
+						$method->addBody('$' . $property->getName() . ' = (string) $' . $property->getName() . ';');
+					}
+
+				}
 
 				if ($restriction !== null) {
 
-					if ($restriction->getBase()?->getName() === 'decimal') {
+					if ($decimal) {
 						$method->addBody('Restriction::decimal($' . $property->getName() . ');');
 					}
 
@@ -469,9 +498,15 @@ require(__DIR__ . '/../vendor/autoload.php');
 
 				$method->addBody('$this->' . $property->getName() . ' = $' . $property->getName() . ';');
 				$method->addBody('return $this;');
-				$method->addParameter($property->getName())
-					->setType($property->getType())
+
+				$parameter = $method->addParameter($property->getName())
 					->setNullable($property->isNullable());
+
+				if ($decimal) {
+					$parameter->setType('string|\\BcMath\\Number');
+				} else {
+					$parameter->setType($property->getType());
+				}
 			}
 
 			private function implementRestriction(
@@ -515,26 +550,43 @@ require(__DIR__ . '/../vendor/autoload.php');
 					case 'enumeration':
 
 						$constantPrefix = strtoupper(preg_replace('~[A-Z]~', '_$0', $property->getName())) . '_';
-						$constants      = [];
+
+						// 2.0 replaces the SCREAMING_SNAKE_CASE codelist constants with PascalCase classes
+						// (e.g. PaymentMeansCode::CashPayment). Bridge each deprecated constant to its new
+						// counterpart and reference the new class directly in the enumeration restriction so the
+						// library never consumes its own deprecated API.
+						$codelistClass     = $this->applyAbbreviations(ucfirst($property->getName()));
+						$codelistNamespace = $this->namespace . '\\Invoice';
+						$constants         = [];
+
+						if ($class->getNamespace()->getName() !== $codelistNamespace) {
+							$class->getNamespace()->addUse($codelistNamespace . '\\' . $codelistClass);
+						}
 
 						foreach ($parameters as $option) {
 
-							$constant = $constantPrefix . strtoupper(
-									strtr(
-										str_replace(' ', '_',
-											substr($option['doc'], strpos($option['doc'], "\n") + 1)
-										),
-										[
-											'(' => '',
-											')' => '',
-										]
-									)
-								);
+							$suffix = strtoupper(
+								strtr(
+									str_replace(' ', '_',
+										substr($option['doc'], strpos($option['doc'], "\n") + 1)
+									),
+									[
+										'(' => '',
+										')' => '',
+									]
+								)
+							);
 
-							$value = $option['value'];
-							settype($value, $property->getType());
-							$class->addConstant($constant, $value);
-							$constants[] = "\tself::" . $constant . ',';
+							$constant  = $constantPrefix . $suffix;
+							$case      = $this->applyAbbreviations(implode('', array_map(
+								static fn (string $word): string => ucfirst(strtolower($word)),
+								explode('_', $suffix)
+							)));
+							$reference = $codelistClass . '::' . $case;
+
+							$class->addConstant($constant, new PhpGenerator\Literal($reference))
+								->addComment("@deprecated use {@see {$reference}} instead");
+							$constants[] = "\t" . $reference . ',';
 
 						}
 
@@ -558,11 +610,20 @@ require(__DIR__ . '/../vendor/autoload.php');
 
 				foreach ($properties as $property) {
 
-					$constructor
-						->addParameter($property->getName())
-						->setType($property->getType());
+					$parameter = $constructor->addParameter($property->getName());
+					$setter    = 'set' . ucfirst($property->getName());
 
-					$constructor->addBody('$this->set' . ucfirst($property->getName()) . '($' . $property->getName() . ');');
+					// Mirror the setter signature so widened decimal parameters (string|BcMath\Number) carry
+					// over to the constructor as well.
+					if ($class->hasMethod($setter)) {
+						$setterParameter = $class->getMethod($setter)->getParameter($property->getName());
+						$parameter->setType($setterParameter->getType());
+						$parameter->setNullable($setterParameter->isNullable());
+					} else {
+						$parameter->setType($property->getType());
+					}
+
+					$constructor->addBody('$this->' . $setter . '($' . $property->getName() . ');');
 
 				}
 			}
@@ -600,6 +661,11 @@ require(__DIR__ . '/../vendor/autoload.php');
 					foreach ($matches[1] as $i => $use) {
 
 						$className = !str_contains($use, '\\') ? $use : substr($use, strrpos($use, '\\') + 1);
+
+						// Namespace imports referenced as a prefix (e.g. `use BcMath;` for BcMath\Number).
+						if (str_contains($code, $className . '\\')) {
+							continue;
+						}
 
 						if (preg_match('~private \??' . $className . ' ~', $code)) {
 							continue;
@@ -692,6 +758,16 @@ require(__DIR__ . '/../vendor/autoload.php');
 				}
 
 				return lcfirst($name);
+			}
+
+			/** Re-uppercase whole PascalCase words that are known abbreviations (VAT, not Vat). */
+			private function applyAbbreviations(string $pascal): string
+			{
+				return (string) preg_replace_callback(
+					'~[A-Z][a-z0-9]*~',
+					fn (array $m): string => in_array(strtoupper($m[0]), self::Abbreviations, true) ? strtoupper($m[0]) : $m[0],
+					$pascal,
+				);
 			}
 
 			private function formatDoc(string $doc): string

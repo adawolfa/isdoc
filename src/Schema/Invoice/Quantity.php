@@ -21,11 +21,13 @@ class Quantity extends SimpleContentElement implements Arrayable
 	#[Map('@unitCode')]
 	private ?string $unitCode = null;
 
+	/** @deprecated Method accessors are deprecated, use {@see $unitCode} property instead. */
 	public function getUnitCode(): ?string
 	{
 		return $this->unitCode;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $unitCode} property instead. */
 	public function setUnitCode(?string $unitCode): self
 	{
 		$this->unitCode = $unitCode;

@@ -3,9 +3,11 @@
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
 use Adawolfa\ISDOC\Arrayable;
+use Adawolfa\ISDOC\Deprecations;
 use Adawolfa\ISDOC\Map;
 use Adawolfa\ISDOC\Restriction;
 use Adawolfa\ISDOC\ToArray;
+use BcMath;
 use Nette\SmartObject;
 
 /**
@@ -18,15 +20,15 @@ use Nette\SmartObject;
  * @property ContractLine|null         $contract
  * @property string|null               $egovClassifier
  * @property Quantity|null             $invoicedQuantity
- * @property string|null               $lineExtensionAmountCurr
- * @property string                    $lineExtensionAmount
- * @property string|null               $lineExtensionAmountBeforeDiscount
- * @property string|null               $lineExtensionAmountTaxInclusiveCurr
- * @property string                    $lineExtensionAmountTaxInclusive
- * @property string|null               $lineExtensionAmountTaxInclusiveBeforeDiscount
- * @property string                    $lineExtensionTaxAmount
- * @property string                    $unitPrice
- * @property string                    $unitPriceTaxInclusive
+ * @property string|BcMath\Number|null $lineExtensionAmountCurr
+ * @property string|BcMath\Number      $lineExtensionAmount
+ * @property string|BcMath\Number|null $lineExtensionAmountBeforeDiscount
+ * @property string|BcMath\Number|null $lineExtensionAmountTaxInclusiveCurr
+ * @property string|BcMath\Number      $lineExtensionAmountTaxInclusive
+ * @property string|BcMath\Number|null $lineExtensionAmountTaxInclusiveBeforeDiscount
+ * @property string|BcMath\Number      $lineExtensionTaxAmount
+ * @property string|BcMath\Number      $unitPrice
+ * @property string|BcMath\Number      $unitPriceTaxInclusive
  * @property ClassifiedTaxCategory     $classifiedTaxCategory
  * @property Note|null                 $note
  * @property Note|null                 $vatNote
@@ -125,16 +127,16 @@ class InvoiceLine implements Arrayable
 	private ?Item $item = null;
 
 	/**
-	 * @param numeric-string $lineExtensionAmount
-	 * @param numeric-string $lineExtensionAmountTaxInclusive
+	 * @param numeric-string|BcMath\Number $lineExtensionAmount
+	 * @param numeric-string|BcMath\Number $lineExtensionAmountTaxInclusive
 	 */
 	public function __construct(
 		string                $id,
-		string                $lineExtensionAmount,
-		string                $lineExtensionAmountTaxInclusive,
-		string                $lineExtensionTaxAmount,
-		string                $unitPrice,
-		string                $unitPriceTaxInclusive,
+		string|BcMath\Number  $lineExtensionAmount,
+		string|BcMath\Number  $lineExtensionAmountTaxInclusive,
+		string|BcMath\Number  $lineExtensionTaxAmount,
+		string|BcMath\Number  $unitPrice,
+		string|BcMath\Number  $unitPriceTaxInclusive,
 		ClassifiedTaxCategory $classifiedTaxCategory,
 	)
 	{
@@ -147,11 +149,13 @@ class InvoiceLine implements Arrayable
 		$this->setClassifiedTaxCategory($classifiedTaxCategory);
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $id} property instead. */
 	public function getId(): string
 	{
 		return $this->id;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $id} property instead. */
 	public function setId(string $id): self
 	{
 		Restriction::maxLength($id, 36);
@@ -159,228 +163,292 @@ class InvoiceLine implements Arrayable
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $order} property instead. */
 	public function getOrder(): ?OrderLine
 	{
 		return $this->order;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $order} property instead. */
 	public function setOrder(?OrderLine $order): self
 	{
 		$this->order = $order;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $deliveryNote} property instead. */
 	public function getDeliveryNote(): ?DeliveryNoteLine
 	{
 		return $this->deliveryNote;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $deliveryNote} property instead. */
 	public function setDeliveryNote(?DeliveryNoteLine $deliveryNote): self
 	{
 		$this->deliveryNote = $deliveryNote;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $originalDocument} property instead. */
 	public function getOriginalDocument(): ?OriginalDocumentLine
 	{
 		return $this->originalDocument;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $originalDocument} property instead. */
 	public function setOriginalDocument(?OriginalDocumentLine $originalDocument): self
 	{
 		$this->originalDocument = $originalDocument;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $contract} property instead. */
 	public function getContract(): ?ContractLine
 	{
 		return $this->contract;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $contract} property instead. */
 	public function setContract(?ContractLine $contract): self
 	{
 		$this->contract = $contract;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $egovClassifier} property instead. */
 	public function getEgovClassifier(): ?string
 	{
 		return $this->egovClassifier;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $egovClassifier} property instead. */
 	public function setEgovClassifier(?string $egovClassifier): self
 	{
 		$this->egovClassifier = $egovClassifier;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $invoicedQuantity} property instead. */
 	public function getInvoicedQuantity(): ?Quantity
 	{
 		return $this->invoicedQuantity;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $invoicedQuantity} property instead. */
 	public function setInvoicedQuantity(?Quantity $invoicedQuantity): self
 	{
 		$this->invoicedQuantity = $invoicedQuantity;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $lineExtensionAmountCurr} property instead. */
 	public function getLineExtensionAmountCurr(): ?string
 	{
 		return $this->lineExtensionAmountCurr;
 	}
 
-	public function setLineExtensionAmountCurr(?string $lineExtensionAmountCurr): self
+	/** @deprecated Method accessors are deprecated, use {@see $lineExtensionAmountCurr} property instead. */
+	public function setLineExtensionAmountCurr(string|BcMath\Number|null $lineExtensionAmountCurr): self
 	{
+		Deprecations::number($lineExtensionAmountCurr);
+		$lineExtensionAmountCurr = $lineExtensionAmountCurr === null ? null : (string) $lineExtensionAmountCurr;
 		Restriction::decimal($lineExtensionAmountCurr);
 		$this->lineExtensionAmountCurr = $lineExtensionAmountCurr;
 		return $this;
 	}
 
-	/** @return numeric-string */
+	/**
+	 * @deprecated Method accessors are deprecated, use {@see $lineExtensionAmount} property instead.
+	 * @return numeric-string
+	 */
 	public function getLineExtensionAmount(): string
 	{
 		return $this->lineExtensionAmount;
 	}
 
 	/**
-	 * @param numeric-string $lineExtensionAmount
+	 * @deprecated Method accessors are deprecated, use {@see $lineExtensionAmount} property instead.
+	 * @param numeric-string|BcMath\Number $lineExtensionAmount
 	 */
-	public function setLineExtensionAmount(string $lineExtensionAmount): self
+	public function setLineExtensionAmount(string|BcMath\Number $lineExtensionAmount): self
 	{
+		Deprecations::number($lineExtensionAmount);
+		$lineExtensionAmount = (string) $lineExtensionAmount;
 		Restriction::decimal($lineExtensionAmount);
 		$this->lineExtensionAmount = $lineExtensionAmount;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $lineExtensionAmountBeforeDiscount} property instead. */
 	public function getLineExtensionAmountBeforeDiscount(): ?string
 	{
 		return $this->lineExtensionAmountBeforeDiscount;
 	}
 
-	public function setLineExtensionAmountBeforeDiscount(?string $lineExtensionAmountBeforeDiscount): self
+	/** @deprecated Method accessors are deprecated, use {@see $lineExtensionAmountBeforeDiscount} property instead. */
+	public function setLineExtensionAmountBeforeDiscount(
+		string|BcMath\Number|null $lineExtensionAmountBeforeDiscount,
+	): self
 	{
+		Deprecations::number($lineExtensionAmountBeforeDiscount);
+		$lineExtensionAmountBeforeDiscount = $lineExtensionAmountBeforeDiscount === null ? null : (string) $lineExtensionAmountBeforeDiscount;
 		Restriction::decimal($lineExtensionAmountBeforeDiscount);
 		$this->lineExtensionAmountBeforeDiscount = $lineExtensionAmountBeforeDiscount;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $lineExtensionAmountTaxInclusiveCurr} property instead. */
 	public function getLineExtensionAmountTaxInclusiveCurr(): ?string
 	{
 		return $this->lineExtensionAmountTaxInclusiveCurr;
 	}
 
-	public function setLineExtensionAmountTaxInclusiveCurr(?string $lineExtensionAmountTaxInclusiveCurr): self
+	/** @deprecated Method accessors are deprecated, use {@see $lineExtensionAmountTaxInclusiveCurr} property instead. */
+	public function setLineExtensionAmountTaxInclusiveCurr(
+		string|BcMath\Number|null $lineExtensionAmountTaxInclusiveCurr,
+	): self
 	{
+		Deprecations::number($lineExtensionAmountTaxInclusiveCurr);
+		$lineExtensionAmountTaxInclusiveCurr = $lineExtensionAmountTaxInclusiveCurr === null ? null : (string) $lineExtensionAmountTaxInclusiveCurr;
 		Restriction::decimal($lineExtensionAmountTaxInclusiveCurr);
 		$this->lineExtensionAmountTaxInclusiveCurr = $lineExtensionAmountTaxInclusiveCurr;
 		return $this;
 	}
 
-	/** @return numeric-string */
+	/**
+	 * @deprecated Method accessors are deprecated, use {@see $lineExtensionAmountTaxInclusive} property instead.
+	 * @return numeric-string
+	 */
 	public function getLineExtensionAmountTaxInclusive(): string
 	{
 		return $this->lineExtensionAmountTaxInclusive;
 	}
 
 	/**
-	 * @param numeric-string $lineExtensionAmountTaxInclusive
+	 * @deprecated Method accessors are deprecated, use {@see $lineExtensionAmountTaxInclusive} property instead.
+	 * @param numeric-string|BcMath\Number $lineExtensionAmountTaxInclusive
 	 */
-	public function setLineExtensionAmountTaxInclusive(string $lineExtensionAmountTaxInclusive): self
+	public function setLineExtensionAmountTaxInclusive(string|BcMath\Number $lineExtensionAmountTaxInclusive): self
 	{
+		Deprecations::number($lineExtensionAmountTaxInclusive);
+		$lineExtensionAmountTaxInclusive = (string) $lineExtensionAmountTaxInclusive;
 		Restriction::decimal($lineExtensionAmountTaxInclusive);
 		$this->lineExtensionAmountTaxInclusive = $lineExtensionAmountTaxInclusive;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $lineExtensionAmountTaxInclusiveBeforeDiscount} property instead. */
 	public function getLineExtensionAmountTaxInclusiveBeforeDiscount(): ?string
 	{
 		return $this->lineExtensionAmountTaxInclusiveBeforeDiscount;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $lineExtensionAmountTaxInclusiveBeforeDiscount} property instead. */
 	public function setLineExtensionAmountTaxInclusiveBeforeDiscount(
-		?string $lineExtensionAmountTaxInclusiveBeforeDiscount,
+		string|BcMath\Number|null $lineExtensionAmountTaxInclusiveBeforeDiscount,
 	): self
 	{
+		Deprecations::number($lineExtensionAmountTaxInclusiveBeforeDiscount);
+		$lineExtensionAmountTaxInclusiveBeforeDiscount = $lineExtensionAmountTaxInclusiveBeforeDiscount === null ? null : (string) $lineExtensionAmountTaxInclusiveBeforeDiscount;
 		Restriction::decimal($lineExtensionAmountTaxInclusiveBeforeDiscount);
 		$this->lineExtensionAmountTaxInclusiveBeforeDiscount = $lineExtensionAmountTaxInclusiveBeforeDiscount;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $lineExtensionTaxAmount} property instead. */
 	public function getLineExtensionTaxAmount(): string
 	{
 		return $this->lineExtensionTaxAmount;
 	}
 
-	public function setLineExtensionTaxAmount(string $lineExtensionTaxAmount): self
+	/** @deprecated Method accessors are deprecated, use {@see $lineExtensionTaxAmount} property instead. */
+	public function setLineExtensionTaxAmount(string|BcMath\Number $lineExtensionTaxAmount): self
 	{
+		Deprecations::number($lineExtensionTaxAmount);
+		$lineExtensionTaxAmount = (string) $lineExtensionTaxAmount;
 		Restriction::decimal($lineExtensionTaxAmount);
 		$this->lineExtensionTaxAmount = $lineExtensionTaxAmount;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $unitPrice} property instead. */
 	public function getUnitPrice(): string
 	{
 		return $this->unitPrice;
 	}
 
-	public function setUnitPrice(string $unitPrice): self
+	/** @deprecated Method accessors are deprecated, use {@see $unitPrice} property instead. */
+	public function setUnitPrice(string|BcMath\Number $unitPrice): self
 	{
+		Deprecations::number($unitPrice);
+		$unitPrice = (string) $unitPrice;
 		Restriction::decimal($unitPrice);
 		$this->unitPrice = $unitPrice;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $unitPriceTaxInclusive} property instead. */
 	public function getUnitPriceTaxInclusive(): string
 	{
 		return $this->unitPriceTaxInclusive;
 	}
 
-	public function setUnitPriceTaxInclusive(string $unitPriceTaxInclusive): self
+	/** @deprecated Method accessors are deprecated, use {@see $unitPriceTaxInclusive} property instead. */
+	public function setUnitPriceTaxInclusive(string|BcMath\Number $unitPriceTaxInclusive): self
 	{
+		Deprecations::number($unitPriceTaxInclusive);
+		$unitPriceTaxInclusive = (string) $unitPriceTaxInclusive;
 		Restriction::decimal($unitPriceTaxInclusive);
 		$this->unitPriceTaxInclusive = $unitPriceTaxInclusive;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $classifiedTaxCategory} property instead. */
 	public function getClassifiedTaxCategory(): ClassifiedTaxCategory
 	{
 		return $this->classifiedTaxCategory;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $classifiedTaxCategory} property instead. */
 	public function setClassifiedTaxCategory(ClassifiedTaxCategory $classifiedTaxCategory): self
 	{
 		$this->classifiedTaxCategory = $classifiedTaxCategory;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $note} property instead. */
 	public function getNote(): ?Note
 	{
 		return $this->note;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $note} property instead. */
 	public function setNote(?Note $note): self
 	{
 		$this->note = $note;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $vatNote} property instead. */
 	public function getVatNote(): ?Note
 	{
 		return $this->vatNote;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $vatNote} property instead. */
 	public function setVatNote(?Note $vatNote): self
 	{
 		$this->vatNote = $vatNote;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $item} property instead. */
 	public function getItem(): ?Item
 	{
 		return $this->item;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $item} property instead. */
 	public function setItem(?Item $item): self
 	{
 		$this->item = $item;

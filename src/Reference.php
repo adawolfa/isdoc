@@ -6,6 +6,7 @@ use Attribute;
 
 /**
  * Indicates a referenced element.
+ * @deprecated 2.0 will no longer use mapping properties
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class Reference

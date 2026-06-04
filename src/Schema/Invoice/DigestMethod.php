@@ -27,11 +27,13 @@ class DigestMethod implements Arrayable
 		$this->setAlgorithm($algorithm);
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $algorithm} property instead. */
 	public function getAlgorithm(): string
 	{
 		return $this->algorithm;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $algorithm} property instead. */
 	public function setAlgorithm(string $algorithm): self
 	{
 		$this->algorithm = $algorithm;

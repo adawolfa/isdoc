@@ -20,10 +20,17 @@ class LocalReverseCharge implements Arrayable
 	use SmartObject;
 	use ToArray;
 
-	public const LOCAL_REVERSE_CHARGE_CODE_DELIVERY_OF_GOLD                       = '1';
-	public const LOCAL_REVERSE_CHARGE_CODE_TRADE_WITH_EMISSION_ALLOWANCES         = '2';
-	public const LOCAL_REVERSE_CHARGE_CODE_DELIVERY_OF_DEVELOPER_OR_ASSEMBLY_WORK = '4';
-	public const LOCAL_REVERSE_CHARGE_CODE_WASTE_SEE_APPENDIX_5_OF_VAT_BILL       = '5';
+	/** @deprecated use {@see LocalReverseChargeCode::DeliveryOfGold} instead */
+	public const string LOCAL_REVERSE_CHARGE_CODE_DELIVERY_OF_GOLD = LocalReverseChargeCode::DeliveryOfGold;
+
+	/** @deprecated use {@see LocalReverseChargeCode::TradeWithEmissionAllowances} instead */
+	public const string LOCAL_REVERSE_CHARGE_CODE_TRADE_WITH_EMISSION_ALLOWANCES = LocalReverseChargeCode::TradeWithEmissionAllowances;
+
+	/** @deprecated use {@see LocalReverseChargeCode::DeliveryOfDeveloperOrAssemblyWork} instead */
+	public const string LOCAL_REVERSE_CHARGE_CODE_DELIVERY_OF_DEVELOPER_OR_ASSEMBLY_WORK = LocalReverseChargeCode::DeliveryOfDeveloperOrAssemblyWork;
+
+	/** @deprecated use {@see LocalReverseChargeCode::WasteSeeAppendix5OfVATBill} instead */
+	public const string LOCAL_REVERSE_CHARGE_CODE_WASTE_SEE_APPENDIX_5_OF_VAT_BILL = LocalReverseChargeCode::WasteSeeAppendix5OfVATBill;
 
 	/** VAT subject code for local reverse charge mode. */
 	#[Map('LocalReverseChargeCode')]
@@ -38,28 +45,32 @@ class LocalReverseCharge implements Arrayable
 		$this->setLocalReverseChargeCode($localReverseChargeCode);
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $localReverseChargeCode} property instead. */
 	public function getLocalReverseChargeCode(): string
 	{
 		return $this->localReverseChargeCode;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $localReverseChargeCode} property instead. */
 	public function setLocalReverseChargeCode(string $localReverseChargeCode): self
 	{
 		Restriction::enumeration($localReverseChargeCode, [
-			self::LOCAL_REVERSE_CHARGE_CODE_DELIVERY_OF_GOLD,
-			self::LOCAL_REVERSE_CHARGE_CODE_TRADE_WITH_EMISSION_ALLOWANCES,
-			self::LOCAL_REVERSE_CHARGE_CODE_DELIVERY_OF_DEVELOPER_OR_ASSEMBLY_WORK,
-			self::LOCAL_REVERSE_CHARGE_CODE_WASTE_SEE_APPENDIX_5_OF_VAT_BILL,
+			LocalReverseChargeCode::DeliveryOfGold,
+			LocalReverseChargeCode::TradeWithEmissionAllowances,
+			LocalReverseChargeCode::DeliveryOfDeveloperOrAssemblyWork,
+			LocalReverseChargeCode::WasteSeeAppendix5OfVATBill,
 		]);
 		$this->localReverseChargeCode = $localReverseChargeCode;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $localReverseChargeQuantity} property instead. */
 	public function getLocalReverseChargeQuantity(): ?Quantity
 	{
 		return $this->localReverseChargeQuantity;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $localReverseChargeQuantity} property instead. */
 	public function setLocalReverseChargeQuantity(?Quantity $localReverseChargeQuantity): self
 	{
 		$this->localReverseChargeQuantity = $localReverseChargeQuantity;

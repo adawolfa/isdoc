@@ -88,7 +88,7 @@ final class Reader
 
 			$name = $zip->getNameIndex($i);
 
-			if ($name !== false && strcasecmp(pathinfo($name, PATHINFO_EXTENSION), ISDOC\Manager::FORMAT_ISDOC) === 0) {
+			if ($name !== false && strcasecmp(pathinfo($name, PATHINFO_EXTENSION), ISDOC\Format::ISDOC) === 0) {
 				$files[] = $name;
 			}
 

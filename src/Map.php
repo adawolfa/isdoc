@@ -6,6 +6,7 @@ use Attribute;
 
 /**
  * Annotates elements to properties or top-most element in a collection.
+ * @deprecated 2.0 will no longer use mapping properties
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY)]
 final class Map

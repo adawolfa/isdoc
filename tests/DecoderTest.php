@@ -68,7 +68,6 @@ final class DecoderTest extends TestCase
 
 		$reflection = new ReflectionObject($invoice);
 		$property = $reflection->getProperty('vatApplicable');
-		$property->setAccessible(true);
 		$this->assertFalse($property->isInitialized($invoice));
 	}
 

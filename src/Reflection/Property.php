@@ -152,9 +152,7 @@ class Property
 			return;
 		}
 
-		$this->property->setAccessible(true);
 		$this->property->setValue($this->instance->getInstance(), $value);
-		$this->property->setAccessible(false);
 	}
 
 	/** @return mixed */
@@ -165,9 +163,7 @@ class Property
 		if ($getter !== null) {
 			$value = $getter();
 		} else {
-			$this->property->setAccessible(true);
 			$value = $this->property->getValue($this->instance->getInstance());
-			$this->property->setAccessible(false);
 		}
 
 		return $value;

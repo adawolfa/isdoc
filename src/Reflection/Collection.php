@@ -94,15 +94,12 @@ final class Collection extends Instance
 			throw new RuntimeException("Unable to create reflection of $this->type::\$items.", 0, $exception);
 		}
 
-		$property->setAccessible(true);
-
 		$items = $property->getValue($this->getInstance());
 		assert(is_array($items) || $items instanceof ArrayAccess);
 
 		$items[] = $item;
 
 		$property->setValue($this->getInstance(), $items);
-		$property->setAccessible(false);
 	}
 
 }

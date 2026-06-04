@@ -27,11 +27,13 @@ class Delivery implements Arrayable
 		$this->setParty($party);
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $party} property instead. */
 	public function getParty(): Party
 	{
 		return $this->party;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $party} property instead. */
 	public function setParty(Party $party): self
 	{
 		$this->party = $party;

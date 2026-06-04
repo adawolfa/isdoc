@@ -27,11 +27,13 @@ class TertiarySellersItemIdentification implements Arrayable
 		$this->setId($id);
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $id} property instead. */
 	public function getId(): string
 	{
 		return $this->id;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $id} property instead. */
 	public function setId(string $id): self
 	{
 		$this->id = $id;

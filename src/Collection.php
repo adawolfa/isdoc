@@ -27,6 +27,7 @@ abstract class Collection implements IteratorAggregate, Countable, Arrayable
 
 	/**
 	 * @return array<int, array<string|int, mixed>|T>
+	 * @deprecated 2.0 will no longer provide {@code toArray()}
 	 */
 	public function toArray(): array
 	{

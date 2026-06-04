@@ -30,16 +30,16 @@ final class Reader
 	public function file(
 		string  $filename,
 		string  $class = Schema\Invoice::class,
-		?string $format = Manager::FORMAT_AUTO
+		?string $format = null,
 	): Schema\Invoice
 	{
 		$format = $format ?? Utils::detectFormat($filename);
 
-		if ($format === Manager::FORMAT_ISDOCX) {
+		if ($format === Format::ISDOCX) {
 			return $this->xReader->file($filename, $class);
 		}
 
-		if ($format === Manager::FORMAT_PDF) {
+		if ($format === Format::PDF) {
 
 			if ($this->pdfReader === null) {
 				throw ReaderException::pdfParsingNotAvailable();

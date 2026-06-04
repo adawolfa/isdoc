@@ -44,44 +44,52 @@ class Supplement implements Arrayable
 		$this->setDigestValue($digestValue);
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $filename} property instead. */
 	public function getFilename(): string
 	{
 		return $this->filename;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $filename} property instead. */
 	public function setFilename(string $filename): self
 	{
 		$this->filename = $filename;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $digestMethod} property instead. */
 	public function getDigestMethod(): DigestMethod
 	{
 		return $this->digestMethod;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $digestMethod} property instead. */
 	public function setDigestMethod(DigestMethod $digestMethod): self
 	{
 		$this->digestMethod = $digestMethod;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $digestValue} property instead. */
 	public function getDigestValue(): string
 	{
 		return $this->digestValue;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $digestValue} property instead. */
 	public function setDigestValue(string $digestValue): self
 	{
 		$this->digestValue = $digestValue;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $preview} property instead. */
 	public function getPreview(): ?bool
 	{
 		return $this->preview;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $preview} property instead. */
 	public function setPreview(?bool $preview): self
 	{
 		$this->preview = $preview;

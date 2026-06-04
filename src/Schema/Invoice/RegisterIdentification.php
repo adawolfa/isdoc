@@ -38,44 +38,52 @@ class RegisterIdentification implements Arrayable
 	#[Map('Preformatted')]
 	private ?string $preformatted = null;
 
+	/** @deprecated Method accessors are deprecated, use {@see $registerKeptAt} property instead. */
 	public function getRegisterKeptAt(): ?string
 	{
 		return $this->registerKeptAt;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $registerKeptAt} property instead. */
 	public function setRegisterKeptAt(?string $registerKeptAt): self
 	{
 		$this->registerKeptAt = $registerKeptAt;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $registerFileRef} property instead. */
 	public function getRegisterFileRef(): ?string
 	{
 		return $this->registerFileRef;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $registerFileRef} property instead. */
 	public function setRegisterFileRef(?string $registerFileRef): self
 	{
 		$this->registerFileRef = $registerFileRef;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $registerDate} property instead. */
 	public function getRegisterDate(): ?DateTimeInterface
 	{
 		return $this->registerDate;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $registerDate} property instead. */
 	public function setRegisterDate(?DateTimeInterface $registerDate): self
 	{
 		$this->registerDate = $registerDate;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $preformatted} property instead. */
 	public function getPreformatted(): ?string
 	{
 		return $this->preformatted;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $preformatted} property instead. */
 	public function setPreformatted(?string $preformatted): self
 	{
 		$this->preformatted = $preformatted;

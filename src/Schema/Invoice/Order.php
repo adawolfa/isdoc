@@ -64,55 +64,65 @@ class Order implements Arrayable
 		$this->setSalesOrderID($salesOrderID);
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $salesOrderID} property instead. */
 	public function getSalesOrderID(): string
 	{
 		return $this->salesOrderID;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $salesOrderID} property instead. */
 	public function setSalesOrderID(string $salesOrderID): self
 	{
 		$this->salesOrderID = $salesOrderID;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $externalOrderID} property instead. */
 	public function getExternalOrderID(): ?string
 	{
 		return $this->externalOrderID;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $externalOrderID} property instead. */
 	public function setExternalOrderID(?string $externalOrderID): self
 	{
 		$this->externalOrderID = $externalOrderID;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $issueDate} property instead. */
 	public function getIssueDate(): ?DateTimeInterface
 	{
 		return $this->issueDate;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $issueDate} property instead. */
 	public function setIssueDate(?DateTimeInterface $issueDate): self
 	{
 		$this->issueDate = $issueDate;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $externalOrderIssueDate} property instead. */
 	public function getExternalOrderIssueDate(): ?DateTimeInterface
 	{
 		return $this->externalOrderIssueDate;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $externalOrderIssueDate} property instead. */
 	public function setExternalOrderIssueDate(?DateTimeInterface $externalOrderIssueDate): self
 	{
 		$this->externalOrderIssueDate = $externalOrderIssueDate;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $uuid} property instead. */
 	public function getUuid(): ?string
 	{
 		return $this->uuid;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $uuid} property instead. */
 	public function setUuid(?string $uuid): self
 	{
 		Restriction::pattern($uuid, '[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}');
@@ -120,33 +130,39 @@ class Order implements Arrayable
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $isds_id} property instead. */
 	public function getIsds_id(): ?string
 	{
 		return $this->isds_id;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $isds_id} property instead. */
 	public function setIsds_id(?string $isds_id): self
 	{
 		$this->isds_id = $isds_id;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $file} property instead. */
 	public function getFile(): ?string
 	{
 		return $this->file;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $file} property instead. */
 	public function setFile(?string $file): self
 	{
 		$this->file = $file;
 		return $this;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $referenceNumber} property instead. */
 	public function getReferenceNumber(): ?string
 	{
 		return $this->referenceNumber;
 	}
 
+	/** @deprecated Method accessors are deprecated, use {@see $referenceNumber} property instead. */
 	public function setReferenceNumber(?string $referenceNumber): self
 	{
 		$this->referenceNumber = $referenceNumber;

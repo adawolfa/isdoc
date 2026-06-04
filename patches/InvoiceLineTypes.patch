@@ -1,15 +1,11 @@
-Index: src/Schema/Invoice/InvoiceLine.php
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
 diff --git a/src/Schema/Invoice/InvoiceLine.php b/src/Schema/Invoice/InvoiceLine.php
---- a/src/Schema/Invoice/InvoiceLine.php	(revision 3ab96efb80dac47220dfaf18141ad11f2b817bfd)
-+++ b/src/Schema/Invoice/InvoiceLine.php	(date 1768533135878)
-@@ -70,7 +70,10 @@
+index 26761c8..609232a 100644
+--- a/src/Schema/Invoice/InvoiceLine.php
++++ b/src/Schema/Invoice/InvoiceLine.php
+@@ -72,7 +72,10 @@ class InvoiceLine implements Arrayable
  	#[Map('LineExtensionAmountCurr')]
  	private ?string $lineExtensionAmountCurr = null;
-
+ 
 -	/** Total line amount without tax in a local currency. */
 +	/**
 +	 * Total line amount without tax in a local currency.
@@ -17,11 +13,11 @@ diff --git a/src/Schema/Invoice/InvoiceLine.php b/src/Schema/Invoice/InvoiceLine
 +	 */
  	#[Map('LineExtensionAmount')]
  	private string $lineExtensionAmount;
-
-@@ -82,7 +85,10 @@
+ 
+@@ -84,7 +87,10 @@ class InvoiceLine implements Arrayable
  	#[Map('LineExtensionAmountTaxInclusiveCurr')]
  	private ?string $lineExtensionAmountTaxInclusiveCurr = null;
-
+ 
 -	/** Total line amount including tax in a local currency. */
 +	/**
 +	 * Total line amount including tax in a local currency.
@@ -29,28 +25,28 @@ diff --git a/src/Schema/Invoice/InvoiceLine.php b/src/Schema/Invoice/InvoiceLine
 +	 */
  	#[Map('LineExtensionAmountTaxInclusive')]
  	private string $lineExtensionAmountTaxInclusive;
-
-@@ -118,15 +124,20 @@
+ 
+@@ -120,15 +126,20 @@ class InvoiceLine implements Arrayable
  	#[Map('Item')]
  	private ?Item $item = null;
-
+ 
 +	/**
-+	 * @param numeric-string $lineExtensionAmount
-+	 * @param numeric-string $lineExtensionAmountTaxInclusive
++	 * @param numeric-string|BcMath\Number $lineExtensionAmount
++	 * @param numeric-string|BcMath\Number $lineExtensionAmountTaxInclusive
 +	 */
  	public function __construct(
 -		string $id,
--		string $lineExtensionAmount,
--		string $lineExtensionAmountTaxInclusive,
--		string $lineExtensionTaxAmount,
--		string $unitPrice,
--		string $unitPriceTaxInclusive,
+-		string|BcMath\Number $lineExtensionAmount,
+-		string|BcMath\Number $lineExtensionAmountTaxInclusive,
+-		string|BcMath\Number $lineExtensionTaxAmount,
+-		string|BcMath\Number $unitPrice,
+-		string|BcMath\Number $unitPriceTaxInclusive,
 +		string                $id,
-+		string                $lineExtensionAmount,
-+		string                $lineExtensionAmountTaxInclusive,
-+		string                $lineExtensionTaxAmount,
-+		string                $unitPrice,
-+		string                $unitPriceTaxInclusive,
++		string|BcMath\Number  $lineExtensionAmount,
++		string|BcMath\Number  $lineExtensionAmountTaxInclusive,
++		string|BcMath\Number  $lineExtensionTaxAmount,
++		string|BcMath\Number  $unitPrice,
++		string|BcMath\Number  $unitPriceTaxInclusive,
  		ClassifiedTaxCategory $classifiedTaxCategory,
 -	) {
 +	)
@@ -58,35 +54,47 @@ diff --git a/src/Schema/Invoice/InvoiceLine.php b/src/Schema/Invoice/InvoiceLine
  		$this->setId($id);
  		$this->setLineExtensionAmount($lineExtensionAmount);
  		$this->setLineExtensionAmountTaxInclusive($lineExtensionAmountTaxInclusive);
-@@ -226,11 +237,15 @@
+@@ -246,13 +257,19 @@ class InvoiceLine implements Arrayable
  		return $this;
  	}
-
-+	/** @return numeric-string */
+ 
+-	/** @deprecated Method accessors are deprecated, use {@see $lineExtensionAmount} property instead. */
++	/**
++	 * @deprecated Method accessors are deprecated, use {@see $lineExtensionAmount} property instead.
++	 * @return numeric-string
++	 */
  	public function getLineExtensionAmount(): string
  	{
  		return $this->lineExtensionAmount;
  	}
-
+ 
+-	/** @deprecated Method accessors are deprecated, use {@see $lineExtensionAmount} property instead. */
 +	/**
-+	 * @param numeric-string $lineExtensionAmount
++	 * @deprecated Method accessors are deprecated, use {@see $lineExtensionAmount} property instead.
++	 * @param numeric-string|BcMath\Number $lineExtensionAmount
 +	 */
- 	public function setLineExtensionAmount(string $lineExtensionAmount): self
+ 	public function setLineExtensionAmount(string|BcMath\Number $lineExtensionAmount): self
  	{
- 		Restriction::decimal($lineExtensionAmount);
-@@ -262,11 +277,15 @@
+ 		Deprecations::number($lineExtensionAmount);
+@@ -298,13 +315,19 @@ class InvoiceLine implements Arrayable
  		return $this;
  	}
-
-+	/** @return numeric-string */
+ 
+-	/** @deprecated Method accessors are deprecated, use {@see $lineExtensionAmountTaxInclusive} property instead. */
++	/**
++	 * @deprecated Method accessors are deprecated, use {@see $lineExtensionAmountTaxInclusive} property instead.
++	 * @return numeric-string
++	 */
  	public function getLineExtensionAmountTaxInclusive(): string
  	{
  		return $this->lineExtensionAmountTaxInclusive;
  	}
-
+ 
+-	/** @deprecated Method accessors are deprecated, use {@see $lineExtensionAmountTaxInclusive} property instead. */
 +	/**
-+	 * @param numeric-string $lineExtensionAmountTaxInclusive
++	 * @deprecated Method accessors are deprecated, use {@see $lineExtensionAmountTaxInclusive} property instead.
++	 * @param numeric-string|BcMath\Number $lineExtensionAmountTaxInclusive
 +	 */
- 	public function setLineExtensionAmountTaxInclusive(string $lineExtensionAmountTaxInclusive): self
+ 	public function setLineExtensionAmountTaxInclusive(string|BcMath\Number $lineExtensionAmountTaxInclusive): self
  	{
- 		Restriction::decimal($lineExtensionAmountTaxInclusive);
+ 		Deprecations::number($lineExtensionAmountTaxInclusive);
