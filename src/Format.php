@@ -2,11 +2,14 @@
 
 namespace Adawolfa\ISDOC;
 
-final class Format
+/**
+ * ISDOC file format for Reader::file()/Writer::file(); pass null (the default) to auto-detect from the extension.
+ */
+enum Format: string
 {
 
-	public const string ISDOC = 'isdoc';
-	public const string ISDOCX = 'isdocx';
-	public const string PDF = 'pdf';
+	case ISDOC = 'isdoc';
+	case ISDOCX = 'isdocx';
+	case PDF = 'pdf';
 
 }

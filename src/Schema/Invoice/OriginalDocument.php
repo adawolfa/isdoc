@@ -2,81 +2,52 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Arrayable;
-use Adawolfa\ISDOC\Map;
 use Adawolfa\ISDOC\Restriction;
-use Adawolfa\ISDOC\ToArray;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
+use Adawolfa\ISDOC\XML\Exception;
 use DateTimeInterface;
-use Nette\SmartObject;
 
 /**
  * Reference to an original document which is being corrected by this document (only for document types 2, 3 and 6).
- *
- * @property string                 $id
- * @property DateTimeInterface|null $issueDate
- * @property string|null            $uuid
  */
-class OriginalDocument implements Arrayable
+class OriginalDocument implements Entity
 {
 
-	use SmartObject;
-	use ToArray;
+	use Backing;
 
 	/** Human readable number of original document. */
-	#[Map('ID')]
-	private string $id;
+	public string $id {
+		/** @throws Exception */
+		get => $this->node->getStringOrThrow('ID');
+		set {
+			$this->node->setString('ID', $value);
+		}
+	}
 
 	/** Issue date of original document. */
-	#[Map('IssueDate')]
-	private ?DateTimeInterface $issueDate = null;
+	public ?DateTimeInterface $issueDate {
+		/** @throws Exception */
+		get => $this->node->getDate('IssueDate');
+		set {
+			$this->node->setDate('IssueDate', $value);
+		}
+	}
 
 	/** Unique GUID identifier. */
-	#[Map('UUID')]
-	private ?string $uuid = null;
-
-	public function __construct(string $id)
-	{
-		$this->setId($id);
+	public ?string $uuid {
+		get => $this->node->getString('UUID');
+		set {
+			Restriction::pattern($value, '[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}');
+			$this->node->setString('UUID', $value);
+		}
 	}
 
-	/** @deprecated Method accessors are deprecated, use {@see $id} property instead. */
-	public function getId(): string
-	{
-		return $this->id;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $id} property instead. */
-	public function setId(string $id): self
+	public function __construct(
+		string $id,
+	)
 	{
 		$this->id = $id;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $issueDate} property instead. */
-	public function getIssueDate(): ?DateTimeInterface
-	{
-		return $this->issueDate;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $issueDate} property instead. */
-	public function setIssueDate(?DateTimeInterface $issueDate): self
-	{
-		$this->issueDate = $issueDate;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $uuid} property instead. */
-	public function getUuid(): ?string
-	{
-		return $this->uuid;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $uuid} property instead. */
-	public function setUuid(?string $uuid): self
-	{
-		Restriction::pattern($uuid, '[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}');
-		$this->uuid = $uuid;
-		return $this;
 	}
 
 }

@@ -2,61 +2,43 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Arrayable;
-use Adawolfa\ISDOC\Map;
-use Adawolfa\ISDOC\ToArray;
-use Nette\SmartObject;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
+use Adawolfa\ISDOC\XML\Exception;
 
 /**
  * Information about a party's tax scheme.
- *
- * @property string $companyID
- * @property string $taxScheme
  */
-class PartyTaxScheme implements Arrayable
+class PartyTaxScheme implements Entity
 {
 
-	use SmartObject;
-	use ToArray;
+	use Backing;
 
 	/** VAT number. */
-	#[Map('CompanyID')]
-	private string $companyID;
+	public string $companyID {
+		/** @throws Exception */
+		get => $this->node->getStringOrThrow('CompanyID');
+		set {
+			$this->node->setString('CompanyID', $value);
+		}
+	}
 
 	/** Information about a tax scheme. The most common values are VAT (Value Added Tax) and TIN (Tax Identification Number). */
-	#[Map('TaxScheme')]
-	private string $taxScheme;
-
-	public function __construct(string $companyID, string $taxScheme)
-	{
-		$this->setCompanyID($companyID);
-		$this->setTaxScheme($taxScheme);
+	public string $taxScheme {
+		/** @throws Exception */
+		get => $this->node->getStringOrThrow('TaxScheme');
+		set {
+			$this->node->setString('TaxScheme', $value);
+		}
 	}
 
-	/** @deprecated Method accessors are deprecated, use {@see $companyID} property instead. */
-	public function getCompanyID(): string
-	{
-		return $this->companyID;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $companyID} property instead. */
-	public function setCompanyID(string $companyID): self
+	public function __construct(
+		string $companyID,
+		string $taxScheme,
+	)
 	{
 		$this->companyID = $companyID;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $taxScheme} property instead. */
-	public function getTaxScheme(): string
-	{
-		return $this->taxScheme;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $taxScheme} property instead. */
-	public function setTaxScheme(string $taxScheme): self
-	{
 		$this->taxScheme = $taxScheme;
-		return $this;
 	}
 
 }

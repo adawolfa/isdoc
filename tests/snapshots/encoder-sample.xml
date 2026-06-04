@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <Invoice xmlns="http://isdoc.cz/namespace/2013" version="6.0.2">
   <DocumentType>1</DocumentType>
   <ID>12345</ID>
@@ -57,8 +57,7 @@
     </InvoiceLine>
   </InvoiceLines>
   <TaxTotal>
-    <TaxSubTotal/>
-    <TaxAmount>0.0</TaxAmount>
+    <TaxAmount>0</TaxAmount>
   </TaxTotal>
   <LegalMonetaryTotal>
     <TaxExclusiveAmount>350.0</TaxExclusiveAmount>

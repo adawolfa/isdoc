@@ -22,9 +22,9 @@ final class Writer
 	}
 
 	/** @throws WriterException */
-	public function file(Schema\Invoice $invoice, string $filename, ?string $format = null): void
+	public function file(Schema\Invoice $invoice, string $filename, ?Format $format = null): void
 	{
-		$format = $format ?? Utils::detectFormat($filename);
+		$format ??= Utils::detectFormat($filename);
 
 		if ($format === Format::ISDOCX) {
 			$this->xWriter->file($invoice, $filename);

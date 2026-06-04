@@ -2,113 +2,57 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Arrayable;
-use Adawolfa\ISDOC\Deprecations;
-use Adawolfa\ISDOC\Map;
-use Adawolfa\ISDOC\Restriction;
-use Adawolfa\ISDOC\ToArray;
-use BcMath;
-use Nette\SmartObject;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
+use Adawolfa\ISDOC\XML\Exception;
+use BcMath\Number;
 
 /**
  * Compound VAT field.
- *
- * @property string|BcMath\Number    $percent
- * @property int                     $vatCalculationMethod
- * @property bool|null               $vatApplicable
- * @property LocalReverseCharge|null $localReverseCharge
  */
-class ClassifiedTaxCategory implements Arrayable
+class ClassifiedTaxCategory implements Entity
 {
 
-	use SmartObject;
-	use ToArray;
-
-	/** @deprecated use {@see VATCalculationMethod::FromTheBottom} instead */
-	public const int VAT_CALCULATION_METHOD_FROM_THE_BOTTOM = VATCalculationMethod::FromTheBottom;
-
-	/** @deprecated use {@see VATCalculationMethod::FromTheTop} instead */
-	public const int VAT_CALCULATION_METHOD_FROM_THE_TOP = VATCalculationMethod::FromTheTop;
+	use Backing;
 
 	/** Percentage VAT rate. */
-	#[Map('Percent')]
-	private string $percent;
+	public Number $percent {
+		/** @throws Exception */
+		get => $this->node->getNumberOrThrow('Percent');
+		set {
+			$this->node->setNumber('Percent', $value);
+		}
+	}
 
 	/** VAT calculation method (there are two types in the Czech Republic). */
-	#[Map('VATCalculationMethod')]
-	private int $vatCalculationMethod;
+	public VATCalculationMethod $vatCalculationMethod {
+		/** @throws Exception */
+		get => $this->node->getEnumOrThrow('VATCalculationMethod', VATCalculationMethod::class);
+		set { $this->node->setEnum('VATCalculationMethod', $value); }
+	}
 
 	/** VAT is applicable. */
-	#[Map('VATApplicable')]
-	private ?bool $vatApplicable = null;
+	public ?bool $vatApplicable {
+		/** @throws Exception */
+		get => $this->node->getBool('VATApplicable');
+		set {
+			$this->node->setBool('VATApplicable', $value);
+		}
+	}
 
 	/** Local reverse charge mode. */
-	#[Map('LocalReverseCharge')]
-	private ?LocalReverseCharge $localReverseCharge = null;
-
-	public function __construct(string|BcMath\Number $percent, int $vatCalculationMethod)
-	{
-		$this->setPercent($percent);
-		$this->setVatCalculationMethod($vatCalculationMethod);
+	public ?LocalReverseCharge $localReverseCharge {
+		get => $this->node->getChild('LocalReverseCharge', LocalReverseCharge::class);
+		set { $this->node->setChild('LocalReverseCharge', $value); }
 	}
 
-	/** @deprecated Method accessors are deprecated, use {@see $percent} property instead. */
-	public function getPercent(): string
+	public function __construct(
+		Number $percent,
+		VATCalculationMethod $vatCalculationMethod,
+	)
 	{
-		return $this->percent;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $percent} property instead. */
-	public function setPercent(string|BcMath\Number $percent): self
-	{
-		Deprecations::number($percent);
-		$percent = (string) $percent;
-		Restriction::decimal($percent);
 		$this->percent = $percent;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $vatCalculationMethod} property instead. */
-	public function getVatCalculationMethod(): int
-	{
-		return $this->vatCalculationMethod;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $vatCalculationMethod} property instead. */
-	public function setVatCalculationMethod(int $vatCalculationMethod): self
-	{
-		Restriction::enumeration($vatCalculationMethod, [
-			VATCalculationMethod::FromTheBottom,
-			VATCalculationMethod::FromTheTop,
-		]);
 		$this->vatCalculationMethod = $vatCalculationMethod;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $vatApplicable} property instead. */
-	public function getVatApplicable(): ?bool
-	{
-		return $this->vatApplicable;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $vatApplicable} property instead. */
-	public function setVatApplicable(?bool $vatApplicable): self
-	{
-		$this->vatApplicable = $vatApplicable;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $localReverseCharge} property instead. */
-	public function getLocalReverseCharge(): ?LocalReverseCharge
-	{
-		return $this->localReverseCharge;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $localReverseCharge} property instead. */
-	public function setLocalReverseCharge(?LocalReverseCharge $localReverseCharge): self
-	{
-		$this->localReverseCharge = $localReverseCharge;
-		return $this;
 	}
 
 }

@@ -3,7 +3,11 @@
 namespace Tests\Adawolfa\ISDOC\API;
 
 use Adawolfa\ISDOC;
+use Adawolfa\ISDOC\ReaderException;
 use Adawolfa\ISDOC\Schema\Invoice as S;
+use Adawolfa\ISDOC\SupplementException;
+use Adawolfa\ISDOC\WriterException;
+use BcMath\Number;
 use DateTimeImmutable;
 use LogicException;
 use PHPUnit\Framework\TestCase;
@@ -19,7 +23,9 @@ final class ReadmeSupplementTest extends TestCase
 	/** @var string[] */
 	private array $temp = [];
 
-	/** The decorated, file-backed Adawolfa\ISDOC\Invoice\Supplement public API. */
+	/** The decorated, file-backed Adawolfa\ISDOC\Invoice\Supplement public API.
+	 * @throws SupplementException
+	 */
 	public function testDecoratedSupplementApi(): void
 	{
 		$path     = $this->tempFile('source');
@@ -28,15 +34,15 @@ final class ReadmeSupplementTest extends TestCase
 
 		$supplement = ISDOC\Invoice\Supplement::fromPath($path, 'document.pdf');
 
-		self::assertSame('document.pdf', $supplement->getFilename());
-		self::assertSame($path, $supplement->getPath());
-		self::assertSame($contents, $supplement->getContents());
-		self::assertSame('http://www.w3.org/2000/09/xmldsig#sha1', $supplement->getDigestMethod()->getAlgorithm());
-		self::assertSame(base64_encode(sha1($contents, true)), $supplement->getDigestValue());
-		self::assertTrue($supplement->isOk());
+		self::assertSame('document.pdf', $supplement->filename);
+		self::assertSame($path, $supplement->path);
+		self::assertSame($contents, $supplement->contents);
+		self::assertSame('http://www.w3.org/2000/09/xmldsig#sha1', $supplement->digestMethod->algorithm);
+		self::assertSame(base64_encode(sha1($contents, true)), $supplement->digestValue);
+		self::assertTrue($supplement->ok);
 
-		$supplement->setPreview(true);
-		self::assertTrue($supplement->getPreview());
+		$supplement->preview = true;
+		self::assertTrue($supplement->preview);
 
 		$saveTo = $this->tempFile('saved');
 		$supplement->saveTo($saveTo);
@@ -44,16 +50,18 @@ final class ReadmeSupplementTest extends TestCase
 
 		// Without an explicit filename, fromPath derives it from the path's basename.
 		$autoNamed = ISDOC\Invoice\Supplement::fromPath($path);
-		self::assertSame(basename($path), $autoNamed->getFilename());
+		self::assertSame(basename($path), $autoNamed->filename);
 
 		// fromString writes to a temporary file under the hood and keeps the given basename.
 		$fromString = ISDOC\Invoice\Supplement::fromString('hello world', 'note.txt');
-		self::assertSame('note.txt', $fromString->getFilename());
-		self::assertSame('hello world', $fromString->getContents());
-		self::assertTrue($fromString->isOk());
+		self::assertSame('note.txt', $fromString->filename);
+		self::assertSame('hello world', $fromString->contents);
+		self::assertTrue($fromString->ok);
 	}
 
-	/** Documented failure modes of the decorated, file-backed supplement. */
+	/** Documented failure modes of the decorated, file-backed supplement.
+	 * @throws SupplementException
+	 */
 	public function testDecoratedSupplementErrors(): void
 	{
 		$missing = sprintf('%s/isdoc_missing_%d.bin', sys_get_temp_dir(), getmypid());
@@ -74,7 +82,7 @@ final class ReadmeSupplementTest extends TestCase
 		unlink($path);
 
 		try {
-			$supplement->getContents();
+			$supplement->contents;
 			self::fail('Expected a RuntimeException.');
 		} catch (ISDOC\RuntimeException) {
 			$this->addToAssertionCount(1);
@@ -93,13 +101,17 @@ final class ReadmeSupplementTest extends TestCase
 		}
 	}
 
-	/** The full ISDOCX round-trip from the README, including RemoteSupplement read-back. */
+	/** The full ISDOCX round-trip from the README, including RemoteSupplement read-back.
+	 * @throws SupplementException
+	 * @throws ReaderException
+	 * @throws WriterException
+	 */
 	public function testIsdocxSupplementRoundTrip(): void
 	{
 		$manager = ISDOC\Manager::create();
 		$invoice = $this->minimalInvoice();
 
-		$supplements = new S\SupplementsList;
+		$supplements = new S\SupplementsList();
 		$supplements->add(ISDOC\Invoice\Supplement::fromString('attachment body', 'attachment.txt'));
 		$invoice->supplementsList = $supplements;
 
@@ -112,9 +124,9 @@ final class ReadmeSupplementTest extends TestCase
 
 		$supplement = iterator_to_array($read->supplementsList)[0];
 		self::assertInstanceOf(ISDOC\Invoice\RemoteSupplement::class, $supplement);
-		self::assertTrue($supplement->isOk());
-		self::assertSame('attachment.txt', $supplement->getFilename());
-		self::assertSame('attachment body', $supplement->getContents());
+		self::assertTrue($supplement->ok);
+		self::assertSame('attachment.txt', $supplement->filename);
+		self::assertSame('attachment body', $supplement->contents);
 
 		$saveTo = $this->tempFile('extracted');
 		$supplement->saveTo($saveTo);
@@ -126,7 +138,7 @@ final class ReadmeSupplementTest extends TestCase
 		$invoice = new ISDOC\Invoice(
 			'2021-0003',
 			'00000000-0000-0000-0000-000000009999',
-			DateTimeImmutable::createFromFormat('Y-m-d', '2021-08-16') ?: throw new LogicException,
+			DateTimeImmutable::createFromFormat('Y-m-d', '2021-08-16') ?: throw new LogicException(),
 			false,
 			'CZK',
 			new S\AccountingSupplierParty(new S\Party(
@@ -138,12 +150,12 @@ final class ReadmeSupplementTest extends TestCase
 
 		$invoice->invoiceLines->add(new S\InvoiceLine(
 			'1',
-			'100.0',
-			'121.0',
-			'21.0',
-			'100.0',
-			'121.0',
-			new S\ClassifiedTaxCategory('21', S\ClassifiedTaxCategory::VAT_CALCULATION_METHOD_FROM_THE_TOP),
+			new Number('100.0'),
+			new Number('121.0'),
+			new Number('21.0'),
+			new Number('100.0'),
+			new Number('121.0'),
+			new S\ClassifiedTaxCategory(new Number('21'), S\VATCalculationMethod::FromTheTop),
 		));
 
 		return $invoice;

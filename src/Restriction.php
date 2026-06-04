@@ -37,36 +37,11 @@ final class Restriction
 		}
 
 		if (str_contains($pattern, '~')) {
-			throw new RuntimeException("Pattern '$pattern' contains forbidden character '~'.");
+			throw new LogicException("Pattern '$pattern' contains forbidden character '~'.");
 		}
 
-		if (!preg_match("~^$pattern$~", $value)) {
+		if (preg_match("~^$pattern$~", $value) !== 1) {
 			throw new PatternRestrictionException($pattern);
-		}
-	}
-
-	/**
-	 * @param array<string|int> $options
-	 */
-	public static function enumeration(string|int|null $value, array $options): void
-	{
-		if ($value === null) {
-			return;
-		}
-
-		if (!in_array($value, $options, true)) {
-			throw new EnumerationRestrictionException($options);
-		}
-	}
-
-	public static function decimal(?string $value): void
-	{
-		if ($value === null) {
-			return;
-		}
-
-		if (!preg_match('~^-?(\d*\.\d+|\d+)$~', $value)) {
-			throw new DecimalRestrictionException;
 		}
 	}
 

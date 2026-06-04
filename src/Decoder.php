@@ -2,26 +2,19 @@
 
 namespace Adawolfa\ISDOC;
 
-use Symfony\Component\Serializer\Encoder\XmlEncoder;
-use Symfony\Component\Serializer\Exception\UnexpectedValueException;
+use Adawolfa\ISDOC\XML\Document;
+use Adawolfa\ISDOC\XML\Exception as XmlException;
 
 /**
- * XML to Invoice decoder.
+ * Parses ISDOC XML into a lazy {@see Schema\Invoice} view.
+ *
+ * Parsing only fails when the document is not well-formed XML; missing or malformed values surface lazily, at
+ * the moment the offending property is read, rather than aborting the whole document.
  *
  * @internal
  */
 final class Decoder
 {
-
-	private XmlEncoder $encoder;
-
-	private Hydrator $hydrator;
-
-	public function __construct(XmlEncoder $encoder, Hydrator $hydrator)
-	{
-		$this->encoder  = $encoder;
-		$this->hydrator = $hydrator;
-	}
 
 	/**
 	 * @template T of Schema\Invoice
@@ -29,25 +22,15 @@ final class Decoder
 	 * @return T&Schema\Invoice
 	 * @throws DecoderException
 	 */
-	public function decode(string $xml, string $class = Schema\Invoice::class, ?callable $hook = null): Schema\Invoice
+	public function decode(string $xml, string $class = Schema\Invoice::class): Schema\Invoice
 	{
-		$decoded = $this->encoder->decode($xml, $this->encoder::FORMAT);
-
-		if (!is_array($decoded)) {
-			throw new DecoderException('XML could not be deserialized into array.');
-		}
-
 		try {
-			$data = Data::create($decoded);
-		} catch (UnexpectedValueException $unexpectedValueException) {
-			throw new DecoderException('Failed to decode XML.', 0, $unexpectedValueException);
+			$node = Document::parse($xml);
+		} catch (XmlException $exception) {
+			throw new DecoderException('The document could not be parsed.', 0, $exception);
 		}
 
-		try {
-			return $this->hydrator->hydrate($data, $class, $hook);
-		} catch (Data\Exception $exception) {
-			throw new DecoderException('A data error has been encountered.', 0, $exception);
-		}
+		return $node->bind($class);
 	}
 
 }

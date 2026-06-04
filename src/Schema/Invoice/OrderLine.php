@@ -2,60 +2,52 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Arrayable;
-use Adawolfa\ISDOC\Map;
-use Adawolfa\ISDOC\Reference;
-use Adawolfa\ISDOC\ToArray;
-use Nette\SmartObject;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
+use Adawolfa\ISDOC\XML\Exception;
 
 /**
  * Reference to line on a related purchase order.
- *
- * @property Order       $order
- * @property string|null $lineID
  */
-class OrderLine implements Arrayable
+class OrderLine implements Entity
 {
 
-	use SmartObject;
-	use ToArray;
+	use Backing;
 
-	#[Reference]
-	private Order $order;
+	private ?Order $isdocReferenceOrder = null;
+
+	public Order $order {
+		/** @throws Exception */
+		get {
+			if ($this->isdocReferenceOrder !== null) {
+				return $this->isdocReferenceOrder;
+			}
+
+			$ref = $this->node->getString('@ref');
+
+			return $ref !== null
+				? $this->node->getReference(Order::class, $ref)
+				: $this->node->view(Order::class);
+		}
+		set {
+			$this->isdocReferenceOrder = $value;
+			$this->node->setReference($value);
+		}
+	}
 
 	/** Line number. */
-	#[Map('LineID')]
-	private ?string $lineID = null;
-
-	public function __construct(Order $order)
-	{
-		$this->setOrder($order);
+	public ?string $lineID {
+		get => $this->node->getString('LineID');
+		set {
+			$this->node->setString('LineID', $value);
+		}
 	}
 
-	/** @deprecated Method accessors are deprecated, use {@see $order} property instead. */
-	public function getOrder(): Order
-	{
-		return $this->order;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $order} property instead. */
-	public function setOrder(Order $order): self
+	public function __construct(
+		Order $order,
+	)
 	{
 		$this->order = $order;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $lineID} property instead. */
-	public function getLineID(): ?string
-	{
-		return $this->lineID;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $lineID} property instead. */
-	public function setLineID(?string $lineID): self
-	{
-		$this->lineID = $lineID;
-		return $this;
 	}
 
 }

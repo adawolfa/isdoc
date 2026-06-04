@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="Adawolfa ISDOC">
+    <description>PSR-12 adapted to Doctrine/Nette conventions + Slevomat strict rules</description>
+
+    <file>src</file>
+    <file>tests</file>
+
+    <arg name="basepath" value="."/>
+    <arg name="colors"/>
+    <arg value="sp"/>
+    <arg name="extensions" value="php"/>
+    <arg name="tab-width" value="4"/>
+
+    <rule ref="PSR12">
+        <!--
+            The project uses PascalCase class constants by convention (e.g.
+            PDODriver::ErrorPrepare), so the all-uppercase requirement inherited
+            from PSR-1 is intentionally relaxed.
+        -->
+        <exclude name="Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase"/>
+
+        <!--
+            Generated entities carry one-line XSD documentation comments (and some hooks with inline
+            restrictions) that legitimately exceed the soft 120-column guide. Line length is left to the
+            editor rather than enforced.
+        -->
+        <exclude name="Generic.Files.LineLength.TooLong"/>
+
+        <!--
+            php_codesniffer 4.0.1 misparses property hooks (`public T $p { get/set {} }`):
+            it reports the `$this` references inside hook bodies as additional
+            property declarations, miscounts the spacing after a class-typed hooked
+            property, and reads superglobals used inside a hook body (e.g. $_SERVER)
+            as underscore-prefixed property names. These messages are pure false
+            positives on hooked properties; PHPStan and the test suite cover the real
+            behavior.
+        -->
+        <exclude name="PSR2.Classes.PropertyDeclaration.Multiple"/>
+        <exclude name="PSR2.Classes.PropertyDeclaration.ScopeMissing"/>
+        <exclude name="PSR2.Classes.PropertyDeclaration.SpacingAfterType"/>
+        <exclude name="PSR2.Classes.PropertyDeclaration.Underscore"/>
+
+        <!--
+            Indentation is done with tabs, not spaces (see .editorconfig). Tabs are
+            required through Generic.WhiteSpace.DisallowSpaceIndent and sized through
+            Generic.WhiteSpace.ScopeIndent (tabIndent) below.
+        -->
+        <exclude name="Generic.WhiteSpace.DisallowTabIndent"/>
+
+        <!--
+            declare(strict_types=1) shares the opening tag line:
+            `<?php declare(strict_types=1);`. This is enforced through
+            SlevomatCodingStandard.TypeHints.DeclareStrictTypes (declareOnFirstLine)
+            below, so PSR-12's "tag on its own line" messages are disabled.
+        -->
+        <exclude name="PSR12.Files.OpenTag.NotAlone"/>
+        <exclude name="PSR12.Files.FileHeader.SpacingAfterTagBlock"/>
+
+        <!--
+            Files end exactly at the closing brace, with no trailing newline
+            (see .editorconfig: insert_final_newline = false). The absence is
+            enforced through Generic.Files.EndFileNoNewline below.
+        -->
+        <exclude name="PSR2.Files.EndFileNewline"/>
+
+        <!--
+            A non-empty class-like body is wrapped in a single blank line: one after
+            the opening brace and one before the closing brace (Nette house style).
+            Empty bodies and enums keep their braces tight, so this is left as a
+            convention rather than enforced (no sniff distinguishes the two cases).
+            PSR-12 forbids the blank lines outright, so its messages are disabled.
+            UseAfterBrace would likewise pull a leading `use` trait import up against
+            the opening brace, defeating the same blank line, so it is relaxed too.
+        -->
+        <exclude name="PSR12.Classes.OpeningBraceSpace.Found"/>
+        <exclude name="PSR2.Classes.ClassDeclaration.CloseBraceAfterBody"/>
+        <exclude name="PSR12.Traits.UseDeclaration.UseAfterBrace"/>
+
+        <!--
+            Multi-line declarations keep the opening brace on its own line, like
+            every other brace in the codebase, and allow space alignment of promoted
+            constructor parameters. PSR-12 wants `) {` on a single line and exactly
+            one space after a type hint, so both messages are relaxed.
+        -->
+        <exclude name="Squiz.Functions.MultiLineFunctionDeclaration.NewlineBeforeOpenBrace"/>
+        <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterHint"/>
+
+        <!--
+            A single blank line may open or close a block to visually group its body.
+        -->
+        <exclude name="Squiz.WhiteSpace.ControlStructureSpacing.SpacingAfterOpen"/>
+        <exclude name="Squiz.WhiteSpace.ControlStructureSpacing.SpacingBeforeClose"/>
+    </rule>
+
+    <!--
+        Indent with tabs, align with spaces (tab width 4).
+
+        IncorrectExact is suppressed because php_codesniffer 4.0.1 miscounts the
+        scope depth of multi-statement property hook bodies (`public T $p { get {
+        ... } }`) and forces an exact-indent check on them, producing false
+        positives; PHPStan and the test suite cover the real nesting. Tabs-only
+        indentation is still enforced through Generic.WhiteSpace.DisallowSpaceIndent
+        below.
+    -->
+    <rule ref="Generic.WhiteSpace.ScopeIndent">
+        <properties>
+            <property name="indent" value="4"/>
+            <property name="tabIndent" value="true"/>
+        </properties>
+        <exclude name="Generic.WhiteSpace.ScopeIndent.IncorrectExact"/>
+    </rule>
+
+    <!-- Indentation must be tabs, never spaces. -->
+    <rule ref="Generic.WhiteSpace.DisallowSpaceIndent"/>
+
+    <!-- No trailing newline at the end of file. -->
+    <rule ref="Generic.Files.EndFileNoNewline"/>
+
+    <!-- Strict types declaration required, sharing the opening tag line -->
+    <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
+        <properties>
+            <property name="declareOnFirstLine" value="true"/>
+            <property name="linesCountAfterDeclare" value="1"/>
+            <property name="spacesCountAroundEqualsSign" value="0"/>
+        </properties>
+    </rule>
+
+    <!-- All type hints must be declared -->
+    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint"/>
+    <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint"/>
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint"/>
+    <rule ref="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat"/>
+    <rule ref="SlevomatCodingStandard.TypeHints.UselessConstantTypeHint"/>
+
+    <!-- Exceptions -->
+    <rule ref="SlevomatCodingStandard.Exceptions.ReferenceThrowableOnly"/>
+
+    <!-- Arrays -->
+    <rule ref="SlevomatCodingStandard.Arrays.DisallowImplicitArrayCreation"/>
+    <rule ref="SlevomatCodingStandard.Arrays.TrailingArrayComma"/>
+
+    <!-- Functions -->
+    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInDeclaration"/>
+    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInCall"/>
+
+    <!-- Classes -->
+    <rule ref="SlevomatCodingStandard.Classes.ClassConstantVisibility"/>
+    <rule ref="SlevomatCodingStandard.Classes.ModernClassNameReference"/>
+
+    <!-- Control structures -->
+    <rule ref="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceEqualOperator"/>
+    <rule ref="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceOperator"/>
+    <rule ref="SlevomatCodingStandard.ControlStructures.RequireNullSafeObjectOperator"/>
+
+    <!-- Namespaces -->
+    <rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.DisallowGroupUse"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses">
+        <properties>
+            <property name="searchAnnotations" value="true"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Namespaces.UseFromSameNamespace"/>
+
+    <!-- Operators -->
+    <rule ref="SlevomatCodingStandard.Operators.DisallowEqualOperators"/>
+    <rule ref="SlevomatCodingStandard.Operators.RequireCombinedAssignmentOperator"/>
+
+    <!-- PHP -->
+    <rule ref="SlevomatCodingStandard.PHP.TypeCast"/>
+    <rule ref="SlevomatCodingStandard.PHP.UselessParentheses"/>
+    <rule ref="SlevomatCodingStandard.PHP.UselessSemicolon"/>
+
+    <!-- Variables -->
+    <rule ref="SlevomatCodingStandard.Variables.UnusedVariable"/>
+
+    <!-- Comments -->
+    <rule ref="SlevomatCodingStandard.Commenting.ForbiddenAnnotations">
+        <properties>
+            <property name="forbiddenAnnotations" type="array">
+                <element value="@author"/>
+                <element value="@copyright"/>
+                <element value="@created"/>
+                <element value="@license"/>
+                <element value="@package"/>
+                <element value="@subpackage"/>
+                <element value="@version"/>
+            </property>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Commenting.UselessFunctionDocComment"/>
+    <rule ref="SlevomatCodingStandard.Commenting.UselessInheritDocComment"/>
+</ruleset>

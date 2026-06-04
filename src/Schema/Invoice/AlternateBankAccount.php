@@ -2,109 +2,55 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Arrayable;
-use Adawolfa\ISDOC\Map;
-use Adawolfa\ISDOC\ToArray;
-use Nette\SmartObject;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
 
 /**
  * Information about a bank account.
- *
- * @property string|null $id
- * @property string|null $bankCode
- * @property string|null $name
- * @property string|null $iban
- * @property string|null $bic
  */
-class AlternateBankAccount implements Arrayable
+class AlternateBankAccount implements Entity
 {
 
-	use SmartObject;
-	use ToArray;
+	use Backing;
 
 	/** Account number. */
-	#[Map('ID')]
-	private ?string $id = null;
+	public ?string $id {
+		get => $this->node->getString('ID');
+		set {
+			$this->node->setString('ID', $value);
+		}
+	}
 
 	/** Bank code. */
-	#[Map('BankCode')]
-	private ?string $bankCode = null;
+	public ?string $bankCode {
+		get => $this->node->getString('BankCode');
+		set {
+			$this->node->setString('BankCode', $value);
+		}
+	}
 
 	/** A character string that constitutes the distinctive designation of a person, place, thing or concept. */
-	#[Map('Name')]
-	private ?string $name = null;
+	public ?string $name {
+		get => $this->node->getString('Name');
+		set {
+			$this->node->setString('Name', $value);
+		}
+	}
 
 	/** International bank account number (IBAN). */
-	#[Map('IBAN')]
-	private ?string $iban = null;
+	public ?string $iban {
+		get => $this->node->getString('IBAN');
+		set {
+			$this->node->setString('IBAN', $value);
+		}
+	}
 
 	/** Bank identifier code as defined in ISO 9362. */
-	#[Map('BIC')]
-	private ?string $bic = null;
-
-	/** @deprecated Method accessors are deprecated, use {@see $id} property instead. */
-	public function getId(): ?string
-	{
-		return $this->id;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $id} property instead. */
-	public function setId(?string $id): self
-	{
-		$this->id = $id;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $bankCode} property instead. */
-	public function getBankCode(): ?string
-	{
-		return $this->bankCode;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $bankCode} property instead. */
-	public function setBankCode(?string $bankCode): self
-	{
-		$this->bankCode = $bankCode;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $name} property instead. */
-	public function getName(): ?string
-	{
-		return $this->name;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $name} property instead. */
-	public function setName(?string $name): self
-	{
-		$this->name = $name;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $iban} property instead. */
-	public function getIban(): ?string
-	{
-		return $this->iban;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $iban} property instead. */
-	public function setIban(?string $iban): self
-	{
-		$this->iban = $iban;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $bic} property instead. */
-	public function getBic(): ?string
-	{
-		return $this->bic;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $bic} property instead. */
-	public function setBic(?string $bic): self
-	{
-		$this->bic = $bic;
-		return $this;
+	public ?string $bic {
+		get => $this->node->getString('BIC');
+		set {
+			$this->node->setString('BIC', $value);
+		}
 	}
 
 }

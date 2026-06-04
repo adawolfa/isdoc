@@ -2,61 +2,43 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Arrayable;
-use Adawolfa\ISDOC\Map;
-use Adawolfa\ISDOC\ToArray;
-use Nette\SmartObject;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
+use Adawolfa\ISDOC\XML\Exception;
 
 /**
  * Country.
- *
- * @property string $identificationCode
- * @property string $name
  */
-class Country implements Arrayable
+class Country implements Entity
 {
 
-	use SmartObject;
-	use ToArray;
+	use Backing;
 
 	/** ISO 3166 country code. */
-	#[Map('IdentificationCode')]
-	private string $identificationCode;
+	public string $identificationCode {
+		/** @throws Exception */
+		get => $this->node->getStringOrThrow('IdentificationCode');
+		set {
+			$this->node->setString('IdentificationCode', $value);
+		}
+	}
 
 	/** Country name. */
-	#[Map('Name')]
-	private string $name;
-
-	public function __construct(string $identificationCode, string $name)
-	{
-		$this->setIdentificationCode($identificationCode);
-		$this->setName($name);
+	public string $name {
+		/** @throws Exception */
+		get => $this->node->getStringOrThrow('Name');
+		set {
+			$this->node->setString('Name', $value);
+		}
 	}
 
-	/** @deprecated Method accessors are deprecated, use {@see $identificationCode} property instead. */
-	public function getIdentificationCode(): string
-	{
-		return $this->identificationCode;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $identificationCode} property instead. */
-	public function setIdentificationCode(string $identificationCode): self
+	public function __construct(
+		string $identificationCode,
+		string $name,
+	)
 	{
 		$this->identificationCode = $identificationCode;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $name} property instead. */
-	public function getName(): string
-	{
-		return $this->name;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $name} property instead. */
-	public function setName(string $name): self
-	{
 		$this->name = $name;
-		return $this;
 	}
 
 }

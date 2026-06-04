@@ -5,6 +5,7 @@ namespace Tests\Adawolfa\ISDOC;
 use Adawolfa;
 use Adawolfa\ISDOC\ReaderException;
 use Adawolfa\ISDOC\WriterException;
+use BcMath\Number;
 use DateTimeImmutable;
 use LogicException;
 use PHPUnit\Framework\TestCase;
@@ -21,7 +22,7 @@ final class ReferenceTest extends TestCase
 		$invoice = new Adawolfa\ISDOC\Invoice(
 			'12345',
 			'00000000-0000-0000-0000-000000001234',
-			DateTimeImmutable::createFromFormat('Y-m-d', '2021-08-16') ?: throw new LogicException,
+			DateTimeImmutable::createFromFormat('Y-m-d', '2021-08-16') ?: throw new LogicException(),
 			false,
 			'CZK',
 			new Adawolfa\ISDOC\Schema\Invoice\AccountingSupplierParty(
@@ -33,32 +34,34 @@ final class ReferenceTest extends TestCase
 						'1234',
 						'Praha',
 						'100 01',
-						new Adawolfa\ISDOC\Schema\Invoice\Country('CZ', 'Česká republika')
-					)
-				)
-			)
+						new Adawolfa\ISDOC\Schema\Invoice\Country('CZ', 'Česká republika'),
+					),
+				),
+			),
 		);
 
 		$order = new Adawolfa\ISDOC\Schema\Invoice\Order('123456');
 
-		$invoice->orderReferences = new Adawolfa\ISDOC\Schema\Invoice\OrderReferences;
-		$invoice->orderReferences->add($order);
+		$orderReferences = new Adawolfa\ISDOC\Schema\Invoice\OrderReferences();
+		$orderReferences->add($order);
+		$invoice->orderReferences = $orderReferences;
 
 		$line = new Adawolfa\ISDOC\Schema\Invoice\InvoiceLine(
 			'1',
-			'100.0',
-			'121.0',
-			'21.0',
-			'100.0',
-			'121.0',
+			new Number('100.0'),
+			new Number('121.0'),
+			new Number('21.0'),
+			new Number('100.0'),
+			new Number('121.0'),
 			new Adawolfa\ISDOC\Schema\Invoice\ClassifiedTaxCategory(
-				'21',
-				Adawolfa\ISDOC\Schema\Invoice\ClassifiedTaxCategory::VAT_CALCULATION_METHOD_FROM_THE_TOP,
+				new Number('21'),
+				Adawolfa\ISDOC\Schema\Invoice\VATCalculationMethod::FromTheTop,
 			),
 		);
 
-		$line->order         = new Adawolfa\ISDOC\Schema\Invoice\OrderLine($order);
-		$line->order->lineID = '10';
+		$orderLine         = new Adawolfa\ISDOC\Schema\Invoice\OrderLine($order);
+		$orderLine->lineID = '10';
+		$line->order       = $orderLine;
 
 		$invoice->invoiceLines->add($line);
 
@@ -66,12 +69,16 @@ final class ReferenceTest extends TestCase
 		$read    = $manager->reader->xml($manager->writer->xml($invoice));
 
 		/** @var Adawolfa\ISDOC\Schema\Invoice\InvoiceLine $readLine */
-		$readLine = iterator_to_array($read->invoiceLines)[0];
+		$readLine  = iterator_to_array($read->invoiceLines)[0];
+		$readOrder = $readLine->order;
 
-		$this->assertNotNull($readLine->order);
-		$this->assertIsIterable($read->orderReferences);
-		$this->assertSame(iterator_to_array($read->orderReferences)[0], $readLine->order->order);
-		$this->assertSame('10', $readLine->order->lineID);
+		$this->assertNotNull($readOrder);
+
+		$orderReferences = $read->orderReferences;
+		$this->assertNotNull($orderReferences);
+
+		$this->assertSame(iterator_to_array($orderReferences)[0], $readOrder->order);
+		$this->assertSame('10', $readOrder->lineID);
 	}
 
 }

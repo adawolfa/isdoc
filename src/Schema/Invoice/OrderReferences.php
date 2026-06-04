@@ -2,29 +2,37 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Collection;
-use Adawolfa\ISDOC\Map;
-use ArrayIterator;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
+use Countable;
+use Generator;
+use IteratorAggregate;
 
 /**
  * Header collection of referenced purchase order(s).
- *
- * @extends Collection<Order>
+ * @implements IteratorAggregate<int, Order>
  */
-#[Map('OrderReference', Order::class)]
-class OrderReferences extends Collection
+class OrderReferences implements Entity, IteratorAggregate, Countable
 {
 
-	/** @return ArrayIterator<int, Order> */
-	public function getIterator(): ArrayIterator
+	use Backing;
+
+	/** @return Generator<int, Order> */
+	public function getIterator(): Generator
 	{
-		return new ArrayIterator($this->items);
+		yield from $this->node->getChildren('OrderReference', Order::class);
 	}
 
-	public function add(Order $order): self
+	public function add(Order $orderReference): self
 	{
-		$this->items[] = $order;
+		$this->node->addChild('OrderReference', $orderReference);
+
 		return $this;
+	}
+
+	public function count(): int
+	{
+		return count($this->node->getChildren('OrderReference'));
 	}
 
 }

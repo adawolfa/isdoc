@@ -3,19 +3,17 @@
 namespace Adawolfa\ISDOC;
 
 use Adawolfa\ISDOC\Invoice\RemoteSupplement;
+use Adawolfa\ISDOC\XML\Exception as XmlException;
 
 /** @internal */
 final class Utils
 {
 
-	public static function detectFormat(string $filename): string
+	public static function detectFormat(string $filename): Format
 	{
 		$extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
-		return match ($extension) {
-			Format::ISDOCX, Format::PDF => $extension,
-			default                     => Format::ISDOC,
-		};
+		return Format::tryFrom($extension) ?? Format::ISDOC;
 	}
 
 	/**
@@ -23,16 +21,22 @@ final class Utils
 	 */
 	public static function checkSupplementDigest(RemoteSupplement $supplement): bool
 	{
-		switch ($supplement->getDigestMethod()->algorithm) {
+		try {
 
-			case 'http://www.w3.org/2000/09/xmldsig#sha1':
-				$contents = $supplement->getContents();
-				return base64_encode(sha1($contents, true)) === $supplement->getDigestValue()
-					   || sha1($contents) === strtolower($supplement->getDigestValue());
+			switch ($supplement->digestMethod->algorithm) {
 
-			default:
-				throw SupplementException::unsupportedDigestAlgo($supplement->getFilename(), $supplement->getDigestMethod()->algorithm);
+				case 'http://www.w3.org/2000/09/xmldsig#sha1':
+					$contents = $supplement->contents;
+					return base64_encode(sha1($contents, true)) === $supplement->digestValue
+						   || sha1($contents) === strtolower($supplement->digestValue);
 
+				default:
+					throw SupplementException::unsupportedDigestAlgo($supplement->filename, $supplement->digestMethod->algorithm);
+
+			}
+
+		} /** @noinspection PhpRedundantCatchClauseInspection */ catch (XmlException $exception) {
+			throw SupplementException::malformedDigest($exception);
 		}
 	}
 

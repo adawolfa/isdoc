@@ -3,6 +3,10 @@
 namespace Tests\Adawolfa\ISDOC;
 
 use Adawolfa;
+use Adawolfa\ISDOC\ReaderException;
+use Adawolfa\ISDOC\SupplementException;
+use Adawolfa\ISDOC\WriterException;
+use BcMath\Number;
 use DateTimeImmutable;
 use LogicException;
 use PHPUnit\Framework\TestCase;
@@ -12,12 +16,17 @@ final class XTest extends TestCase
 
 	private string $temp;
 
+	/**
+	 * @throws ReaderException
+	 * @throws SupplementException
+	 * @throws WriterException
+	 */
 	public function testWriteRead(): void
 	{
 		$invoice = new Adawolfa\ISDOC\Invoice(
 			'12345',
 			'00000000-0000-0000-0000-000000001234',
-			DateTimeImmutable::createFromFormat('Y-m-d', '2021-08-16') ?: throw new LogicException,
+			DateTimeImmutable::createFromFormat('Y-m-d', '2021-08-16') ?: throw new LogicException(),
 			false,
 			'CZK',
 			new Adawolfa\ISDOC\Schema\Invoice\AccountingSupplierParty(
@@ -29,28 +38,28 @@ final class XTest extends TestCase
 						'1234',
 						'Praha',
 						'100 01',
-						new Adawolfa\ISDOC\Schema\Invoice\Country('CZ', 'Česká republika')
-					)
-				)
-			)
+						new Adawolfa\ISDOC\Schema\Invoice\Country('CZ', 'Česká republika'),
+					),
+				),
+			),
 		);
 
 		$invoice->invoiceLines->add(
 			new Adawolfa\ISDOC\Schema\Invoice\InvoiceLine(
 				'1',
-				'100.0',
-				'121.0',
-				'21.0',
-				'100.0',
-				'121.0',
+				new Number('100.0'),
+				new Number('121.0'),
+				new Number('21.0'),
+				new Number('100.0'),
+				new Number('121.0'),
 				new Adawolfa\ISDOC\Schema\Invoice\ClassifiedTaxCategory(
-					'21',
-					Adawolfa\ISDOC\Schema\Invoice\ClassifiedTaxCategory::VAT_CALCULATION_METHOD_FROM_THE_TOP,
+					new Number('21'),
+					Adawolfa\ISDOC\Schema\Invoice\VATCalculationMethod::FromTheTop,
 				),
-			)
+			),
 		);
 
-		$supplements = new Adawolfa\ISDOC\Schema\Invoice\SupplementsList;
+		$supplements = new Adawolfa\ISDOC\Schema\Invoice\SupplementsList();
 		$supplements->add(Adawolfa\ISDOC\Invoice\Supplement::fromString('foo', 'foo.txt'));
 		$invoice->supplementsList = $supplements;
 

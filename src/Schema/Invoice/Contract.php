@@ -2,172 +2,93 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Arrayable;
-use Adawolfa\ISDOC\Map;
 use Adawolfa\ISDOC\Restriction;
-use Adawolfa\ISDOC\ToArray;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
+use Adawolfa\ISDOC\XML\Exception;
 use DateTimeInterface;
-use Nette\SmartObject;
 
 /**
  * Information about related contract.
- *
- * @property string                      $id
- * @property string|null                 $uuid
- * @property DateTimeInterface           $issueDate
- * @property DateTimeInterface|null      $lastValidDate
- * @property LastValidDateUnbounded|null $lastValidDateUnbounded
- * @property string|null                 $isds_id
- * @property string|null                 $file
- * @property string|null                 $referenceNumber
  */
-class Contract implements Arrayable
+class Contract implements Entity
 {
 
-	use SmartObject;
-	use ToArray;
+	use Backing;
 
 	/** Human readable contract identifier. */
-	#[Map('ID')]
-	private string $id;
+	public string $id {
+		/** @throws Exception */
+		get => $this->node->getStringOrThrow('ID');
+		set {
+			$this->node->setString('ID', $value);
+		}
+	}
 
 	/** Contract identifier supplied at the time of contract registration inside file system. */
-	#[Map('UUID')]
-	private ?string $uuid = null;
+	public ?string $uuid {
+		get => $this->node->getString('UUID');
+		set {
+			Restriction::pattern($value, '[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}');
+			$this->node->setString('UUID', $value);
+		}
+	}
 
 	/** Date of contract signature. */
-	#[Map('IssueDate')]
-	private DateTimeInterface $issueDate;
+	public DateTimeInterface $issueDate {
+		/** @throws Exception */
+		get => $this->node->getDateOrThrow('IssueDate');
+		set {
+			$this->node->setDate('IssueDate', $value);
+		}
+	}
 
 	/** Date until contract is valid. */
-	#[Map('LastValidDate')]
-	private ?DateTimeInterface $lastValidDate = null;
+	public ?DateTimeInterface $lastValidDate {
+		/** @throws Exception */
+		get => $this->node->getDate('LastValidDate');
+		set {
+			$this->node->setDate('LastValidDate', $value);
+		}
+	}
 
 	/** Contract for indefinite period. */
-	#[Map('LastValidDateUnbounded')]
-	private ?LastValidDateUnbounded $lastValidDateUnbounded = null;
+	public ?LastValidDateUnbounded $lastValidDateUnbounded {
+		get => $this->node->getChild('LastValidDateUnbounded', LastValidDateUnbounded::class);
+		set { $this->node->setChild('LastValidDateUnbounded', $value); }
+	}
 
 	/** Unique identifier inside ISDS system. */
-	#[Map('ISDS_ID')]
-	private ?string $isds_id = null;
+	public ?string $isds_id {
+		get => $this->node->getString('ISDS_ID');
+		set {
+			$this->node->setString('ISDS_ID', $value);
+		}
+	}
 
 	/** File number. */
-	#[Map('FileReference')]
-	private ?string $file = null;
+	public ?string $file {
+		get => $this->node->getString('FileReference');
+		set {
+			$this->node->setString('FileReference', $value);
+		}
+	}
 
 	/** Reference number. */
-	#[Map('ReferenceNumber')]
-	private ?string $referenceNumber = null;
-
-	public function __construct(string $id, DateTimeInterface $issueDate)
-	{
-		$this->setId($id);
-		$this->setIssueDate($issueDate);
+	public ?string $referenceNumber {
+		get => $this->node->getString('ReferenceNumber');
+		set {
+			$this->node->setString('ReferenceNumber', $value);
+		}
 	}
 
-	/** @deprecated Method accessors are deprecated, use {@see $id} property instead. */
-	public function getId(): string
-	{
-		return $this->id;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $id} property instead. */
-	public function setId(string $id): self
+	public function __construct(
+		string $id,
+		DateTimeInterface $issueDate,
+	)
 	{
 		$this->id = $id;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $uuid} property instead. */
-	public function getUuid(): ?string
-	{
-		return $this->uuid;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $uuid} property instead. */
-	public function setUuid(?string $uuid): self
-	{
-		Restriction::pattern($uuid, '[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}');
-		$this->uuid = $uuid;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $issueDate} property instead. */
-	public function getIssueDate(): DateTimeInterface
-	{
-		return $this->issueDate;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $issueDate} property instead. */
-	public function setIssueDate(DateTimeInterface $issueDate): self
-	{
 		$this->issueDate = $issueDate;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $lastValidDate} property instead. */
-	public function getLastValidDate(): ?DateTimeInterface
-	{
-		return $this->lastValidDate;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $lastValidDate} property instead. */
-	public function setLastValidDate(?DateTimeInterface $lastValidDate): self
-	{
-		$this->lastValidDate = $lastValidDate;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $lastValidDateUnbounded} property instead. */
-	public function getLastValidDateUnbounded(): ?LastValidDateUnbounded
-	{
-		return $this->lastValidDateUnbounded;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $lastValidDateUnbounded} property instead. */
-	public function setLastValidDateUnbounded(?LastValidDateUnbounded $lastValidDateUnbounded): self
-	{
-		$this->lastValidDateUnbounded = $lastValidDateUnbounded;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $isds_id} property instead. */
-	public function getIsds_id(): ?string
-	{
-		return $this->isds_id;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $isds_id} property instead. */
-	public function setIsds_id(?string $isds_id): self
-	{
-		$this->isds_id = $isds_id;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $file} property instead. */
-	public function getFile(): ?string
-	{
-		return $this->file;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $file} property instead. */
-	public function setFile(?string $file): self
-	{
-		$this->file = $file;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $referenceNumber} property instead. */
-	public function getReferenceNumber(): ?string
-	{
-		return $this->referenceNumber;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $referenceNumber} property instead. */
-	public function setReferenceNumber(?string $referenceNumber): self
-	{
-		$this->referenceNumber = $referenceNumber;
-		return $this;
 	}
 
 }

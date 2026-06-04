@@ -4,31 +4,27 @@ namespace Adawolfa\ISDOC\X;
 
 use Adawolfa\ISDOC;
 use Adawolfa\ISDOC\Encoder;
-use Symfony\Component\Serializer\Encoder\XmlEncoder;
+use Dom\XMLDocument;
 use ZipArchive;
 
 /**
- * ISDOCX writer.
+ * ISDOCX writer: packs the encoded ISDOC document, a manifest, and file-backed supplements into a ZIP.
  *
  * @internal
  */
 final class Writer
 {
 
-	private XmlEncoder $xmlEncoder;
+	private const string ManifestNamespace = 'http://isdoc.cz/namespace/2013/manifest';
 
-	private Encoder $encoder;
-
-	public function __construct(XmlEncoder $xmlEncoder, Encoder $encoder)
+	public function __construct(private readonly Encoder $encoder)
 	{
-		$this->xmlEncoder = $xmlEncoder;
-		$this->encoder    = $encoder;
 	}
 
 	/** @throws ISDOC\WriterException */
 	public function file(ISDOC\Schema\Invoice $invoice, string $filename): void
 	{
-		$zip = new ZipArchive;
+		$zip = new ZipArchive();
 
 		if ($zip->open($filename, ZipArchive::CREATE) !== true) {
 			throw ISDOC\WriterException::zipCouldNotCreate($filename);
@@ -40,45 +36,46 @@ final class Writer
 			throw ISDOC\WriterException::encodeFailure($exception);
 		}
 
-		$isdocFileName = sprintf('%s.isdoc', $invoice->id);
-		$zip->addFromString($isdocFileName, $xml);
-		$zip->addFromString('manifest.xml', $this->createManifest($isdocFileName));
+		// Reading the typed invoice id and supplement names to build the archive entries can surface a lazy
+		// XML\Exception; wrap it so the writer keeps throwing only WriterException.
+		try {
 
-		if ($invoice->supplementsList !== null) {
+			$isdocFilename = sprintf('%s.isdoc', $invoice->id);
+			$zip->addFromString($isdocFilename, $xml);
+			$zip->addFromString('manifest.xml', $this->manifest($isdocFilename));
 
-			foreach ($invoice->supplementsList as $supplement) {
+			foreach ($invoice->supplementsList ?? [] as $supplement) {
 
-				if ($supplement instanceof ISDOC\Invoice\Supplement) {
-
-					if ($zip->addFile($supplement->path, $supplement->filename) === false) {
-						throw ISDOC\WriterException::failedAddSupplement($supplement->path, $supplement->filename);
-					}
-
+				if (
+					$supplement instanceof ISDOC\Invoice\Supplement
+					&& $zip->addFile($supplement->path, $supplement->filename) === false
+				) {
+					throw ISDOC\WriterException::failedAddSupplement($supplement->path, $supplement->filename);
 				}
 
 			}
 
+		} /** @noinspection PhpRedundantCatchClauseInspection */ catch (ISDOC\XML\Exception $exception) {
+			throw ISDOC\WriterException::invalidInvoice($exception);
 		}
 
 		$zip->close();
 	}
 
-	private function createManifest(string $filename): string
+	private function manifest(string $filename): string
 	{
-		return $this->xmlEncoder->encode(
-			[
-				'@xmlns'       => 'http://isdoc.cz/namespace/2013/manifest',
-				'maindocument' => [
-					'@filename' => $filename,
-					'#'         => null,
-				],
-			],
-			$this->xmlEncoder::FORMAT,
-			[
-				$this->xmlEncoder::ROOT_NODE_NAME => 'manifest',
-				$this->xmlEncoder::ENCODING       => 'utf-8',
-			]
-		);
+		$document = XMLDocument::createEmpty();
+
+		$manifest = $document->createElementNS(self::ManifestNamespace, 'manifest');
+		$main     = $document->createElementNS(self::ManifestNamespace, 'maindocument');
+		$main->setAttribute('filename', $filename);
+		$manifest->appendChild($main);
+		$document->appendChild($manifest);
+
+		$document->formatOutput = true;
+		$xml = $document->saveXml();
+
+		return $xml === false ? '' : $xml;
 	}
 
 }

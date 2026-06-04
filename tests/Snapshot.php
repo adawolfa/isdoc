@@ -2,8 +2,6 @@
 
 namespace Tests\Adawolfa\ISDOC;
 
-use DateTimeInterface;
-
 trait Snapshot
 {
 
@@ -17,24 +15,6 @@ trait Snapshot
 		} else {
 			file_put_contents($filename, $data);
 			$this->addToAssertionCount(1);
-		}
-	}
-
-	/**
-	 * @param array<string|int, mixed> $array
-	 */
-	private static function walkArrayDateToString(array &$array): void
-	{
-		foreach ($array as $key => $value) {
-
-			if ($value instanceof DateTimeInterface) {
-				$array[$key] = $value->format('Y-m-d H:i:s');
-			}
-			/** @noinspection PhpArrayAccessCanBeReplacedWithForeachValueInspection */
-			elseif (is_array($value) && is_array($array[$key])) {
-				self::walkArrayDateToString($array[$key]);
-			}
-
 		}
 	}
 

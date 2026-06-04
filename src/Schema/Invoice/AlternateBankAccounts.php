@@ -2,29 +2,37 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Collection;
-use Adawolfa\ISDOC\Map;
-use ArrayIterator;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
+use Countable;
+use Generator;
+use IteratorAggregate;
 
 /**
  * Collection of alternative bank accounts.
- *
- * @extends Collection<AlternateBankAccount>
+ * @implements IteratorAggregate<int, AlternateBankAccount>
  */
-#[Map('AlternateBankAccount', AlternateBankAccount::class)]
-class AlternateBankAccounts extends Collection
+class AlternateBankAccounts implements Entity, IteratorAggregate, Countable
 {
 
-	/** @return ArrayIterator<int, AlternateBankAccount> */
-	public function getIterator(): ArrayIterator
+	use Backing;
+
+	/** @return Generator<int, AlternateBankAccount> */
+	public function getIterator(): Generator
 	{
-		return new ArrayIterator($this->items);
+		yield from $this->node->getChildren('AlternateBankAccount', AlternateBankAccount::class);
 	}
 
 	public function add(AlternateBankAccount $alternateBankAccount): self
 	{
-		$this->items[] = $alternateBankAccount;
+		$this->node->addChild('AlternateBankAccount', $alternateBankAccount);
+
 		return $this;
+	}
+
+	public function count(): int
+	{
+		return count($this->node->getChildren('AlternateBankAccount'));
 	}
 
 }

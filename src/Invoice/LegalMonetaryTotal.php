@@ -3,86 +3,94 @@
 namespace Adawolfa\ISDOC\Invoice;
 
 use Adawolfa\ISDOC;
-use BcMath;
+use Adawolfa\ISDOC\Schema\Invoice\InvoiceLine;
+use BcMath\Number;
 
 /**
- * Legal monetary total with auto-computed properties.
+ * Legal monetary total whose tax-exclusive and tax-inclusive amounts default to the bcmath sum of the invoice
+ * lines unless they were set explicitly.
+ *
+ * The two amounts are read straight from the backing element when present (an explicit value) and computed from
+ * the lines otherwise. {@see flush()} writes the effective values into the document at serialization time so the
+ * computed totals appear in the output; the remaining required totals default to zero.
  */
 class LegalMonetaryTotal extends ISDOC\Schema\Invoice\LegalMonetaryTotal
 {
 
 	private ISDOC\Schema\Invoice $invoice;
 
-	private bool $taxExclusiveAmountAssigned;
+	public Number $taxExclusiveAmount {
+		/** @throws ISDOC\XML\Exception */
+		get => $this->node->getNumber('TaxExclusiveAmount')
+			?? $this->sum(static fn(InvoiceLine $line): Number => $line->lineExtensionAmount);
+		set {
+			$this->node->setNumber('TaxExclusiveAmount', $value);
+		}
+	}
 
-	private bool $taxInclusiveAmountAssigned;
+	public Number $taxInclusiveAmount {
+		/** @throws ISDOC\XML\Exception */
+		get => $this->node->getNumber('TaxInclusiveAmount')
+			?? $this->sum(static fn(InvoiceLine $line): Number => $line->lineExtensionAmountTaxInclusive);
+		set {
+			$this->node->setNumber('TaxInclusiveAmount', $value);
+		}
+	}
 
 	public function __construct(ISDOC\Schema\Invoice $invoice)
 	{
-		parent::__construct('0', '0', '0', '0', '0', '0', '0', '0');
-		$this->invoice                    = $invoice;
-		$this->taxExclusiveAmountAssigned = false;
-		$this->taxInclusiveAmountAssigned = false;
+		$zero = new Number('0');
+
+		parent::__construct(
+			taxExclusiveAmount:               $zero,
+			taxInclusiveAmount:               $zero,
+			alreadyClaimedTaxExclusiveAmount: $zero,
+			alreadyClaimedTaxInclusiveAmount: $zero,
+			differenceTaxExclusiveAmount:     $zero,
+			differenceTaxInclusiveAmount:     $zero,
+			paidDepositsAmount:               $zero,
+			payableAmount:                    $zero,
+		);
+
+		$this->invoice = $invoice;
+
+		// The tax-exclusive/inclusive totals default to the invoice-line sums and are materialized by flush()
+		// just before serialization; drop the zero placeholders the parent constructor wrote so the get-hooks
+		// fall back to the computed sums instead of reading a stored zero.
+		$this->node->remove('TaxExclusiveAmount');
+		$this->node->remove('TaxInclusiveAmount');
 	}
 
 	/**
-	 * @param callable(ISDOC\Schema\Invoice\InvoiceLine): numeric-string $fn
+	 * Materializes the effective tax-exclusive/inclusive totals into the document (called before serialization).
+	 *
+	 * @throws ISDOC\XML\Exception
 	 */
-	private function sum(callable $fn): string
+	public function flush(): void
 	{
-		$sum = '0';
-		$scale = 0;
+		$exclusive = $this->taxExclusiveAmount;
+		$inclusive = $this->taxInclusiveAmount;
+
+		$this->taxExclusiveAmount = $exclusive;
+		$this->taxInclusiveAmount = $inclusive;
+	}
+
+	/**
+	 * Sums a per-line amount across the invoice lines. {@see Number} addition widens to the larger scale of its
+	 * operands, so the result keeps as many decimal places as the most precise line — matching the previous
+	 * bcmath sum that grew its scale to the widest summand.
+	 *
+	 * @param callable(InvoiceLine): Number $amount
+	 */
+	private function sum(callable $amount): Number
+	{
+		$sum = new Number('0');
 
 		foreach ($this->invoice->invoiceLines as $line) {
-
-			$lineValue = $fn($line);
-
-			$r = strrchr($lineValue, '.');
-			if ($r !== false) {
-				$scale = max($scale, strlen(substr($r, 1)));
-			}
-
-			$sum = bcadd($sum, $lineValue, $scale);
-
+			$sum = $sum->add($amount($line));
 		}
 
 		return $sum;
-	}
-
-	/** {@inheritDoc} */
-	public function getTaxExclusiveAmount(): string
-	{
-		if ($this->taxExclusiveAmountAssigned) {
-			return parent::getTaxExclusiveAmount();
-		}
-
-		return $this->sum(fn(ISDOC\Schema\Invoice\InvoiceLine $line): string => $line->getLineExtensionAmount());
-	}
-
-	/** {@inheritDoc} */
-	public function setTaxExclusiveAmount(string|BcMath\Number $taxExclusiveAmount): self
-	{
-		$this->taxExclusiveAmountAssigned = true;
-		parent::setTaxExclusiveAmount($taxExclusiveAmount);
-		return $this;
-	}
-
-	/** {@inheritDoc} */
-	public function getTaxInclusiveAmount(): string
-	{
-		if ($this->taxInclusiveAmountAssigned) {
-			return parent::getTaxInclusiveAmount();
-		}
-
-		return $this->sum(fn(ISDOC\Schema\Invoice\InvoiceLine $line): string => $line->getLineExtensionAmountTaxInclusive());
-	}
-
-	/** {@inheritDoc} */
-	public function setTaxInclusiveAmount(string|BcMath\Number $taxInclusiveAmount): self
-	{
-		$this->taxInclusiveAmountAssigned = true;
-		parent::setTaxInclusiveAmount($taxInclusiveAmount);
-		return $this;
 	}
 
 }

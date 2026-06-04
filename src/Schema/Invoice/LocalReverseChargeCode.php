@@ -4,21 +4,20 @@ namespace Adawolfa\ISDOC\Schema\Invoice;
 
 /**
  * VAT subject code for local reverse charge mode.
- *
- * Forward-compatible counterpart of the LocalReverseChargeCode enum introduced in 2.0. Reference these
- * constants instead of the deprecated LocalReverseCharge::LOCAL_REVERSE_CHARGE_CODE_* constants to keep the
- * upgrade seamless.
  */
-final class LocalReverseChargeCode
+enum LocalReverseChargeCode: string
 {
 
-	public const string DeliveryOfGold = '1';
-	public const string TradeWithEmissionAllowances = '2';
-	public const string DeliveryOfDeveloperOrAssemblyWork = '4';
-	public const string WasteSeeAppendix5OfVATBill = '5';
+	/** delivery of gold. */
+	case DeliveryOfGold = '1';
 
-	private function __construct()
-	{
-	}
+	/** trade with emission allowances. */
+	case TradeWithEmissionAllowances = '2';
+
+	/** delivery of developer or assembly work. */
+	case DeliveryOfDeveloperOrAssemblyWork = '4';
+
+	/** waste (see appendix 5 of VAT bill). */
+	case WasteSeeAppendix5OfVATBill = '5';
 
 }

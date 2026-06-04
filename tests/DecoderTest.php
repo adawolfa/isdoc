@@ -4,39 +4,19 @@ namespace Tests\Adawolfa\ISDOC;
 
 use Adawolfa;
 use Adawolfa\ISDOC\ReaderException;
-use Nette\Utils\Json;
-use Nette\Utils\JsonException;
+use Adawolfa\ISDOC\Schema\Invoice\PartyTaxScheme;
+use Adawolfa\ISDOC\XML\Exception as XmlException;
 use PHPUnit\Framework\TestCase;
-use ReflectionException;
-use ReflectionObject;
-use Symfony;
 
 final class DecoderTest extends TestCase
 {
-
-	use Snapshot;
-
-	/**
-	 * @throws ReaderException
-	 * @throws JsonException
-	 */
-	public function testSample(): void
-	{
-		$invoice = Adawolfa\ISDOC\Manager::create()->getReader()->file(__DIR__ . '/fixtures/sample.isdoc');
-		$data    = $invoice->toArray();
-
-		self::walkArrayDateToString($data);
-
-		$this->assertInstanceOf(Adawolfa\ISDOC\Schema\Invoice::class, $invoice);
-		$this->assertSnapshot('decoder-sample.json', Json::encode($data, Json::PRETTY));
-	}
 
 	/**
 	 * @throws ReaderException
 	 */
 	public function testSampleNoReference(): void
 	{
-		$invoice = Adawolfa\ISDOC\Manager::create()->getReader()->file(__DIR__ . '/fixtures/sample-no-reference.isdoc');
+		$invoice = Adawolfa\ISDOC\Manager::create()->reader->file(__DIR__ . '/fixtures/sample-no-reference.isdoc');
 
 		/** @var Adawolfa\ISDOC\Schema\Invoice\InvoiceLine $invoiceLine */
 		$invoiceLine = iterator_to_array($invoice->invoiceLines)[0];
@@ -44,83 +24,100 @@ final class DecoderTest extends TestCase
 		$this->assertIsIterable($invoice->orderReferences);
 
 		/** @var Adawolfa\ISDOC\Schema\Invoice\Order $order */
-		$order = iterator_to_array($invoice->orderReferences)[0];
+		$order       = iterator_to_array($invoice->orderReferences)[0];
+		$inlineOrder = $invoiceLine->order?->order;
+		$this->assertNotNull($inlineOrder);
 
-		$invoiceLineArray = $invoiceLine->order?->order->toArray();
-		$orderArray       = $order->toArray();
+		// The inline (non-IDREF) reference carries the same order data as the header collection's element...
+		$this->assertSame($order->salesOrderID, $inlineOrder->salesOrderID);
+		$this->assertSame($order->externalOrderID, $inlineOrder->externalOrderID);
+		$this->assertEquals($order->issueDate, $inlineOrder->issueDate);
 
-		$invoiceLineArray['issueDate'] = $invoiceLine->order?->order->issueDate?->format('Y-m-d');
-		$orderArray['issueDate']       = $order->issueDate?->format('Y-m-d');
-
-		$this->assertSame($invoiceLineArray, $orderArray);
-		$this->assertNotSame($invoiceLine->order?->order, $order);
+		// ... but is a distinct object from it.
+		$this->assertNotSame($inlineOrder, $order);
 	}
 
 	/**
-	 * @throws ReflectionException
+	 * Parsing never fails wholesale: a missing required value raises only when that property is accessed,
+	 * naming the exact path.
+	 *
 	 * @throws ReaderException
 	 */
-	public function testSkipMissingPrimitiveValuesHydration(): void
+	public function testMissingRequiredRaisesOnlyOnAccess(): void
 	{
-		$invoice = Adawolfa\ISDOC\Manager::create(true)
-			->getReader()
+		$invoice = Adawolfa\ISDOC\Manager::create()
+			->reader
 			->file(__DIR__ . '/fixtures/no-vat-applicable.isdoc');
 
-		$reflection = new ReflectionObject($invoice);
-		$property = $reflection->getProperty('vatApplicable');
-		$this->assertFalse($property->isInitialized($invoice));
+		// Unrelated valid fields read fine even though VATApplicable is missing.
+		$this->assertSame('FV-111999/2011', $invoice->id);
+
+		$this->expectException(XmlException::class);
+		$this->expectExceptionMessage("Missing required value 'Invoice/VATApplicable'.");
+		$invoice->vatApplicable;
 	}
 
+	/**
+	 * @throws ReaderException
+	 */
 	public function testNamespacedReferences(): void
 	{
-		$invoice = Adawolfa\ISDOC\Manager::create()->getReader()->file(__DIR__ . '/fixtures/sample-namespaced-references.isdoc');
+		$invoice = Adawolfa\ISDOC\Manager::create()->reader->file(__DIR__ . '/fixtures/sample-namespaced-references.isdoc');
 
-		$orderReference = null;
-		foreach ($invoice->orderReferences ?? [] as $orderReference);
-		$this->assertNotNull($orderReference);
+		$orderReferences = $invoice->orderReferences;
+		$this->assertNotNull($orderReferences);
+		$orderReference = iterator_to_array($orderReferences)[0];
 
-		$deliveryNoteReference = null;
-		foreach ($invoice->deliveryNoteReferences ?? [] as $deliveryNoteReference);
-		$this->assertNotNull($deliveryNoteReference);
+		$deliveryNoteReferences = $invoice->deliveryNoteReferences;
+		$this->assertNotNull($deliveryNoteReferences);
+		$deliveryNoteReference = iterator_to_array($deliveryNoteReferences)[0];
 
 		$this->assertNotSame($deliveryNoteReference, $orderReference);
 
-		$firstInvoiceLine = null;
+		$firstInvoiceLine = iterator_to_array($invoice->invoiceLines)[0];
 
-		foreach ($invoice->invoiceLines as $firstInvoiceLine) {
-			break;
-		}
+		$order = $firstInvoiceLine->order;
+		$this->assertNotNull($order);
 
-		$this->assertNotNull($firstInvoiceLine);
+		$deliveryNote = $firstInvoiceLine->deliveryNote;
+		$this->assertNotNull($deliveryNote);
 
-		$this->assertNotNull($firstInvoiceLine->order);
-		$this->assertNotNull($firstInvoiceLine->deliveryNote);
-		$this->assertSame($firstInvoiceLine->order->order, $orderReference);
-		$this->assertSame($firstInvoiceLine->deliveryNote->deliveryNote, $deliveryNoteReference);
+		// The same id="ref" resolves to different targets under different wrapper-name scopes.
+		$this->assertSame($order->order, $orderReference);
+		$this->assertSame($deliveryNote->deliveryNote, $deliveryNoteReference);
 	}
 
+	/**
+	 * @throws ReaderException
+	 */
 	public function testMultiPartyTaxScheme(): void
 	{
-		$default = Adawolfa\ISDOC\Manager::create()->getReader()->file(__DIR__ . '/fixtures/multi-partytax.isdoc');
-		$this->assertNotNull($default->getAccountingSupplierParty()->getParty()->getPartyTaxScheme());
-		$this->assertSame($default->getAccountingSupplierParty()->getParty()->getPartyTaxScheme()->getCompanyID(), 'CZ25097563');
+		$invoice = Adawolfa\ISDOC\Manager::create()->reader->file(__DIR__ . '/fixtures/multi-partytax.isdoc');
+		$party   = $invoice->accountingSupplierParty->party;
 
-		$this->assertNotNull($default->getAccountingSupplierParty()->getParty()->getPartyTaxSchemes());
-		$this->assertCount(2, $default->getAccountingSupplierParty()->getParty()->getPartyTaxSchemes());
-		/** @var Adawolfa\ISDOC\Schema\Invoice\PartyTaxScheme[] $taxSchemes */
-		$taxSchemes = iterator_to_array($default->getAccountingSupplierParty()->getParty()->getPartyTaxSchemes());
-		$this->assertSame($taxSchemes[0]->getTaxScheme(), 'VAT');
-		$this->assertSame($taxSchemes[0]->getCompanyID(), 'CZ25097563');
-		$this->assertSame($taxSchemes[1]->getTaxScheme(), 'TIN');
-		$this->assertSame($taxSchemes[1]->getCompanyID(), 'SK25097563');
+		// The collection exposes every scheme in document order.
+		$this->assertNotNull($party->partyTaxSchemes);
+		$this->assertCount(2, $party->partyTaxSchemes);
 
-		$vat = Adawolfa\ISDOC\Manager::create(false, 'vat')->getReader()->file(__DIR__ . '/fixtures/multi-partytax.isdoc');
-		$this->assertNotNull($vat->getAccountingSupplierParty()->getParty()->getPartyTaxScheme());
-		$this->assertSame($vat->getAccountingSupplierParty()->getParty()->getPartyTaxScheme()->getCompanyID(), 'CZ25097563');
+		/** @var list<PartyTaxScheme> $schemes */
+		$schemes = iterator_to_array($party->partyTaxSchemes);
+		$this->assertSame('VAT', $schemes[0]->taxScheme);
+		$this->assertSame('CZ25097563', $schemes[0]->companyID);
+		$this->assertSame('TIN', $schemes[1]->taxScheme);
+		$this->assertSame('SK25097563', $schemes[1]->companyID);
 
-		$tin = Adawolfa\ISDOC\Manager::create(false, 'tin')->getReader()->file(__DIR__ . '/fixtures/multi-partytax.isdoc');
-		$this->assertNotNull($tin->getAccountingSupplierParty()->getParty()->getPartyTaxScheme());
-		$this->assertSame($tin->getAccountingSupplierParty()->getParty()->getPartyTaxScheme()->getCompanyID(), 'SK25097563');
+		// A specific scheme is selected by filtering the collection (replacing the old preferredTaxScheme hack).
+		$tin = null;
+
+		foreach ($party->partyTaxSchemes as $scheme) {
+			if (strtoupper($scheme->taxScheme) === 'TIN') {
+				$tin = $scheme;
+				break;
+			}
+		}
+
+		$this->assertNotNull($tin);
+		$this->assertSame('SK25097563', $tin->companyID);
 	}
 
 }

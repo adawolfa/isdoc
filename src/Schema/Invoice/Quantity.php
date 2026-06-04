@@ -2,36 +2,28 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Arrayable;
-use Adawolfa\ISDOC\Map;
-use Adawolfa\ISDOC\SimpleContentElement;
-use Adawolfa\ISDOC\ToArray;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
 
 /**
  * Amount.
- *
- * @property string|null $unitCode
  */
-class Quantity extends SimpleContentElement implements Arrayable
+class Quantity implements Entity
 {
 
-	use ToArray;
+	use Backing;
 
-	/** Unit. */
-	#[Map('@unitCode')]
-	private ?string $unitCode = null;
-
-	/** @deprecated Method accessors are deprecated, use {@see $unitCode} property instead. */
-	public function getUnitCode(): ?string
-	{
-		return $this->unitCode;
+	public ?string $content {
+		get => $this->node->text;
+		set { $this->node->text = $value; }
 	}
 
-	/** @deprecated Method accessors are deprecated, use {@see $unitCode} property instead. */
-	public function setUnitCode(?string $unitCode): self
-	{
-		$this->unitCode = $unitCode;
-		return $this;
+	/** Unit. */
+	public ?string $unitCode {
+		get => $this->node->getString('@unitCode');
+		set {
+			$this->node->setString('@unitCode', $value);
+		}
 	}
 
 }

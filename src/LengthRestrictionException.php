@@ -2,7 +2,7 @@
 
 namespace Adawolfa\ISDOC;
 
-final class LengthRestrictionException extends RuntimeException
+final class LengthRestrictionException extends LogicException
 {
 
 	private function __construct(string $message)

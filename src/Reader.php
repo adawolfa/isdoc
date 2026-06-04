@@ -30,10 +30,10 @@ final class Reader
 	public function file(
 		string  $filename,
 		string  $class = Schema\Invoice::class,
-		?string $format = null,
+		?Format $format = null,
 	): Schema\Invoice
 	{
-		$format = $format ?? Utils::detectFormat($filename);
+		$format ??= Utils::detectFormat($filename);
 
 		if ($format === Format::ISDOCX) {
 			return $this->xReader->file($filename, $class);
@@ -70,7 +70,7 @@ final class Reader
 	 */
 	public function xml(
 		string $xml,
-		string $class = Schema\Invoice::class
+		string $class = Schema\Invoice::class,
 	): Schema\Invoice
 	{
 		try {

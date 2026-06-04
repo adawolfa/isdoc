@@ -2,12 +2,10 @@
 
 namespace Tests\Adawolfa\ISDOC;
 
-use Adawolfa\ISDOC\DecimalRestrictionException;
-use Adawolfa\ISDOC\EnumerationRestrictionException;
 use Adawolfa\ISDOC\LengthRestrictionException;
+use Adawolfa\ISDOC\LogicException;
 use Adawolfa\ISDOC\PatternRestrictionException;
 use Adawolfa\ISDOC\Restriction;
-use Adawolfa\ISDOC\RuntimeException;
 use PHPUnit\Framework\TestCase;
 
 final class RestrictionTest extends TestCase
@@ -40,29 +38,8 @@ final class RestrictionTest extends TestCase
 
 	public function testPatternForbiddenTilde(): void
 	{
-		$this->expectException(RuntimeException::class);
+		$this->expectException(LogicException::class);
 		Restriction::pattern('', '~');
-	}
-
-	public function testEnumeration(): void
-	{
-		Restriction::enumeration(null, [1, 2, 3]);
-		Restriction::enumeration(1, [1, 2, 3]);
-		$this->expectException(EnumerationRestrictionException::class);
-		Restriction::enumeration('1', [1, 2, 3]);
-	}
-
-	public function testDecimal(): void
-	{
-		Restriction::decimal(null);
-		Restriction::decimal('.000');
-		Restriction::decimal('-.000');
-		Restriction::decimal('000');
-		Restriction::decimal('-000');
-		Restriction::decimal('123.456');
-		Restriction::decimal('-123.456');
-		$this->expectException(DecimalRestrictionException::class);
-		Restriction::decimal('1,4');
 	}
 
 }

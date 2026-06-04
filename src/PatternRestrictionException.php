@@ -2,7 +2,7 @@
 
 namespace Adawolfa\ISDOC;
 
-final class PatternRestrictionException extends RuntimeException
+final class PatternRestrictionException extends LogicException
 {
 
 	public function __construct(string $pattern)

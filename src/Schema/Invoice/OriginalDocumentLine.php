@@ -2,60 +2,52 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Arrayable;
-use Adawolfa\ISDOC\Map;
-use Adawolfa\ISDOC\Reference;
-use Adawolfa\ISDOC\ToArray;
-use Nette\SmartObject;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
+use Adawolfa\ISDOC\XML\Exception;
 
 /**
  * Line reference to an original document which is being corrected by this document (only for document types 2, 3 and 6).
- *
- * @property OriginalDocument $originalDocument
- * @property string|null      $lineID
  */
-class OriginalDocumentLine implements Arrayable
+class OriginalDocumentLine implements Entity
 {
 
-	use SmartObject;
-	use ToArray;
+	use Backing;
 
-	#[Reference]
-	private OriginalDocument $originalDocument;
+	private ?OriginalDocument $isdocReferenceOriginalDocument = null;
+
+	public OriginalDocument $originalDocument {
+		/** @throws Exception */
+		get {
+			if ($this->isdocReferenceOriginalDocument !== null) {
+				return $this->isdocReferenceOriginalDocument;
+			}
+
+			$ref = $this->node->getString('@ref');
+
+			return $ref !== null
+				? $this->node->getReference(OriginalDocument::class, $ref)
+				: $this->node->view(OriginalDocument::class);
+		}
+		set {
+			$this->isdocReferenceOriginalDocument = $value;
+			$this->node->setReference($value);
+		}
+	}
 
 	/** Line number. */
-	#[Map('LineID')]
-	private ?string $lineID = null;
-
-	public function __construct(OriginalDocument $originalDocument)
-	{
-		$this->setOriginalDocument($originalDocument);
+	public ?string $lineID {
+		get => $this->node->getString('LineID');
+		set {
+			$this->node->setString('LineID', $value);
+		}
 	}
 
-	/** @deprecated Method accessors are deprecated, use {@see $originalDocument} property instead. */
-	public function getOriginalDocument(): OriginalDocument
-	{
-		return $this->originalDocument;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $originalDocument} property instead. */
-	public function setOriginalDocument(OriginalDocument $originalDocument): self
+	public function __construct(
+		OriginalDocument $originalDocument,
+	)
 	{
 		$this->originalDocument = $originalDocument;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $lineID} property instead. */
-	public function getLineID(): ?string
-	{
-		return $this->lineID;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $lineID} property instead. */
-	public function setLineID(?string $lineID): self
-	{
-		$this->lineID = $lineID;
-		return $this;
 	}
 
 }

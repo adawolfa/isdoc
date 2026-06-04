@@ -4,24 +4,32 @@ namespace Adawolfa\ISDOC\Schema\Invoice;
 
 /**
  * The set of valid means of paying the debt incurred.
- *
- * Forward-compatible counterpart of the PaymentMeansCode enum introduced in 2.0. Reference these constants
- * instead of the deprecated Payment::PAYMENT_MEANS_CODE_* constants to keep the upgrade seamless.
  */
-final class PaymentMeansCode
+enum PaymentMeansCode: int
 {
 
-	public const int CashPayment = 10;
-	public const int ChequePayment = 20;
-	public const int CreditTransfer = 31;
-	public const int MoneyTransferToAnAccount = 42;
-	public const int CardPayment = 48;
-	public const int DirectDebit = 49;
-	public const int PaymentByPostgiro = 50;
-	public const int CompositionBetweenPartners = 97;
+	/** Cash payment. */
+	case CashPayment = 10;
 
-	private function __construct()
-	{
-	}
+	/** Cheque payment. */
+	case ChequePayment = 20;
+
+	/** Credit transfer. */
+	case CreditTransfer = 31;
+
+	/** Money transfer to an account. */
+	case MoneyTransferToAnAccount = 42;
+
+	/** Card payment. */
+	case CardPayment = 48;
+
+	/** Direct debit. */
+	case DirectDebit = 49;
+
+	/** Payment by postgiro. */
+	case PaymentByPostgiro = 50;
+
+	/** Composition between partners. */
+	case CompositionBetweenPartners = 97;
 
 }

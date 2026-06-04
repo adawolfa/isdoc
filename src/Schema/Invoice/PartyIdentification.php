@@ -2,78 +2,48 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Arrayable;
-use Adawolfa\ISDOC\Map;
-use Adawolfa\ISDOC\ToArray;
-use Nette\SmartObject;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
+use Adawolfa\ISDOC\XML\Exception;
 
 /**
  * Information about a party's identification.
- *
- * @property string|null $userID
- * @property string|null $catalogFirmIdentification
- * @property string      $id
  */
-class PartyIdentification implements Arrayable
+class PartyIdentification implements Entity
 {
 
-	use SmartObject;
-	use ToArray;
+	use Backing;
 
 	/** User defined company/workplace number. */
-	#[Map('UserID')]
-	private ?string $userID = null;
+	public ?string $userID {
+		get => $this->node->getString('UserID');
+		set {
+			$this->node->setString('UserID', $value);
+		}
+	}
 
 	/** International company/workplace number, e.g. EAN. */
-	#[Map('CatalogFirmIdentification')]
-	private ?string $catalogFirmIdentification = null;
+	public ?string $catalogFirmIdentification {
+		get => $this->node->getString('CatalogFirmIdentification');
+		set {
+			$this->node->setString('CatalogFirmIdentification', $value);
+		}
+	}
 
 	/** Company identification number. */
-	#[Map('ID')]
-	private string $id;
-
-	public function __construct(string $id)
-	{
-		$this->setId($id);
+	public string $id {
+		/** @throws Exception */
+		get => $this->node->getStringOrThrow('ID');
+		set {
+			$this->node->setString('ID', $value);
+		}
 	}
 
-	/** @deprecated Method accessors are deprecated, use {@see $userID} property instead. */
-	public function getUserID(): ?string
-	{
-		return $this->userID;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $userID} property instead. */
-	public function setUserID(?string $userID): self
-	{
-		$this->userID = $userID;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $catalogFirmIdentification} property instead. */
-	public function getCatalogFirmIdentification(): ?string
-	{
-		return $this->catalogFirmIdentification;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $catalogFirmIdentification} property instead. */
-	public function setCatalogFirmIdentification(?string $catalogFirmIdentification): self
-	{
-		$this->catalogFirmIdentification = $catalogFirmIdentification;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $id} property instead. */
-	public function getId(): string
-	{
-		return $this->id;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $id} property instead. */
-	public function setId(string $id): self
+	public function __construct(
+		string $id,
+	)
 	{
 		$this->id = $id;
-		return $this;
 	}
 
 }

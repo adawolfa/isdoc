@@ -2,92 +2,50 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Arrayable;
-use Adawolfa\ISDOC\Map;
-use Adawolfa\ISDOC\ToArray;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
+use Adawolfa\ISDOC\XML\Exception;
 use DateTimeInterface;
-use Nette\SmartObject;
 
 /**
  * Commercial Register record identification (in the Czech Republic).
- *
- * @property string|null            $registerKeptAt
- * @property string|null            $registerFileRef
- * @property DateTimeInterface|null $registerDate
- * @property string|null            $preformatted
  */
-class RegisterIdentification implements Arrayable
+class RegisterIdentification implements Entity
 {
 
-	use SmartObject;
-	use ToArray;
+	use Backing;
 
 	/** Commercial Register administrator. */
-	#[Map('RegisterKeptAt')]
-	private ?string $registerKeptAt = null;
+	public ?string $registerKeptAt {
+		get => $this->node->getString('RegisterKeptAt');
+		set {
+			$this->node->setString('RegisterKeptAt', $value);
+		}
+	}
 
 	/** Commercial Register number. */
-	#[Map('RegisterFileRef')]
-	private ?string $registerFileRef = null;
+	public ?string $registerFileRef {
+		get => $this->node->getString('RegisterFileRef');
+		set {
+			$this->node->setString('RegisterFileRef', $value);
+		}
+	}
 
 	/** Registration date. */
-	#[Map('RegisterDate')]
-	private ?DateTimeInterface $registerDate = null;
+	public ?DateTimeInterface $registerDate {
+		/** @throws Exception */
+		get => $this->node->getDate('RegisterDate');
+		set {
+			$this->node->setDate('RegisterDate', $value);
+		}
+	}
 
 	/** Preformatted information about registration in the Commerical Register. */
-	#[Map('Preformatted')]
-	private ?string $preformatted = null;
-
-	/** @deprecated Method accessors are deprecated, use {@see $registerKeptAt} property instead. */
-	public function getRegisterKeptAt(): ?string
-	{
-		return $this->registerKeptAt;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $registerKeptAt} property instead. */
-	public function setRegisterKeptAt(?string $registerKeptAt): self
-	{
-		$this->registerKeptAt = $registerKeptAt;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $registerFileRef} property instead. */
-	public function getRegisterFileRef(): ?string
-	{
-		return $this->registerFileRef;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $registerFileRef} property instead. */
-	public function setRegisterFileRef(?string $registerFileRef): self
-	{
-		$this->registerFileRef = $registerFileRef;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $registerDate} property instead. */
-	public function getRegisterDate(): ?DateTimeInterface
-	{
-		return $this->registerDate;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $registerDate} property instead. */
-	public function setRegisterDate(?DateTimeInterface $registerDate): self
-	{
-		$this->registerDate = $registerDate;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $preformatted} property instead. */
-	public function getPreformatted(): ?string
-	{
-		return $this->preformatted;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $preformatted} property instead. */
-	public function setPreformatted(?string $preformatted): self
-	{
-		$this->preformatted = $preformatted;
-		return $this;
+	public ?string $preformatted {
+		get => $this->node->getString('Preformatted');
+		set {
+			$this->node->setString('Preformatted', $value);
+		}
 	}
 
 }

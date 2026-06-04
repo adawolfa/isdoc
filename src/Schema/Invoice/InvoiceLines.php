@@ -2,29 +2,37 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Collection;
-use Adawolfa\ISDOC\Map;
-use ArrayIterator;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
+use Countable;
+use Generator;
+use IteratorAggregate;
 
 /**
  * Invoice lines collection.
- *
- * @extends Collection<InvoiceLine>
+ * @implements IteratorAggregate<int, InvoiceLine>
  */
-#[Map('InvoiceLine', InvoiceLine::class)]
-class InvoiceLines extends Collection
+class InvoiceLines implements Entity, IteratorAggregate, Countable
 {
 
-	/** @return ArrayIterator<int, InvoiceLine> */
-	public function getIterator(): ArrayIterator
+	use Backing;
+
+	/** @return Generator<int, InvoiceLine> */
+	public function getIterator(): Generator
 	{
-		return new ArrayIterator($this->items);
+		yield from $this->node->getChildren('InvoiceLine', InvoiceLine::class);
 	}
 
 	public function add(InvoiceLine $invoiceLine): self
 	{
-		$this->items[] = $invoiceLine;
+		$this->node->addChild('InvoiceLine', $invoiceLine);
+
 		return $this;
+	}
+
+	public function count(): int
+	{
+		return count($this->node->getChildren('InvoiceLine'));
 	}
 
 }

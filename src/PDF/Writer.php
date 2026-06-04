@@ -4,50 +4,46 @@ namespace Adawolfa\ISDOC\PDF;
 
 use Adawolfa\ISDOC;
 use Adawolfa\ISDOC\Encoder;
-use Adawolfa\ISDOC\Schema\Invoice\SupplementsList;
 use Adawolfa\ISDOC\WriterException;
 
 /**
- * PDF ISDOC writer.
+ * PDF ISDOC writer: appends the encoded ISDOC document and the remaining supplements to a carrier PDF as an
+ * incremental update, the first PDF supplement serving as that carrier.
  *
  * @internal
  */
-final class Writer
+final readonly class Writer
 {
 
-	private Encoder $encoder;
-
-	public function __construct(Encoder $encoder)
+	public function __construct(private Encoder $encoder)
 	{
-		$this->encoder = $encoder;
 	}
 
 	/** @throws ISDOC\WriterException */
 	public function file(ISDOC\Schema\Invoice $invoice, string $filename): void
 	{
-		$pdfSupplement       = null;
-		$filteredSupplements = new SupplementsList;
+		$carrier   = null;
+		$embedded  = [];
 
 		foreach ($invoice->supplementsList ?? [] as $supplement) {
-			$extension = pathinfo($supplement->filename, PATHINFO_EXTENSION);
-			if ($pdfSupplement === null && strtolower($extension) === 'pdf' && $supplement instanceof ISDOC\Invoice\Supplement) {
-				$pdfSupplement = $supplement;
-			} else {
-				$filteredSupplements->add($supplement);
+
+			if (!$supplement instanceof ISDOC\Invoice\Supplement) {
+				throw ISDOC\WriterException::unsupportedSupplementType();
 			}
+
+			if ($carrier === null && strtolower(pathinfo($supplement->filename, PATHINFO_EXTENSION)) === 'pdf') {
+				$carrier = $supplement;
+			} else {
+				$embedded[] = $supplement;
+			}
+
 		}
 
-		if ($pdfSupplement === null) {
+		if ($carrier === null) {
 			throw ISDOC\WriterException::noPdfSupplement();
 		}
 
-		$invoice = clone $invoice;
-
-		if ($filteredSupplements->count() > 0) {
-			$invoice->supplementsList = $filteredSupplements;
-		} else {
-			$invoice->supplementsList = null;
-		}
+		$xml = $this->encodeWithoutCarrier($invoice, $carrier);
 
 		$tempFile = tempnam(sys_get_temp_dir(), 'pdf');
 
@@ -57,11 +53,11 @@ final class Writer
 
 		try {
 
-			if (!copy($pdfSupplement->path, $tempFile)) {
+			if (!copy($carrier->path, $tempFile)) {
 				throw ISDOC\WriterException::fileCouldNotWrite($tempFile);
 			}
 
-			$this->append($tempFile, $invoice);
+			$this->append($tempFile, $xml, $embedded);
 
 			if (!rename($tempFile, $filename)) {
 				throw ISDOC\WriterException::fileCouldNotWrite($filename);
@@ -73,16 +69,34 @@ final class Writer
 	}
 
 	/**
+	 * Encodes the document with the carrier supplement temporarily removed from the list (it is the PDF itself,
+	 * not an embedded attachment), restoring it afterwards so the caller's invoice is left untouched.
+	 *
 	 * @throws WriterException
 	 */
-	private function append(string $filename, ISDOC\Schema\Invoice $invoice): void
+	private function encodeWithoutCarrier(ISDOC\Schema\Invoice $invoice, ISDOC\Invoice\Supplement $carrier): string
 	{
-		try {
-			$xml = $this->encoder->encode($invoice);
-		} catch (ISDOC\EncoderException $e) {
-			throw ISDOC\WriterException::encodeFailure($e);
-		}
+		$element = $carrier->node->dom;
+		$parent  = $element->parentElement;
+		$next    = $element->nextElementSibling;
 
+		$parent?->removeChild($element);
+
+		try {
+			return $this->encoder->encode($invoice);
+		} catch (ISDOC\EncoderException $exception) {
+			throw ISDOC\WriterException::encodeFailure($exception);
+		} finally {
+			$parent?->insertBefore($element, $next);
+		}
+	}
+
+	/**
+	 * @param list<ISDOC\Invoice\Supplement> $supplements
+	 * @throws WriterException
+	 */
+	private function append(string $filename, string $xml, array $supplements): void
+	{
 		$fd = @fopen($filename, 'a+');
 
 		if ($fd === false) {
@@ -180,11 +194,7 @@ final class Writer
 		$positions = [$objPos];
 		$num       = $size + 1;
 
-		foreach ($invoice->supplementsList ?? [] as $supplement) {
-
-			if (!$supplement instanceof ISDOC\Invoice\Supplement) {
-				throw ISDOC\WriterException::unsupportedSupplementType();
-			}
+		foreach ($supplements as $supplement) {
 
 			$sfd = fopen($supplement->path, 'r');
 

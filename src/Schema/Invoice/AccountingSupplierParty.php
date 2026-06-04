@@ -2,42 +2,30 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Arrayable;
-use Adawolfa\ISDOC\Map;
-use Adawolfa\ISDOC\ToArray;
-use Nette\SmartObject;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
+use Adawolfa\ISDOC\XML\Exception;
 
 /**
  * Supplier, accounting entity in Commercial Register.
- *
- * @property Party $party
  */
-class AccountingSupplierParty implements Arrayable
+class AccountingSupplierParty implements Entity
 {
 
-	use SmartObject;
-	use ToArray;
+	use Backing;
 
 	/** Information about an organization, sub-organization, or individual fulfilling a role in a business process. */
-	#[Map('Party')]
-	private Party $party;
-
-	public function __construct(Party $party)
-	{
-		$this->setParty($party);
+	public Party $party {
+		/** @throws Exception */
+		get => $this->node->getChildOrThrow('Party', Party::class);
+		set { $this->node->setChild('Party', $value); }
 	}
 
-	/** @deprecated Method accessors are deprecated, use {@see $party} property instead. */
-	public function getParty(): Party
-	{
-		return $this->party;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $party} property instead. */
-	public function setParty(Party $party): self
+	public function __construct(
+		Party $party,
+	)
 	{
 		$this->party = $party;
-		return $this;
 	}
 
 }

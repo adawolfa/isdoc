@@ -2,42 +2,32 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Arrayable;
-use Adawolfa\ISDOC\Map;
-use Adawolfa\ISDOC\ToArray;
-use Nette\SmartObject;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
+use Adawolfa\ISDOC\XML\Exception;
 
 /**
  * Information about a party's name.
- *
- * @property string $name
  */
-class PartyName implements Arrayable
+class PartyName implements Entity
 {
 
-	use SmartObject;
-	use ToArray;
+	use Backing;
 
 	/** A character string that constitutes the distinctive designation of a person, place, thing or concept. */
-	#[Map('Name')]
-	private string $name;
-
-	public function __construct(string $name)
-	{
-		$this->setName($name);
+	public string $name {
+		/** @throws Exception */
+		get => $this->node->getStringOrThrow('Name');
+		set {
+			$this->node->setString('Name', $value);
+		}
 	}
 
-	/** @deprecated Method accessors are deprecated, use {@see $name} property instead. */
-	public function getName(): string
-	{
-		return $this->name;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $name} property instead. */
-	public function setName(string $name): self
+	public function __construct(
+		string $name,
+	)
 	{
 		$this->name = $name;
-		return $this;
 	}
 
 }

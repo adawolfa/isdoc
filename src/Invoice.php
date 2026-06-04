@@ -2,16 +2,17 @@
 
 namespace Adawolfa\ISDOC;
 
+use BcMath\Number;
 use DateTimeInterface;
 
 /**
- * Decorated version of Invoice with more sane constructor.
+ * Decorated invoice with a saner constructor and auto-computed monetary totals.
+ *
+ * Implements {@see Finalizable} so the encoder flushes {@see Invoice\LegalMonetaryTotal}'s computed
+ * tax-exclusive/inclusive sums into the backing document just before serialization.
  */
-class Invoice extends Schema\Invoice
+class Invoice extends Schema\Invoice implements Finalizable
 {
-
-	/** @deprecated use {@see Invoice::Version} instead */
-	public const string VERSION = self::Version;
 
 	public const string Version = '6.0.2';
 
@@ -21,7 +22,7 @@ class Invoice extends Schema\Invoice
 		DateTimeInterface                      $issueDate,
 		bool                                   $vatApplicable,
 		string                                 $currencyCode,
-		Schema\Invoice\AccountingSupplierParty $accountingSupplierParty
+		Schema\Invoice\AccountingSupplierParty $accountingSupplierParty,
 	)
 	{
 		parent::__construct(
@@ -30,16 +31,32 @@ class Invoice extends Schema\Invoice
 			$uuid,
 			$issueDate,
 			$vatApplicable,
-			new Schema\Invoice\Note,
+			new Schema\Invoice\Note(),
 			$currencyCode,
-			'1.0',
-			'1.0',
+			new Number('1.0'),
+			new Number('1.0'),
 			$accountingSupplierParty,
-			new Schema\Invoice\InvoiceLines,
-			new Schema\Invoice\TaxTotal('0.0'),
+			new Schema\Invoice\InvoiceLines(),
+			new Invoice\TaxTotal(),
 			new Invoice\LegalMonetaryTotal($this),
 			self::Version,
 		);
+	}
+
+	/** @throws XML\Exception */
+	public function finalizeForWrite(): void
+	{
+		$taxTotal = $this->taxTotal;
+
+		if ($taxTotal instanceof Invoice\TaxTotal) {
+			$taxTotal->flush();
+		}
+
+		$legalMonetaryTotal = $this->legalMonetaryTotal;
+
+		if ($legalMonetaryTotal instanceof Invoice\LegalMonetaryTotal) {
+			$legalMonetaryTotal->flush();
+		}
 	}
 
 }

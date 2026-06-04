@@ -2,45 +2,60 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Arrayable;
-use Adawolfa\ISDOC\Map;
-use Adawolfa\ISDOC\ToArray;
-use Nette\SmartObject;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
+use Adawolfa\ISDOC\XML\Exception;
 
 /**
  * Postal address.
- *
- * @property string  $streetName
- * @property string  $buildingNumber
- * @property string  $cityName
- * @property string  $postalZone
- * @property Country $country
  */
-class PostalAddress implements Arrayable
+class PostalAddress implements Entity
 {
 
-	use SmartObject;
-	use ToArray;
+	use Backing;
 
 	/** Street. */
-	#[Map('StreetName')]
-	private string $streetName;
+	public string $streetName {
+		/** @throws Exception */
+		get => $this->node->getStringOrThrow('StreetName');
+		set {
+			$this->node->setString('StreetName', $value);
+		}
+	}
 
 	/** Building number. */
-	#[Map('BuildingNumber')]
-	private string $buildingNumber;
+	public string $buildingNumber {
+		/** @throws Exception */
+		get => $this->node->getStringOrThrow('BuildingNumber');
+		set {
+			$this->node->setString('BuildingNumber', $value);
+		}
+	}
 
 	/** City. */
-	#[Map('CityName')]
-	private string $cityName;
+	public string $cityName {
+		/** @throws Exception */
+		get => $this->node->getStringOrThrow('CityName');
+		set {
+			$this->node->setString('CityName', $value);
+		}
+	}
 
 	/** ZIP/postal zone. */
-	#[Map('PostalZone')]
-	private string $postalZone;
+	public string $postalZone {
+		/** @throws Exception */
+		get => $this->node->getStringOrThrow('PostalZone');
+		set {
+			$this->node->setString('PostalZone', $value);
+		}
+	}
 
 	/** Country. */
-	#[Map('Country')]
-	private Country $country;
+	public Country $country {
+		/** @throws Exception */
+		get => $this->node->getChildOrThrow('Country', Country::class);
+		set { $this->node->setChild('Country', $value); }
+	}
 
 	public function __construct(
 		string $streetName,
@@ -48,77 +63,13 @@ class PostalAddress implements Arrayable
 		string $cityName,
 		string $postalZone,
 		Country $country,
-	) {
-		$this->setStreetName($streetName);
-		$this->setBuildingNumber($buildingNumber);
-		$this->setCityName($cityName);
-		$this->setPostalZone($postalZone);
-		$this->setCountry($country);
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $streetName} property instead. */
-	public function getStreetName(): string
-	{
-		return $this->streetName;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $streetName} property instead. */
-	public function setStreetName(string $streetName): self
+	)
 	{
 		$this->streetName = $streetName;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $buildingNumber} property instead. */
-	public function getBuildingNumber(): string
-	{
-		return $this->buildingNumber;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $buildingNumber} property instead. */
-	public function setBuildingNumber(string $buildingNumber): self
-	{
 		$this->buildingNumber = $buildingNumber;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $cityName} property instead. */
-	public function getCityName(): string
-	{
-		return $this->cityName;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $cityName} property instead. */
-	public function setCityName(string $cityName): self
-	{
 		$this->cityName = $cityName;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $postalZone} property instead. */
-	public function getPostalZone(): string
-	{
-		return $this->postalZone;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $postalZone} property instead. */
-	public function setPostalZone(string $postalZone): self
-	{
 		$this->postalZone = $postalZone;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $country} property instead. */
-	public function getCountry(): Country
-	{
-		return $this->country;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $country} property instead. */
-	public function setCountry(Country $country): self
-	{
 		$this->country = $country;
-		return $this;
 	}
 
 }

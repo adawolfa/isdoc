@@ -2,29 +2,42 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Collection;
-use Adawolfa\ISDOC\Map;
-use ArrayIterator;
+use Adawolfa\ISDOC\Schema\Entity;
+use Adawolfa\ISDOC\XML\Node;
+use Countable;
+use Generator;
+use IteratorAggregate;
 
 /**
- * Collection of party's tax schemes.
- *
- * @extends Collection<PartyTaxScheme>
+ * Information about a party's tax scheme.
+ * @implements IteratorAggregate<int, PartyTaxScheme>
  */
-#[Map(null, PartyTaxScheme::class)]
-class PartyTaxSchemes extends Collection
+class PartyTaxSchemes implements Entity, IteratorAggregate, Countable
 {
 
-	/** @return ArrayIterator<int, PartyTaxScheme> */
-	public function getIterator(): ArrayIterator
+	private ?Node $isdocNode = null;
+
+	public Node $node {
+		get => $this->isdocNode ??= Node::entity(self::class);
+		set { $this->isdocNode = $value; }
+	}
+
+	/** @return Generator<int, PartyTaxScheme> */
+	public function getIterator(): Generator
 	{
-		return new ArrayIterator($this->items);
+		yield from $this->node->getChildren('PartyTaxScheme', PartyTaxScheme::class);
 	}
 
 	public function add(PartyTaxScheme $partyTaxScheme): self
 	{
-		$this->items[] = $partyTaxScheme;
+		$this->node->addChild('PartyTaxScheme', $partyTaxScheme);
+
 		return $this;
+	}
+
+	public function count(): int
+	{
+		return count($this->node->getChildren('PartyTaxScheme'));
 	}
 
 }

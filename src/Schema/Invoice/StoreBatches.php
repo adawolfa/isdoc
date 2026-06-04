@@ -2,29 +2,37 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Collection;
-use Adawolfa\ISDOC\Map;
-use ArrayIterator;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
+use Countable;
+use Generator;
+use IteratorAggregate;
 
 /**
  * Batch or serial number collection.
- *
- * @extends Collection<StoreBatch>
+ * @implements IteratorAggregate<int, StoreBatch>
  */
-#[Map('StoreBatch', StoreBatch::class)]
-class StoreBatches extends Collection
+class StoreBatches implements Entity, IteratorAggregate, Countable
 {
 
-	/** @return ArrayIterator<int, StoreBatch> */
-	public function getIterator(): ArrayIterator
+	use Backing;
+
+	/** @return Generator<int, StoreBatch> */
+	public function getIterator(): Generator
 	{
-		return new ArrayIterator($this->items);
+		yield from $this->node->getChildren('StoreBatch', StoreBatch::class);
 	}
 
 	public function add(StoreBatch $storeBatch): self
 	{
-		$this->items[] = $storeBatch;
+		$this->node->addChild('StoreBatch', $storeBatch);
+
 		return $this;
+	}
+
+	public function count(): int
+	{
+		return count($this->node->getChildren('StoreBatch'));
 	}
 
 }

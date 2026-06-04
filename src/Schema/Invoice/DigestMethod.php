@@ -2,42 +2,32 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Arrayable;
-use Adawolfa\ISDOC\Map;
-use Adawolfa\ISDOC\ToArray;
-use Nette\SmartObject;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
+use Adawolfa\ISDOC\XML\Exception;
 
 /**
  * Attachment digest method identification.
- *
- * @property string $algorithm
  */
-class DigestMethod implements Arrayable
+class DigestMethod implements Entity
 {
 
-	use SmartObject;
-	use ToArray;
+	use Backing;
 
 	/** Algorithm identifiers are defined in http://www.w3.org/TR/xmldsig-core/#sec-AlgID. */
-	#[Map('@Algorithm')]
-	private string $algorithm;
-
-	public function __construct(string $algorithm)
-	{
-		$this->setAlgorithm($algorithm);
+	public string $algorithm {
+		/** @throws Exception */
+		get => $this->node->getStringOrThrow('@Algorithm');
+		set {
+			$this->node->setString('@Algorithm', $value);
+		}
 	}
 
-	/** @deprecated Method accessors are deprecated, use {@see $algorithm} property instead. */
-	public function getAlgorithm(): string
-	{
-		return $this->algorithm;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $algorithm} property instead. */
-	public function setAlgorithm(string $algorithm): self
+	public function __construct(
+		string $algorithm,
+	)
 	{
 		$this->algorithm = $algorithm;
-		return $this;
 	}
 
 }

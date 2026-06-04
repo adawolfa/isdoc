@@ -2,42 +2,32 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Arrayable;
-use Adawolfa\ISDOC\Map;
-use Adawolfa\ISDOC\ToArray;
-use Nette\SmartObject;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
+use Adawolfa\ISDOC\XML\Exception;
 
 /**
  * Seller's item identification.
- *
- * @property string $id
  */
-class SellersItemIdentification implements Arrayable
+class SellersItemIdentification implements Entity
 {
 
-	use SmartObject;
-	use ToArray;
+	use Backing;
 
 	/** Unique identifier. */
-	#[Map('ID')]
-	private string $id;
-
-	public function __construct(string $id)
-	{
-		$this->setId($id);
+	public string $id {
+		/** @throws Exception */
+		get => $this->node->getStringOrThrow('ID');
+		set {
+			$this->node->setString('ID', $value);
+		}
 	}
 
-	/** @deprecated Method accessors are deprecated, use {@see $id} property instead. */
-	public function getId(): string
-	{
-		return $this->id;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $id} property instead. */
-	public function setId(string $id): self
+	public function __construct(
+		string $id,
+	)
 	{
 		$this->id = $id;
-		return $this;
 	}
 
 }

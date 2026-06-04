@@ -2,29 +2,37 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Collection;
-use Adawolfa\ISDOC\Map;
-use ArrayIterator;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
+use Countable;
+use Generator;
+use IteratorAggregate;
 
 /**
  * Related contracts.
- *
- * @extends Collection<Contract>
+ * @implements IteratorAggregate<int, Contract>
  */
-#[Map('ContractReference', Contract::class)]
-class ContractReferences extends Collection
+class ContractReferences implements Entity, IteratorAggregate, Countable
 {
 
-	/** @return ArrayIterator<int, Contract> */
-	public function getIterator(): ArrayIterator
+	use Backing;
+
+	/** @return Generator<int, Contract> */
+	public function getIterator(): Generator
 	{
-		return new ArrayIterator($this->items);
+		yield from $this->node->getChildren('ContractReference', Contract::class);
 	}
 
-	public function add(Contract $contract): self
+	public function add(Contract $contractReference): self
 	{
-		$this->items[] = $contract;
+		$this->node->addChild('ContractReference', $contractReference);
+
 		return $this;
+	}
+
+	public function count(): int
+	{
+		return count($this->node->getChildren('ContractReference'));
 	}
 
 }

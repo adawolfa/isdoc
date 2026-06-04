@@ -2,29 +2,37 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Collection;
-use Adawolfa\ISDOC\Map;
-use ArrayIterator;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
+use Countable;
+use Generator;
+use IteratorAggregate;
 
 /**
  * Header collection of referenced original documents.
- *
- * @extends Collection<OriginalDocument>
+ * @implements IteratorAggregate<int, OriginalDocument>
  */
-#[Map('OriginalDocumentReference', OriginalDocument::class)]
-class OriginalDocumentReferences extends Collection
+class OriginalDocumentReferences implements Entity, IteratorAggregate, Countable
 {
 
-	/** @return ArrayIterator<int, OriginalDocument> */
-	public function getIterator(): ArrayIterator
+	use Backing;
+
+	/** @return Generator<int, OriginalDocument> */
+	public function getIterator(): Generator
 	{
-		return new ArrayIterator($this->items);
+		yield from $this->node->getChildren('OriginalDocumentReference', OriginalDocument::class);
 	}
 
-	public function add(OriginalDocument $originalDocument): self
+	public function add(OriginalDocument $originalDocumentReference): self
 	{
-		$this->items[] = $originalDocument;
+		$this->node->addChild('OriginalDocumentReference', $originalDocumentReference);
+
 		return $this;
+	}
+
+	public function count(): int
+	{
+		return count($this->node->getChildren('OriginalDocumentReference'));
 	}
 
 }

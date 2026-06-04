@@ -4,32 +4,21 @@ namespace Adawolfa\ISDOC\X;
 
 use Adawolfa\ISDOC;
 use Adawolfa\ISDOC\Decoder;
-use Symfony\Component\Serializer\Encoder\XmlEncoder;
-use Symfony\Component\Serializer\Exception\UnexpectedValueException;
+use Dom\Element;
+use Dom\XMLDocument;
+use DOMException;
 use ZipArchive;
 
 /**
- * ISDOCX reader.
+ * ISDOCX reader: extracts the inner ISDOC document from the ZIP and binds its supplements to archive-backed views.
  *
  * @internal
  */
-final class Reader
+final readonly class Reader
 {
 
-	/**
-	 * Uncompressed-size cap for the manifest and the ISDOC XML, enforced before the entry is inflated to defend
-	 * against a ZIP decompression bomb. 256 KB is a generous bound for what the ISDOC/manifest XML actually fits.
-	 */
-	private const DOCUMENT_SIZE_LIMIT = 1 << 18;
-
-	private XmlEncoder $xmlEncoder;
-
-	private Decoder $decoder;
-
-	public function __construct(XmlEncoder $encoder, Decoder $decoder)
+	public function __construct(private Decoder $decoder)
 	{
-		$this->xmlEncoder = $encoder;
-		$this->decoder    = $decoder;
 	}
 
 	/**
@@ -40,7 +29,7 @@ final class Reader
 	 */
 	public function file(string $filename, string $class = ISDOC\Schema\Invoice::class): ISDOC\Schema\Invoice
 	{
-		$zip = new ZipArchive;
+		$zip = new ZipArchive();
 
 		if ($zip->open($filename, ZipArchive::RDONLY) !== true) {
 			throw ISDOC\ReaderException::zipCouldNotOpen($filename);
@@ -53,34 +42,22 @@ final class Reader
 		}
 
 		try {
-			return $this->decoder->decode($xml, $class, $this->createHook($zip));
+			$invoice = $this->decoder->decode($xml, $class);
 		} catch (ISDOC\DecoderException $exception) {
 			throw ISDOC\ReaderException::decodeFailureFile($filename, $exception);
 		}
-	}
 
-	private function createHook(ZipArchive $zip): callable
-	{
-		return function (object $instance) use ($zip): object {
+		$list = $invoice->node->getChild('SupplementsList');
 
-			if (!$instance instanceof ISDOC\Schema\Invoice\Supplement) {
-				return $instance;
+		if ($list !== null) {
+			foreach ($list->getChildren('Supplement') as $supplement) {
+				$supplement->bind(Supplement::class)->zip = $zip;
 			}
+		}
 
-			$supplement = new Supplement(
-				$instance->filename,
-				$instance->digestMethod,
-				$instance->digestValue,
-				$zip,
-			);
-
-			$supplement->preview = $instance->preview;
-			return $supplement;
-
-		};
+		return $invoice;
 	}
 
-	/** @throws ISDOC\ReaderException */
 	private function readXML(ZipArchive $zip): ?string
 	{
 		$fromManifest = $this->readXMLFromManifest($zip);
@@ -95,7 +72,7 @@ final class Reader
 
 			$name = $zip->getNameIndex($i);
 
-			if ($name !== false && strcasecmp(pathinfo($name, PATHINFO_EXTENSION), ISDOC\Format::ISDOC) === 0) {
+			if ($name !== false && strcasecmp(pathinfo($name, PATHINFO_EXTENSION), ISDOC\Format::ISDOC->value) === 0) {
 				$files[] = $name;
 			}
 
@@ -105,62 +82,50 @@ final class Reader
 			return null;
 		}
 
-		return $this->readEntry($zip, $files[0]);
-	}
-
-	/** @throws ISDOC\ReaderException */
-	private function readXMLFromManifest(ZipArchive $zip): ?string
-	{
-		$manifestXML = $this->readEntry($zip, 'manifest.xml');
-
-		if ($manifestXML === null) {
-			return null;
-		}
-
-		// Security: the manifest is parsed with Symfony's XmlEncoder, which does not enable LIBXML_NOENT and
-		// rejects external entities by default — keep it that way (never pass a LOAD_OPTIONS that adds
-		// LIBXML_NOENT / LIBXML_DTDLOAD), otherwise an attacker-supplied manifest could mount an XXE attack.
-		try {
-			$manifest = $this->xmlEncoder->decode($manifestXML, $this->xmlEncoder::FORMAT);
-		} catch (UnexpectedValueException) {
-			return null;
-		}
-
-		if (!is_array($manifest) || !is_array($manifest['maindocument'] ?? null)) {
-			return null;
-		}
-
-		$filename = $manifest['maindocument']['@filename'] ?? null;
-
-		if (!is_string($filename)) {
-			return null;
-		}
-
-		return $this->readEntry($zip, $filename);
-	}
-
-	/**
-	 * Reads an archive entry into memory, rejecting a decompression bomb up front: the uncompressed size is read
-	 * from the central directory and checked against {@see self::DOCUMENT_SIZE_LIMIT} before a single byte is
-	 * inflated. Returns null when the entry is absent.
-	 *
-	 * @throws ISDOC\ReaderException
-	 */
-	private function readEntry(ZipArchive $zip, string $name): ?string
-	{
-		$size = Zip::entrySize($zip, $name);
-
-		if ($size === null) {
-			return null;
-		}
-
-		if ($size > self::DOCUMENT_SIZE_LIMIT) {
-			throw ISDOC\ReaderException::zipEntryTooLarge($name, $size, self::DOCUMENT_SIZE_LIMIT);
-		}
-
-		$xml = $zip->getFromName($name);
+		$xml = $zip->getFromName($files[0]);
 
 		return $xml === false ? null : $xml;
+	}
+
+	private function readXMLFromManifest(ZipArchive $zip): ?string
+	{
+		$manifest = $zip->getFromName('manifest.xml');
+
+		if ($manifest === false) {
+			return null;
+		}
+
+		try {
+			$document = XMLDocument::createFromString($manifest, LIBXML_NONET | LIBXML_NOERROR | LIBXML_NOWARNING);
+		} /** @noinspection PhpRedundantCatchClauseInspection */ catch (DOMException) {
+			return null;
+		}
+
+		$root = $document->documentElement;
+
+		if (!$root instanceof Element) {
+			return null;
+		}
+
+		foreach ($root->childNodes as $node) {
+
+			if (!$node instanceof Element || $node->localName !== 'maindocument') {
+				continue;
+			}
+
+			$filename = $node->getAttribute('filename');
+
+			if ($filename === null) {
+				continue;
+			}
+
+			$xml = $zip->getFromName($filename);
+
+			return $xml === false ? null : $xml;
+
+		}
+
+		return null;
 	}
 
 }

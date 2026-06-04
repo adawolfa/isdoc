@@ -4,23 +4,29 @@ namespace Adawolfa\ISDOC\Schema\Invoice;
 
 /**
  * Document type.
- *
- * Forward-compatible counterpart of the DocumentType enum introduced in 2.0. Reference these constants
- * instead of the deprecated Invoice::DOCUMENT_TYPE_* constants to keep the upgrade seamless.
  */
-final class DocumentType
+enum DocumentType: int
 {
 
-	public const int Invoice = 1;
-	public const int CreditNote = 2;
-	public const int DebitNote = 3;
-	public const int ProformaInvoiceNoVAT = 4;
-	public const int AdvanceInvoiceWithVAT = 5;
-	public const int CreditNoteForAdvanceInvoiceWithVAT = 6;
-	public const int SimplifiedTaxDocument = 7;
+	/** invoice. */
+	case Invoice = 1;
 
-	private function __construct()
-	{
-	}
+	/** credit note. */
+	case CreditNote = 2;
+
+	/** debit note. */
+	case DebitNote = 3;
+
+	/** proforma invoice (no VAT). */
+	case ProformaInvoiceNoVAT = 4;
+
+	/** advance invoice (with VAT). */
+	case AdvanceInvoiceWithVAT = 5;
+
+	/** credit note for advance invoice (with VAT). */
+	case CreditNoteForAdvanceInvoiceWithVAT = 6;
+
+	/** simplified tax document. */
+	case SimplifiedTaxDocument = 7;
 
 }

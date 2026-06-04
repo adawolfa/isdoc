@@ -1,5 +1,40 @@
 parameters:
-	level: 9
+	level: max
 	paths:
 		- src
 		- tests
+	exceptions:
+		# Treat the library's own exception as checked: every method that can throw it (directly or by
+		# propagation) must declare it in @throws, and an @throws that is never actually thrown is reported.
+		# The Adawolfa\ISDOC\LogicException hierarchy (restriction failures = programmer errors) and the
+		# Adawolfa\ISDOC\RuntimeException hierarchy (I/O failures) stay unchecked, so set-hooks that
+		# validate input need no annotation.
+		implicitThrows: false
+		checkedExceptionClasses:
+			- Adawolfa\ISDOC\Exception
+		check:
+			missingCheckedExceptionInThrows: true
+			tooWideThrowType: true
+	ignoreErrors:
+		# PHP's Dom\XMLDocument::createFromString() throws \DOMException on malformed input at runtime (verified),
+		# but phpstan's core stubs don't declare it, so these load-bearing defensive catches read as dead. The
+		# catches convert the parse failure into the library's own exception (Document) or a null manifest (Reader).
+		-
+			message: '#^Dead catch - DOMException is never thrown in the try block\.$#'
+			path: src/XML/Document.php
+		-
+			message: '#^Dead catch - DOMException is never thrown in the try block\.$#'
+			path: src/X/Reader.php
+		# PHPUnit's assertions are static but conventionally called on $this in the test suite.
+		-
+			identifier: staticMethod.dynamicCall
+			path: tests/*
+		# Test methods exercise the library's throwing accessors and let exceptions propagate to PHPUnit (which
+		# reports them as failures); annotating every test method with @throws would be noise, not a contract.
+		-
+			identifier: missingType.checkedException
+			path: tests/*
+		# The `?: throw` idiom for createFromFormat() is intentional in the test fixtures.
+		-
+			identifier: ternary.shortNotAllowed
+			path: tests/*

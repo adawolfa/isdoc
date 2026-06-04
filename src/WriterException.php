@@ -18,6 +18,11 @@ final class WriterException extends Exception
 		return new self('Failed to encode invoice to XML.', $exception);
 	}
 
+	public static function invalidInvoice(XML\Exception $exception): self
+	{
+		return new self('Invoice data could not be read.', $exception);
+	}
+
 	public static function fileCouldNotWrite(string $filename): self
 	{
 		return new self("Failed to write file '$filename'.");

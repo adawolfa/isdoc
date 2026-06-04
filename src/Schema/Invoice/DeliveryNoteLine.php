@@ -2,60 +2,52 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Arrayable;
-use Adawolfa\ISDOC\Map;
-use Adawolfa\ISDOC\Reference;
-use Adawolfa\ISDOC\ToArray;
-use Nette\SmartObject;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
+use Adawolfa\ISDOC\XML\Exception;
 
 /**
  * Information about referenced line on delivery note.
- *
- * @property DeliveryNote $deliveryNote
- * @property string|null  $lineID
  */
-class DeliveryNoteLine implements Arrayable
+class DeliveryNoteLine implements Entity
 {
 
-	use SmartObject;
-	use ToArray;
+	use Backing;
 
-	#[Reference]
-	private DeliveryNote $deliveryNote;
+	private ?DeliveryNote $isdocReferenceDeliveryNote = null;
+
+	public DeliveryNote $deliveryNote {
+		/** @throws Exception */
+		get {
+			if ($this->isdocReferenceDeliveryNote !== null) {
+				return $this->isdocReferenceDeliveryNote;
+			}
+
+			$ref = $this->node->getString('@ref');
+
+			return $ref !== null
+				? $this->node->getReference(DeliveryNote::class, $ref)
+				: $this->node->view(DeliveryNote::class);
+		}
+		set {
+			$this->isdocReferenceDeliveryNote = $value;
+			$this->node->setReference($value);
+		}
+	}
 
 	/** Line number. */
-	#[Map('LineID')]
-	private ?string $lineID = null;
-
-	public function __construct(DeliveryNote $deliveryNote)
-	{
-		$this->setDeliveryNote($deliveryNote);
+	public ?string $lineID {
+		get => $this->node->getString('LineID');
+		set {
+			$this->node->setString('LineID', $value);
+		}
 	}
 
-	/** @deprecated Method accessors are deprecated, use {@see $deliveryNote} property instead. */
-	public function getDeliveryNote(): DeliveryNote
-	{
-		return $this->deliveryNote;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $deliveryNote} property instead. */
-	public function setDeliveryNote(DeliveryNote $deliveryNote): self
+	public function __construct(
+		DeliveryNote $deliveryNote,
+	)
 	{
 		$this->deliveryNote = $deliveryNote;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $lineID} property instead. */
-	public function getLineID(): ?string
-	{
-		return $this->lineID;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $lineID} property instead. */
-	public function setLineID(?string $lineID): self
-	{
-		$this->lineID = $lineID;
-		return $this;
 	}
 
 }

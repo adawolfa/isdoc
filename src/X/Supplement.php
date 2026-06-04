@@ -3,181 +3,95 @@
 namespace Adawolfa\ISDOC\X;
 
 use Adawolfa\ISDOC;
-use Adawolfa\ISDOC\Schema\Invoice\DigestMethod;
 use Adawolfa\ISDOC\SupplementException;
 use ZipArchive;
 
 /**
- * ISDOCX attachment.
+ * Supplement backed by an entry in the ISDOCX ZIP archive.
  *
- * @property-read string   $contents
- * @property-read resource $stream
- * @property-read bool     $ok
+ * Bound onto the parsed {@code <Supplement>} element by {@see Reader}; the file name and digest are read from
+ * the document, the bytes from the archive (whose entry names are matched case-insensitively).
  */
 final class Supplement extends ISDOC\Schema\Invoice\Supplement implements ISDOC\Invoice\RemoteSupplement
 {
 
-	/**
-	 * Default uncompressed-size cap for a single supplement, enforced before the entry is inflated to defend
-	 * against a ZIP decompression bomb (a tiny archive can declare a multi-gigabyte entry). 32 MB is a generous
-	 * default for a real attachment while still bounding memory and disk use; callers that legitimately need more
-	 * can raise it, or pass null to disable it, on getContents() / getStream() / saveTo().
-	 */
-	public const SIZE_LIMIT = 1 << 25;
-
-	private ZipArchive $zip;
-
-	public function __construct(
-		string       $filename,
-		DigestMethod $digestMethod,
-		string       $digestValue,
-		ZipArchive   $zip
-	)
-	{
-		parent::__construct($filename, $digestMethod, $digestValue);
-		$this->zip = $zip;
-	}
-
-	/**
-	 * @param int|null $sizeLimit Uncompressed-size cap enforced before inflating; null disables it.
-	 * @throws SupplementException
-	 */
-	public function getContents(?int $sizeLimit = self::SIZE_LIMIT): string
-	{
-		$name = $this->findRealFile();
-		$this->checkSize($name, $sizeLimit);
-		$contents = $this->zip->getFromName($name);
-
-		if ($contents === false) {
-			throw SupplementException::zipDoesNotContainFile($this->getFilename());
-		}
-
-		return $contents;
-	}
-
-	/**
-	 * @param int|null $sizeLimit Uncompressed-size cap enforced before inflating; null disables it.
-	 * @return resource
-	 * @throws SupplementException
-	 */
-	public function getStream(?int $sizeLimit = self::SIZE_LIMIT)
-	{
-		$name = $this->findRealFile();
-		$this->checkSize($name, $sizeLimit);
-		$resource = $this->zip->getStream($name);
-
-		if ($resource === false) {
-			throw SupplementException::zipDoesNotContainFile($this->getFilename());
-		}
-
-		return $resource;
-	}
-
-	/**
-	 * Rejects an oversized entry from its central-directory size before any bytes are inflated. A null limit
-	 * disables the check.
-	 *
-	 * @throws SupplementException
-	 */
-	private function checkSize(string $name, ?int $sizeLimit): void
-	{
-		if ($sizeLimit === null) {
-			return;
-		}
-
-		$size = Zip::entrySize($this->zip, $name);
-
-		if ($size !== null && $size > $sizeLimit) {
-			throw SupplementException::supplementTooLarge($this->getFilename(), $size, $sizeLimit);
+	public ZipArchive $zip {
+		set {
+			$this->zip = $value;
 		}
 	}
 
-	/**
-	 * @param int|null $sizeLimit Uncompressed-size cap (central-directory pre-check and a running budget on the
-	 *                            inflated stream); raise it for legitimately large attachments or pass null to
-	 *                            disable it. Defaults to {@see self::SIZE_LIMIT}.
-	 * @throws SupplementException
-	 */
-	public function saveTo(string $filename, ?int $sizeLimit = self::SIZE_LIMIT): void
-	{
-		// I assume rewound descriptor. getStream() already enforced the size cap from the central directory.
-		$resource = $this->getStream($sizeLimit);
+	public string $contents {
+		/** @throws SupplementException */
+		get {
+			$contents = $this->zip->getFromName($this->findRealFile());
 
-		try {
-
-			$f = @fopen($filename, 'w');
-
-			if ($f === false) {
-				throw SupplementException::couldNotWriteFile($this->getFilename(), $filename);
+			if ($contents === false) {
+				throw SupplementException::zipDoesNotContainFile($this->filename);
 			}
 
-			$written  = 0;
-			$complete = false;
+			return $contents;
+		}
+	}
 
-			try {
+	/** @var resource */
+	public $stream {
+		/** @throws SupplementException */
+		get {
+			$resource = $this->zip->getStream($this->findRealFile());
 
-				while (!feof($resource)) {
-
-					$chunk = @fread($resource, 1 << 14);
-
-					if ($chunk === false) {
-						throw SupplementException::couldNotWriteFile($this->getFilename(), $filename);
-					}
-
-					$written += strlen($chunk);
-
-					// Defence in depth: a stream that inflates past the declared size (or a malformed entry) is
-					// stopped here so a decompression bomb cannot fill the disk even when statName() under-reports.
-					if ($sizeLimit !== null && $written > $sizeLimit) {
-						throw SupplementException::supplementTooLarge($this->getFilename(), $written, $sizeLimit);
-					}
-
-					if (@fwrite($f, $chunk) === false) {
-						throw SupplementException::couldNotWriteFile($this->getFilename(), $filename);
-					}
-
-				}
-
-				$complete = true;
-
-			} finally {
-				fclose($f);
-
-				// Never leave a partial (or bomb-truncated) file behind when the copy did not finish cleanly.
-				if (!$complete) {
-					@unlink($filename);
-				}
+			if ($resource === false) {
+				throw SupplementException::zipDoesNotContainFile($this->filename);
 			}
 
-		} finally {
-			fclose($resource);
+			return $resource;
 		}
 	}
 
 	/** @throws SupplementException */
-	public function isOk(): bool
+	public function saveTo(string $filename): void
 	{
-		return ISDOC\Utils::checkSupplementDigest($this);
+		$resource = $this->stream;
+		$handle   = @fopen($filename, 'w');
+
+		if ($handle === false) {
+			throw SupplementException::couldNotWriteFile($this->filename, $filename);
+		}
+
+		while (!feof($resource)) {
+
+			$chunk = @fread($resource, 1 << 14);
+
+			if ($chunk === false || @fwrite($handle, $chunk) === false) {
+				throw SupplementException::couldNotWriteFile($this->filename, $filename);
+			}
+
+		}
+
+		fclose($handle);
 	}
 
-	/**
-	 * File names are apparently case insensitive, but ZIP is not.
-	 */
+	public bool $ok {
+		/** @throws SupplementException */
+		get => ISDOC\Utils::checkSupplementDigest($this);
+	}
+
+	/** File names are apparently case insensitive, but the ZIP is not. */
 	private function findRealFile(): string
 	{
-		$lName = str_replace('\\', '/', mb_strtolower($this->getFilename()));
+		$name = str_replace('\\', '/', mb_strtolower($this->filename));
 
 		for ($i = 0; $i < $this->zip->numFiles; $i++) {
 
 			$real = $this->zip->getNameIndex($i);
 
-			if ($real !== false && mb_strtolower($real) === $lName) {
+			if ($real !== false && mb_strtolower($real) === $name) {
 				return $real;
 			}
 
 		}
 
-		return $this->getFilename();
+		return $this->filename;
 	}
 
 }

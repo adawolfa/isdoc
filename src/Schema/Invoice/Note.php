@@ -2,38 +2,30 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Arrayable;
-use Adawolfa\ISDOC\Map;
 use Adawolfa\ISDOC\Restriction;
-use Adawolfa\ISDOC\SimpleContentElement;
-use Adawolfa\ISDOC\ToArray;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
 
 /**
  * Note.
- *
- * @property string|null $languageID
  */
-class Note extends SimpleContentElement implements Arrayable
+class Note implements Entity
 {
 
-	use ToArray;
+	use Backing;
 
-	/** Language identifier (e.g. "en" for English). */
-	#[Map('@languageID')]
-	private ?string $languageID = null;
-
-	/** @deprecated Method accessors are deprecated, use {@see $languageID} property instead. */
-	public function getLanguageID(): ?string
-	{
-		return $this->languageID;
+	public ?string $content {
+		get => $this->node->text;
+		set { $this->node->text = $value; }
 	}
 
-	/** @deprecated Method accessors are deprecated, use {@see $languageID} property instead. */
-	public function setLanguageID(?string $languageID): self
-	{
-		Restriction::pattern($languageID, '[a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})*');
-		$this->languageID = $languageID;
-		return $this;
+	/** Language identifier (e.g. "en" for English). */
+	public ?string $languageID {
+		get => $this->node->getString('@languageID');
+		set {
+			Restriction::pattern($value, '[a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})*');
+			$this->node->setString('@languageID', $value);
+		}
 	}
 
 }

@@ -2,17 +2,14 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Arrayable;
-use Adawolfa\ISDOC\ToArray;
-use Nette\SmartObject;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
 
 /**
  * Contract for indefinite period.
  */
-class LastValidDateUnbounded implements Arrayable
+class LastValidDateUnbounded implements Entity
 {
 
-	use SmartObject;
-	use ToArray;
-
+	use Backing;
 }

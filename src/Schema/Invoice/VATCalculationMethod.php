@@ -4,19 +4,14 @@ namespace Adawolfa\ISDOC\Schema\Invoice;
 
 /**
  * VAT calculation method (there are two types in the Czech Republic).
- *
- * Forward-compatible counterpart of the VATCalculationMethod enum introduced in 2.0. Reference these constants
- * instead of the deprecated ClassifiedTaxCategory::VAT_CALCULATION_METHOD_* constants to keep the upgrade
- * seamless.
  */
-final class VATCalculationMethod
+enum VATCalculationMethod: int
 {
 
-	public const int FromTheBottom = 0;
-	public const int FromTheTop = 1;
+	/** From the bottom. */
+	case FromTheBottom = 0;
 
-	private function __construct()
-	{
-	}
+	/** From the top. */
+	case FromTheTop = 1;
 
 }

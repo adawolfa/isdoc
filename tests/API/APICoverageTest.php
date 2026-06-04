@@ -3,44 +3,39 @@
 namespace Tests\Adawolfa\ISDOC\API;
 
 use Adawolfa\ISDOC;
+use Adawolfa\ISDOC\ReaderException;
 use Adawolfa\ISDOC\Schema\Invoice as S;
+use Adawolfa\ISDOC\WriterException;
+use BcMath\Number;
 use DateTimeImmutable;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 use Tests\Adawolfa\ISDOC\Snapshot;
 
 /**
- * Back-compatibility guard for the whole public {@see ISDOC\Schema\Invoice} API surface and the
- * decorated writing API advertised in README.md.
+ * Coverage guard for the whole public {@see ISDOC\Schema\Invoice} API surface and the decorated
+ * writing API advertised in README.md.
  *
  * The test builds a single, maximally-populated invoice that touches every entity and every property
  * the schema exposes, encodes it to ISDOC through the {@see ISDOC\Manager} facade, decodes it back and
  * reads everything back, asserting the whole object graph survived the round-trip.
  *
- * The flow is written twice, with deliberately explicit, statically-analysable calls so that PHPStan
- * itself verifies the API exists:
+ * The flow is written with deliberately explicit, statically-analysable property reads and writes
+ * ($invoice->id, $invoice->id = ...) so that PHPStan itself verifies the API exists. The encoded XML
+ * is pinned by a snapshot; required values go through the constructors and collection items through add().
  *
- *  - {@see self::testRoundTripViaProperties()} builds and reads through the magic properties
- *    ($invoice->id, $invoice->id = ...), which also pins the magic-property annotations relied upon by
- *    Nette\SmartObject.
- *  - {@see self::testRoundTripViaAccessors()} builds and reads through the get*()/set*() methods.
- *
- * Both paths produce identical XML (the same graph), pinned by a shared snapshot. Required values go
- * through the constructors and collection items through add() — those are identical in both modes.
- *
- * Only the stable, public surface is asserted here; the internal decoder/encoder/hydrator/reflection
- * API is intentionally left out. Coverage of the public surface is verified through phpunit.xml.
+ * Only the stable, public surface is asserted here; the internal decoder/encoder API is intentionally
+ * left out.
  */
 final class APICoverageTest extends TestCase
 {
 
 	use Snapshot;
 
-	public function testRoundTripViaAccessors(): void
-	{
-		$this->assertViaGetters($this->roundTrip($this->buildViaSetters()));
-	}
-
+	/**
+	 * @throws WriterException
+	 * @throws ReaderException
+	 */
 	public function testRoundTripViaProperties(): void
 	{
 		$this->assertViaProperties($this->roundTrip($this->buildViaProperties()));
@@ -49,319 +44,23 @@ final class APICoverageTest extends TestCase
 	/**
 	 * Encodes the invoice, pins the exact XML, decodes it back and proves the round-trip is lossless
 	 * and idempotent (re-encoding the decoded graph yields the very same XML).
+	 *
+	 * @throws WriterException
+	 * @throws ReaderException
 	 */
 	private function roundTrip(ISDOC\Invoice $invoice): S
 	{
 		$manager = ISDOC\Manager::create();
 
-		$xml = $manager->getWriter()->xml($invoice);
+		$xml = $manager->writer->xml($invoice);
 		$this->assertSnapshot('api-coverage.xml', $xml);
 
-		$decoded = $manager->getReader()->xml($xml);
-		self::assertSame($xml, $manager->getWriter()->xml($decoded), 'Round-trip is not idempotent.');
+		$decoded = $manager->reader->xml($xml);
+		self::assertSame($xml, $manager->writer->xml($decoded), 'Round-trip is not idempotent.');
 
 		$this->assertReferencesResolved($decoded);
-		self::assertArrayHasKey('id', $decoded->toArray());
 
 		return $decoded;
-	}
-
-	// ---------------------------------------------------------------------------------------------
-	// Building the graph through set*() methods.
-	// ---------------------------------------------------------------------------------------------
-
-	private function buildViaSetters(): ISDOC\Invoice
-	{
-		$invoice = new ISDOC\Invoice(
-			'2021-0001',
-			'00000000-0000-0000-0000-000000001234',
-			$this->date('2021-08-16'),
-			true,
-			'CZK',
-			new S\AccountingSupplierParty($this->fullPartyViaSetters('12345678', 'Dodavatel, a. s.')),
-		);
-
-		$invoice->setDocumentType(S::DOCUMENT_TYPE_INVOICE);
-		$invoice->setSubDocumentType('TAX');
-		$invoice->setSubDocumentTypeOrigin('CZ-GFR');
-		$invoice->setTargetConsolidator('0800');
-		$invoice->setClientOnTargetConsolidator('CLIENT-1');
-		$invoice->setClientBankAccount('123456789/0800');
-		$invoice->setEgovFlag(true);
-		$invoice->setIsds_id('abcdefgh');
-		$invoice->setFile('FILE-2021-0001');
-		$invoice->setReferenceNumber('REF-2021-0001');
-		$invoice->setIssuingSystem('Acme Billing 1.0');
-		$invoice->setTaxPointDate($this->date('2021-08-15'));
-		$invoice->setForeignCurrencyCode('EUR');
-		$invoice->setCurrRate('25.5');
-		$invoice->setRefCurrRate('1.0');
-		$invoice->setVersion(ISDOC\Invoice::VERSION);
-
-		$invoice->getElectronicPossibilityAgreement()->setContent('Agreed electronically.');
-		$invoice->getElectronicPossibilityAgreement()->setLanguageID('cs');
-		$invoice->setNote($this->noteViaSetters('Thank you for your business.', 'en'));
-
-		$invoice->setSellerSupplierParty(new S\SellerSupplierParty($this->buildBasicParty('11111111', 'Prodejce, a. s.')));
-		$invoice->setAccountingCustomerParty(new S\AccountingCustomerParty($this->fullPartyViaSetters('87654321', 'Odběratel, a. s.')));
-		$invoice->setBuyerCustomerParty(new S\BuyerCustomerParty($this->buildBasicParty('22222222', 'Kupující, a. s.')));
-		$invoice->setDelivery(new S\Delivery($this->buildBasicParty('33333333', 'Místo dodání, a. s.')));
-
-		$anonymous = new S\AnonymousCustomerParty('ANON-1');
-		$anonymous->setIdScheme('https://www.rfc-editor.org/rfc/rfc9562.html');
-		$invoice->setAnonymousCustomerParty($anonymous);
-
-		$order = new S\Order('SO-1');
-		$order->setExternalOrderID('PO-1');
-		$order->setIssueDate($this->date('2021-07-01'));
-		$order->setExternalOrderIssueDate($this->date('2021-06-30'));
-		$order->setUuid('00000000-0000-0000-0000-0000000000a1');
-		$order->setIsds_id('order001');
-		$order->setFile('ORDER-FILE');
-		$order->setReferenceNumber('ORDER-REF');
-		$invoice->setOrderReferences((new S\OrderReferences)->add($order));
-
-		$deliveryNote = new S\DeliveryNote('DN-1');
-		$deliveryNote->setIssueDate($this->date('2021-07-10'));
-		$deliveryNote->setUuid('00000000-0000-0000-0000-0000000000a2');
-		$invoice->setDeliveryNoteReferences((new S\DeliveryNoteReferences)->add($deliveryNote));
-
-		$originalDocument = new S\OriginalDocument('OD-1');
-		$originalDocument->setIssueDate($this->date('2021-05-01'));
-		$originalDocument->setUuid('00000000-0000-0000-0000-0000000000a3');
-		$invoice->setOriginalDocumentReferences((new S\OriginalDocumentReferences)->add($originalDocument));
-
-		$contract = new S\Contract('CT-1', $this->date('2021-01-01'));
-		$contract->setUuid('00000000-0000-0000-0000-0000000000a4');
-		$contract->setLastValidDate($this->date('2022-01-01'));
-		$contract->setIsds_id('contract1');
-		$contract->setFile('CONTRACT-FILE');
-		$contract->setReferenceNumber('CONTRACT-REF');
-		$invoice->setContractReferences((new S\ContractReferences)->add($contract));
-
-		$invoice->getInvoiceLines()->add($this->richLineViaSetters($order, $deliveryNote, $originalDocument, $contract));
-		$invoice->getInvoiceLines()->add(new S\InvoiceLine(
-			'2',
-			'250.0',
-			'302.5',
-			'52.5',
-			'250.0',
-			'302.5',
-			new S\ClassifiedTaxCategory('21', S\ClassifiedTaxCategory::VAT_CALCULATION_METHOD_FROM_THE_BOTTOM),
-		));
-
-		$nonTaxedDeposit = new S\NonTaxedDeposit('NTD-1', '555', '100.0');
-		$nonTaxedDeposit->setDepositAmountCurr('4.0');
-		$invoice->setNonTaxedDeposits((new S\NonTaxedDeposits)->add($nonTaxedDeposit));
-
-		$taxedDeposit = new S\TaxedDeposit(
-			'TD-1',
-			'556',
-			'200.0',
-			'242.0',
-			new S\ClassifiedTaxCategory('21', S\ClassifiedTaxCategory::VAT_CALCULATION_METHOD_FROM_THE_TOP),
-		);
-		$taxedDeposit->setTaxableDepositAmountCurr('8.0');
-		$taxedDeposit->setTaxInclusiveDepositAmountCurr('9.68');
-		$invoice->setTaxedDeposits((new S\TaxedDeposits)->add($taxedDeposit));
-
-		$taxTotal = $invoice->getTaxTotal();
-		$taxTotal->setTaxAmount('73.5');
-		$taxTotal->setTaxAmountCurr('2.88');
-		$taxSubTotal = new S\TaxSubTotal(
-			'350.0', '73.5', '423.5', '0.0', '0.0', '0.0', '0.0', '0.0', '0.0', $this->fullTaxCategoryViaSetters(),
-		);
-		$taxSubTotal->setTaxableAmountCurr('13.72');
-		$taxSubTotal->setTaxAmountCurr('2.88');
-		$taxSubTotal->setTaxInclusiveAmountCurr('16.6');
-		$taxSubTotal->setAlreadyClaimedTaxableAmountCurr('0.0');
-		$taxSubTotal->setAlreadyClaimedTaxAmountCurr('0.0');
-		$taxSubTotal->setAlreadyClaimedTaxInclusiveAmountCurr('0.0');
-		$taxSubTotal->setDifferenceTaxableAmountCurr('0.0');
-		$taxSubTotal->setDifferenceTaxAmountCurr('0.0');
-		$taxSubTotal->setDifferenceTaxInclusiveAmountCurr('0.0');
-		$taxTotal->add($taxSubTotal);
-
-		$total = $invoice->getLegalMonetaryTotal();
-		$total->setTaxExclusiveAmount('350.0');
-		$total->setTaxExclusiveAmountCurr('13.72');
-		$total->setTaxInclusiveAmount('423.5');
-		$total->setTaxInclusiveAmountCurr('16.6');
-		$total->setAlreadyClaimedTaxExclusiveAmount('0.0');
-		$total->setAlreadyClaimedTaxExclusiveAmountCurr('0.0');
-		$total->setAlreadyClaimedTaxInclusiveAmount('0.0');
-		$total->setAlreadyClaimedTaxInclusiveAmountCurr('0.0');
-		$total->setDifferenceTaxExclusiveAmount('0.0');
-		$total->setDifferenceTaxExclusiveAmountCurr('0.0');
-		$total->setDifferenceTaxInclusiveAmount('0.0');
-		$total->setDifferenceTaxInclusiveAmountCurr('0.0');
-		$total->setPaidDepositsAmount('0.0');
-		$total->setPaidDepositsAmountCurr('0.0');
-		$total->setPayableRoundingAmount('0.5');
-		$total->setPayableRoundingAmountCurr('0.02');
-		$total->setPayableAmount('424.0');
-		$total->setPayableAmountCurr('16.62');
-
-		$payment = new S\Payment('424.0', S\Payment::PAYMENT_MEANS_CODE_CREDIT_TRANSFER);
-		// Booleans are kept true throughout the round-trip: false booleans do not survive decoding in
-		// 1.x (see testBooleanFalseDecodingLimitation()).
-		$payment->setPartialPayment(true);
-		$payment->setDetails($this->detailsViaSetters());
-		$paymentMeans = (new S\PaymentMeans)->add($payment);
-		$paymentMeans->setAlternateBankAccounts($this->alternateBankAccountsViaSetters());
-		$invoice->setPaymentMeans($paymentMeans);
-
-		$supplement = new S\Supplement(
-			'invoice.pdf',
-			new S\DigestMethod('http://www.w3.org/2000/09/xmldsig#sha1'),
-			'2jmj7l5rSw0yVb/vlWAYkK/YBwk=',
-		);
-		$supplement->setPreview(true);
-		$invoice->setSupplementsList((new S\SupplementsList)->add($supplement));
-
-		return $invoice;
-	}
-
-	private function richLineViaSetters(
-		S\Order $order,
-		S\DeliveryNote $deliveryNote,
-		S\OriginalDocument $originalDocument,
-		S\Contract $contract,
-	): S\InvoiceLine
-	{
-		$line = new S\InvoiceLine('1', '100.0', '121.0', '21.0', '100.0', '121.0', $this->fullClassifiedTaxCategoryViaSetters());
-
-		$line->setOrder((new S\OrderLine($order))->setLineID('OL-1'));
-		$line->setDeliveryNote((new S\DeliveryNoteLine($deliveryNote))->setLineID('DNL-1'));
-		$line->setOriginalDocument((new S\OriginalDocumentLine($originalDocument))->setLineID('ODL-1'));
-		$line->setContract((new S\ContractLine($contract))->setParagraphID('PAR-1'));
-
-		$line->setEgovClassifier('00000099');
-		$line->setInvoicedQuantity($this->quantityViaSetters('ks', '1'));
-		$line->setLineExtensionAmountCurr('3.92');
-		$line->setLineExtensionAmountBeforeDiscount('110.0');
-		$line->setLineExtensionAmountTaxInclusiveCurr('4.75');
-		$line->setLineExtensionAmountTaxInclusiveBeforeDiscount('133.1');
-		$line->setNote($this->noteViaSetters('Line note.'));
-		$line->setVatNote($this->noteViaSetters('§ 47 zákona o DPH'));
-		$line->setItem($this->itemViaSetters());
-
-		return $line;
-	}
-
-	private function fullClassifiedTaxCategoryViaSetters(): S\ClassifiedTaxCategory
-	{
-		$category = new S\ClassifiedTaxCategory('21', S\ClassifiedTaxCategory::VAT_CALCULATION_METHOD_FROM_THE_TOP);
-		$category->setVatApplicable(true);
-		$localReverseCharge = new S\LocalReverseCharge(S\LocalReverseCharge::LOCAL_REVERSE_CHARGE_CODE_DELIVERY_OF_GOLD);
-		$localReverseCharge->setLocalReverseChargeQuantity($this->quantityViaSetters('g', '5'));
-		$category->setLocalReverseCharge($localReverseCharge);
-		return $category;
-	}
-
-	private function fullTaxCategoryViaSetters(): S\TaxCategory
-	{
-		$category = new S\TaxCategory('21');
-		$category->setTaxScheme('VAT');
-		$category->setVatApplicable(true);
-		$category->setLocalReverseChargeFlag(true);
-		return $category;
-	}
-
-	private function itemViaSetters(): S\Item
-	{
-		$item = new S\Item;
-		$item->setDescription('Premium widget');
-		$item->setCatalogueItemIdentification(new S\CatalogueItemIdentification('CAT-1'));
-		$item->setSellersItemIdentification(new S\SellersItemIdentification('SELLER-1'));
-		$item->setSecondarySellersItemIdentification(new S\SecondarySellersItemIdentification('SELLER-2'));
-		$item->setTertiarySellersItemIdentification(new S\TertiarySellersItemIdentification('SELLER-3'));
-		$item->setBuyersItemIdentification(new S\BuyersItemIdentification('BUYER-1'));
-
-		$storeBatch = new S\StoreBatch('BATCH-1', $this->quantityViaSetters('ks', '10'), S\StoreBatch::BATCH_OR_SERIAL_NUMBER_BATCH);
-		$storeBatch->setExpirationDate($this->date('2025-12-31'));
-		$storeBatch->setSpecification('Cold storage');
-		$storeBatch->setSealSeriesID('SEAL-1');
-		$storeBatch->setNote($this->noteViaSetters('Handle with care.'));
-		$item->setStoreBatches((new S\StoreBatches)->add($storeBatch));
-
-		return $item;
-	}
-
-	private function detailsViaSetters(): S\Details
-	{
-		$details = new S\Details;
-		$details->setDocumentID('PAY-1');
-		$details->setIssueDate($this->date('2021-08-16'));
-		$details->setPaymentDueDate($this->date('2021-08-30'));
-		$details->setId('123456789');
-		$details->setBankCode('0800');
-		$details->setName('Česká spořitelna, a. s.');
-		$details->setIban('CZ6508000000192000145399');
-		$details->setBic('GIBACZPX');
-		$details->setVariableSymbol('20210001');
-		$details->setConstantSymbol('0308');
-		$details->setSpecificSymbol('12345');
-		return $details;
-	}
-
-	private function alternateBankAccountsViaSetters(): S\AlternateBankAccounts
-	{
-		$account = new S\AlternateBankAccount;
-		$account->setId('987654321');
-		$account->setBankCode('0100');
-		$account->setName('Komerční banka, a. s.');
-		$account->setIban('CZ6501000000000987654321');
-		$account->setBic('KOMBCZPP');
-		return (new S\AlternateBankAccounts)->add($account);
-	}
-
-	private function fullPartyViaSetters(string $id, string $name): S\Party
-	{
-		$party = $this->buildBasicParty($id, $name);
-
-		$party->getPartyIdentification()->setCatalogFirmIdentification('CAT-FIRM-' . $id);
-		$party->getPartyIdentification()->setUserID('USER-' . $id);
-
-		$schemes = new S\PartyTaxSchemes;
-		$schemes->add(new S\PartyTaxScheme('CZ' . $id, 'VAT'));
-		$schemes->add(new S\PartyTaxScheme('SK' . $id, 'TIN'));
-		$party->setPartyTaxSchemes($schemes);
-
-		$register = new S\RegisterIdentification;
-		$register->setRegisterKeptAt('Městský soud v Praze');
-		$register->setRegisterFileRef('B 1234');
-		$register->setRegisterDate($this->date('2001-03-14'));
-		$register->setPreformatted('Spisová značka B 1234 vedená u Městského soudu v Praze');
-		$party->setRegisterIdentification($register);
-
-		$contact = new S\Contact;
-		$contact->setName('Jan Novák');
-		$contact->setTelephone('+420123456789');
-		$contact->setElectronicMail('jan.novak@example.com');
-		$party->setContact($contact);
-
-		return $party;
-	}
-
-	private function noteViaSetters(string $content, ?string $languageID = null): S\Note
-	{
-		$note = new S\Note;
-		$note->setContent($content);
-
-		if ($languageID !== null) {
-			$note->setLanguageID($languageID);
-		}
-
-		return $note;
-	}
-
-	private function quantityViaSetters(string $unitCode, string $content): S\Quantity
-	{
-		$quantity = new S\Quantity;
-		$quantity->setUnitCode($unitCode);
-		$quantity->setContent($content);
-		return $quantity;
 	}
 
 	// ---------------------------------------------------------------------------------------------
@@ -379,7 +78,7 @@ final class APICoverageTest extends TestCase
 			new S\AccountingSupplierParty($this->fullPartyViaProperties('12345678', 'Dodavatel, a. s.')),
 		);
 
-		$invoice->documentType              = S::DOCUMENT_TYPE_INVOICE;
+		$invoice->documentType              = S\DocumentType::Invoice;
 		$invoice->subDocumentType           = 'TAX';
 		$invoice->subDocumentTypeOrigin     = 'CZ-GFR';
 		$invoice->targetConsolidator        = '0800';
@@ -392,9 +91,9 @@ final class APICoverageTest extends TestCase
 		$invoice->issuingSystem             = 'Acme Billing 1.0';
 		$invoice->taxPointDate              = $this->date('2021-08-15');
 		$invoice->foreignCurrencyCode       = 'EUR';
-		$invoice->currRate                  = '25.5';
-		$invoice->refCurrRate               = '1.0';
-		$invoice->version                   = ISDOC\Invoice::VERSION;
+		$invoice->currRate                  = new Number('25.5');
+		$invoice->refCurrRate               = new Number('1.0');
+		$invoice->version                   = ISDOC\Invoice::Version;
 
 		$invoice->electronicPossibilityAgreement->content    = 'Agreed electronically.';
 		$invoice->electronicPossibilityAgreement->languageID = 'cs';
@@ -417,17 +116,17 @@ final class APICoverageTest extends TestCase
 		$order->isds_id                = 'order001';
 		$order->file                   = 'ORDER-FILE';
 		$order->referenceNumber        = 'ORDER-REF';
-		$invoice->orderReferences = (new S\OrderReferences)->add($order);
+		$invoice->orderReferences = new S\OrderReferences()->add($order);
 
 		$deliveryNote = new S\DeliveryNote('DN-1');
 		$deliveryNote->issueDate = $this->date('2021-07-10');
 		$deliveryNote->uuid      = '00000000-0000-0000-0000-0000000000a2';
-		$invoice->deliveryNoteReferences = (new S\DeliveryNoteReferences)->add($deliveryNote);
+		$invoice->deliveryNoteReferences = new S\DeliveryNoteReferences()->add($deliveryNote);
 
 		$originalDocument = new S\OriginalDocument('OD-1');
 		$originalDocument->issueDate = $this->date('2021-05-01');
 		$originalDocument->uuid      = '00000000-0000-0000-0000-0000000000a3';
-		$invoice->originalDocumentReferences = (new S\OriginalDocumentReferences)->add($originalDocument);
+		$invoice->originalDocumentReferences = new S\OriginalDocumentReferences()->add($originalDocument);
 
 		$contract = new S\Contract('CT-1', $this->date('2021-01-01'));
 		$contract->uuid            = '00000000-0000-0000-0000-0000000000a4';
@@ -435,75 +134,84 @@ final class APICoverageTest extends TestCase
 		$contract->isds_id         = 'contract1';
 		$contract->file            = 'CONTRACT-FILE';
 		$contract->referenceNumber = 'CONTRACT-REF';
-		$invoice->contractReferences = (new S\ContractReferences)->add($contract);
+		$invoice->contractReferences = new S\ContractReferences()->add($contract);
 
 		$invoice->invoiceLines->add($this->richLineViaProperties($order, $deliveryNote, $originalDocument, $contract));
 		$invoice->invoiceLines->add(new S\InvoiceLine(
 			'2',
-			'250.0',
-			'302.5',
-			'52.5',
-			'250.0',
-			'302.5',
-			new S\ClassifiedTaxCategory('21', S\ClassifiedTaxCategory::VAT_CALCULATION_METHOD_FROM_THE_BOTTOM),
+			new Number('250.0'),
+			new Number('302.5'),
+			new Number('52.5'),
+			new Number('250.0'),
+			new Number('302.5'),
+			new S\ClassifiedTaxCategory(new Number('21'), S\VATCalculationMethod::FromTheBottom),
 		));
 
-		$nonTaxedDeposit = new S\NonTaxedDeposit('NTD-1', '555', '100.0');
-		$nonTaxedDeposit->depositAmountCurr = '4.0';
-		$invoice->nonTaxedDeposits = (new S\NonTaxedDeposits)->add($nonTaxedDeposit);
+		$nonTaxedDeposit = new S\NonTaxedDeposit('NTD-1', '555', new Number('100.0'));
+		$nonTaxedDeposit->depositAmountCurr = new Number('4.0');
+		$invoice->nonTaxedDeposits = new S\NonTaxedDeposits()->add($nonTaxedDeposit);
 
 		$taxedDeposit = new S\TaxedDeposit(
 			'TD-1',
 			'556',
-			'200.0',
-			'242.0',
-			new S\ClassifiedTaxCategory('21', S\ClassifiedTaxCategory::VAT_CALCULATION_METHOD_FROM_THE_TOP),
+			new Number('200.0'),
+			new Number('242.0'),
+			new S\ClassifiedTaxCategory(new Number('21'), S\VATCalculationMethod::FromTheTop),
 		);
-		$taxedDeposit->taxableDepositAmountCurr      = '8.0';
-		$taxedDeposit->taxInclusiveDepositAmountCurr = '9.68';
-		$invoice->taxedDeposits = (new S\TaxedDeposits)->add($taxedDeposit);
+		$taxedDeposit->taxableDepositAmountCurr      = new Number('8.0');
+		$taxedDeposit->taxInclusiveDepositAmountCurr = new Number('9.68');
+		$invoice->taxedDeposits = new S\TaxedDeposits()->add($taxedDeposit);
 
 		$taxTotal = $invoice->taxTotal;
-		$taxTotal->taxAmount     = '73.5';
-		$taxTotal->taxAmountCurr = '2.88';
+		$taxTotal->taxAmount     = new Number('73.5');
+		$taxTotal->taxAmountCurr = new Number('2.88');
 		$taxSubTotal = new S\TaxSubTotal(
-			'350.0', '73.5', '423.5', '0.0', '0.0', '0.0', '0.0', '0.0', '0.0', $this->fullTaxCategoryViaProperties(),
+			new Number('350.0'),
+			new Number('73.5'),
+			new Number('423.5'),
+			new Number('0.0'),
+			new Number('0.0'),
+			new Number('0.0'),
+			new Number('0.0'),
+			new Number('0.0'),
+			new Number('0.0'),
+			$this->fullTaxCategoryViaProperties(),
 		);
-		$taxSubTotal->taxableAmountCurr                = '13.72';
-		$taxSubTotal->taxAmountCurr                    = '2.88';
-		$taxSubTotal->taxInclusiveAmountCurr           = '16.6';
-		$taxSubTotal->alreadyClaimedTaxableAmountCurr  = '0.0';
-		$taxSubTotal->alreadyClaimedTaxAmountCurr      = '0.0';
-		$taxSubTotal->alreadyClaimedTaxInclusiveAmountCurr = '0.0';
-		$taxSubTotal->differenceTaxableAmountCurr      = '0.0';
-		$taxSubTotal->differenceTaxAmountCurr          = '0.0';
-		$taxSubTotal->differenceTaxInclusiveAmountCurr = '0.0';
+		$taxSubTotal->taxableAmountCurr                = new Number('13.72');
+		$taxSubTotal->taxAmountCurr                    = new Number('2.88');
+		$taxSubTotal->taxInclusiveAmountCurr           = new Number('16.6');
+		$taxSubTotal->alreadyClaimedTaxableAmountCurr  = new Number('0.0');
+		$taxSubTotal->alreadyClaimedTaxAmountCurr      = new Number('0.0');
+		$taxSubTotal->alreadyClaimedTaxInclusiveAmountCurr = new Number('0.0');
+		$taxSubTotal->differenceTaxableAmountCurr      = new Number('0.0');
+		$taxSubTotal->differenceTaxAmountCurr          = new Number('0.0');
+		$taxSubTotal->differenceTaxInclusiveAmountCurr = new Number('0.0');
 		$taxTotal->add($taxSubTotal);
 
 		$total = $invoice->legalMonetaryTotal;
-		$total->taxExclusiveAmount                  = '350.0';
-		$total->taxExclusiveAmountCurr              = '13.72';
-		$total->taxInclusiveAmount                  = '423.5';
-		$total->taxInclusiveAmountCurr              = '16.6';
-		$total->alreadyClaimedTaxExclusiveAmount    = '0.0';
-		$total->alreadyClaimedTaxExclusiveAmountCurr = '0.0';
-		$total->alreadyClaimedTaxInclusiveAmount    = '0.0';
-		$total->alreadyClaimedTaxInclusiveAmountCurr = '0.0';
-		$total->differenceTaxExclusiveAmount        = '0.0';
-		$total->differenceTaxExclusiveAmountCurr    = '0.0';
-		$total->differenceTaxInclusiveAmount        = '0.0';
-		$total->differenceTaxInclusiveAmountCurr    = '0.0';
-		$total->paidDepositsAmount                  = '0.0';
-		$total->paidDepositsAmountCurr              = '0.0';
-		$total->payableRoundingAmount               = '0.5';
-		$total->payableRoundingAmountCurr           = '0.02';
-		$total->payableAmount                       = '424.0';
-		$total->payableAmountCurr                   = '16.62';
+		$total->taxExclusiveAmount                  = new Number('350.0');
+		$total->taxExclusiveAmountCurr              = new Number('13.72');
+		$total->taxInclusiveAmount                  = new Number('423.5');
+		$total->taxInclusiveAmountCurr              = new Number('16.6');
+		$total->alreadyClaimedTaxExclusiveAmount    = new Number('0.0');
+		$total->alreadyClaimedTaxExclusiveAmountCurr = new Number('0.0');
+		$total->alreadyClaimedTaxInclusiveAmount    = new Number('0.0');
+		$total->alreadyClaimedTaxInclusiveAmountCurr = new Number('0.0');
+		$total->differenceTaxExclusiveAmount        = new Number('0.0');
+		$total->differenceTaxExclusiveAmountCurr    = new Number('0.0');
+		$total->differenceTaxInclusiveAmount        = new Number('0.0');
+		$total->differenceTaxInclusiveAmountCurr    = new Number('0.0');
+		$total->paidDepositsAmount                  = new Number('0.0');
+		$total->paidDepositsAmountCurr              = new Number('0.0');
+		$total->payableRoundingAmount               = new Number('0.5');
+		$total->payableRoundingAmountCurr           = new Number('0.02');
+		$total->payableAmount                       = new Number('424.0');
+		$total->payableAmountCurr                   = new Number('16.62');
 
-		$payment = new S\Payment('424.0', S\Payment::PAYMENT_MEANS_CODE_CREDIT_TRANSFER);
+		$payment = new S\Payment(new Number('424.0'), S\PaymentMeansCode::CreditTransfer);
 		$payment->partialPayment = true;
 		$payment->details        = $this->detailsViaProperties();
-		$paymentMeans = (new S\PaymentMeans)->add($payment);
+		$paymentMeans = new S\PaymentMeans()->add($payment);
 		$paymentMeans->alternateBankAccounts = $this->alternateBankAccountsViaProperties();
 		$invoice->paymentMeans = $paymentMeans;
 
@@ -513,7 +221,7 @@ final class APICoverageTest extends TestCase
 			'2jmj7l5rSw0yVb/vlWAYkK/YBwk=',
 		);
 		$supplement->preview = true;
-		$invoice->supplementsList = (new S\SupplementsList)->add($supplement);
+		$invoice->supplementsList = new S\SupplementsList()->add($supplement);
 
 		return $invoice;
 	}
@@ -525,7 +233,7 @@ final class APICoverageTest extends TestCase
 		S\Contract $contract,
 	): S\InvoiceLine
 	{
-		$line = new S\InvoiceLine('1', '100.0', '121.0', '21.0', '100.0', '121.0', $this->fullClassifiedTaxCategoryViaProperties());
+		$line = new S\InvoiceLine('1', new Number('100.0'), new Number('121.0'), new Number('21.0'), new Number('100.0'), new Number('121.0'), $this->fullClassifiedTaxCategoryViaProperties());
 
 		$orderLine = new S\OrderLine($order);
 		$orderLine->lineID = 'OL-1';
@@ -545,10 +253,10 @@ final class APICoverageTest extends TestCase
 
 		$line->egovClassifier                                = '00000099';
 		$line->invoicedQuantity                              = $this->quantityViaProperties('ks', '1');
-		$line->lineExtensionAmountCurr                       = '3.92';
-		$line->lineExtensionAmountBeforeDiscount             = '110.0';
-		$line->lineExtensionAmountTaxInclusiveCurr           = '4.75';
-		$line->lineExtensionAmountTaxInclusiveBeforeDiscount = '133.1';
+		$line->lineExtensionAmountCurr                       = new Number('3.92');
+		$line->lineExtensionAmountBeforeDiscount             = new Number('110.0');
+		$line->lineExtensionAmountTaxInclusiveCurr           = new Number('4.75');
+		$line->lineExtensionAmountTaxInclusiveBeforeDiscount = new Number('133.1');
 		$line->note    = $this->noteViaProperties('Line note.');
 		$line->vatNote = $this->noteViaProperties('§ 47 zákona o DPH');
 		$line->item    = $this->itemViaProperties();
@@ -558,9 +266,9 @@ final class APICoverageTest extends TestCase
 
 	private function fullClassifiedTaxCategoryViaProperties(): S\ClassifiedTaxCategory
 	{
-		$category = new S\ClassifiedTaxCategory('21', S\ClassifiedTaxCategory::VAT_CALCULATION_METHOD_FROM_THE_TOP);
+		$category = new S\ClassifiedTaxCategory(new Number('21'), S\VATCalculationMethod::FromTheTop);
 		$category->vatApplicable = true;
-		$localReverseCharge = new S\LocalReverseCharge(S\LocalReverseCharge::LOCAL_REVERSE_CHARGE_CODE_DELIVERY_OF_GOLD);
+		$localReverseCharge = new S\LocalReverseCharge(S\LocalReverseChargeCode::DeliveryOfGold);
 		$localReverseCharge->localReverseChargeQuantity = $this->quantityViaProperties('g', '5');
 		$category->localReverseCharge = $localReverseCharge;
 		return $category;
@@ -568,7 +276,7 @@ final class APICoverageTest extends TestCase
 
 	private function fullTaxCategoryViaProperties(): S\TaxCategory
 	{
-		$category = new S\TaxCategory('21');
+		$category = new S\TaxCategory(new Number('21'));
 		$category->taxScheme              = 'VAT';
 		$category->vatApplicable          = true;
 		$category->localReverseChargeFlag = true;
@@ -577,7 +285,7 @@ final class APICoverageTest extends TestCase
 
 	private function itemViaProperties(): S\Item
 	{
-		$item = new S\Item;
+		$item = new S\Item();
 		$item->description                        = 'Premium widget';
 		$item->catalogueItemIdentification        = new S\CatalogueItemIdentification('CAT-1');
 		$item->sellersItemIdentification          = new S\SellersItemIdentification('SELLER-1');
@@ -585,19 +293,19 @@ final class APICoverageTest extends TestCase
 		$item->tertiarySellersItemIdentification  = new S\TertiarySellersItemIdentification('SELLER-3');
 		$item->buyersItemIdentification           = new S\BuyersItemIdentification('BUYER-1');
 
-		$storeBatch = new S\StoreBatch('BATCH-1', $this->quantityViaProperties('ks', '10'), S\StoreBatch::BATCH_OR_SERIAL_NUMBER_BATCH);
+		$storeBatch = new S\StoreBatch('BATCH-1', $this->quantityViaProperties('ks', '10'), S\BatchOrSerialNumber::Batch);
 		$storeBatch->expirationDate = $this->date('2025-12-31');
 		$storeBatch->specification  = 'Cold storage';
 		$storeBatch->sealSeriesID   = 'SEAL-1';
 		$storeBatch->note           = $this->noteViaProperties('Handle with care.');
-		$item->storeBatches = (new S\StoreBatches)->add($storeBatch);
+		$item->storeBatches = new S\StoreBatches()->add($storeBatch);
 
 		return $item;
 	}
 
 	private function detailsViaProperties(): S\Details
 	{
-		$details = new S\Details;
+		$details = new S\Details();
 		$details->documentID     = 'PAY-1';
 		$details->issueDate      = $this->date('2021-08-16');
 		$details->paymentDueDate = $this->date('2021-08-30');
@@ -614,13 +322,13 @@ final class APICoverageTest extends TestCase
 
 	private function alternateBankAccountsViaProperties(): S\AlternateBankAccounts
 	{
-		$account = new S\AlternateBankAccount;
+		$account = new S\AlternateBankAccount();
 		$account->id       = '987654321';
 		$account->bankCode = '0100';
 		$account->name     = 'Komerční banka, a. s.';
 		$account->iban     = 'CZ6501000000000987654321';
 		$account->bic      = 'KOMBCZPP';
-		return (new S\AlternateBankAccounts)->add($account);
+		return new S\AlternateBankAccounts()->add($account);
 	}
 
 	private function fullPartyViaProperties(string $id, string $name): S\Party
@@ -630,21 +338,19 @@ final class APICoverageTest extends TestCase
 		$party->partyIdentification->catalogFirmIdentification = 'CAT-FIRM-' . $id;
 		$party->partyIdentification->userID                    = 'USER-' . $id;
 
-		$schemes = new S\PartyTaxSchemes;
+		$schemes = new S\PartyTaxSchemes();
 		$schemes->add(new S\PartyTaxScheme('CZ' . $id, 'VAT'));
 		$schemes->add(new S\PartyTaxScheme('SK' . $id, 'TIN'));
-		// partyTaxSchemes has no magic property (only the deprecated singular partyTaxScheme), so it is
-		// assigned through its method even in property mode.
-		$party->setPartyTaxSchemes($schemes);
+		$party->partyTaxSchemes = $schemes;
 
-		$register = new S\RegisterIdentification;
+		$register = new S\RegisterIdentification();
 		$register->registerKeptAt  = 'Městský soud v Praze';
 		$register->registerFileRef = 'B 1234';
 		$register->registerDate    = $this->date('2001-03-14');
 		$register->preformatted    = 'Spisová značka B 1234 vedená u Městského soudu v Praze';
 		$party->registerIdentification = $register;
 
-		$contact = new S\Contact;
+		$contact = new S\Contact();
 		$contact->name           = 'Jan Novák';
 		$contact->telephone      = '+420123456789';
 		$contact->electronicMail = 'jan.novak@example.com';
@@ -655,7 +361,7 @@ final class APICoverageTest extends TestCase
 
 	private function noteViaProperties(string $content, ?string $languageID = null): S\Note
 	{
-		$note = new S\Note;
+		$note = new S\Note();
 		$note->content = $content;
 
 		if ($languageID !== null) {
@@ -667,7 +373,7 @@ final class APICoverageTest extends TestCase
 
 	private function quantityViaProperties(string $unitCode, string $content): S\Quantity
 	{
-		$quantity = new S\Quantity;
+		$quantity = new S\Quantity();
 		$quantity->unitCode = $unitCode;
 		$quantity->content  = $content;
 		return $quantity;
@@ -683,252 +389,12 @@ final class APICoverageTest extends TestCase
 	}
 
 	// ---------------------------------------------------------------------------------------------
-	// Reading everything back through get*() methods.
-	// ---------------------------------------------------------------------------------------------
-
-	private function assertViaGetters(S $invoice): void
-	{
-		self::assertSame(S::DOCUMENT_TYPE_INVOICE, $invoice->getDocumentType());
-		self::assertSame('2021-0001', $invoice->getId());
-		self::assertSame('00000000-0000-0000-0000-000000001234', $invoice->getUuid());
-		self::assertSame('2021-08-16', $invoice->getIssueDate()->format('Y-m-d'));
-		self::assertTrue($invoice->getVatApplicable());
-		self::assertSame('CZK', $invoice->getLocalCurrencyCode());
-		self::assertSame('TAX', $invoice->getSubDocumentType());
-		self::assertSame('CZ-GFR', $invoice->getSubDocumentTypeOrigin());
-		self::assertSame('0800', $invoice->getTargetConsolidator());
-		self::assertSame('CLIENT-1', $invoice->getClientOnTargetConsolidator());
-		self::assertSame('123456789/0800', $invoice->getClientBankAccount());
-		self::assertTrue($invoice->getEgovFlag());
-		self::assertSame('abcdefgh', $invoice->getIsds_id());
-		self::assertSame('FILE-2021-0001', $invoice->getFile());
-		self::assertSame('REF-2021-0001', $invoice->getReferenceNumber());
-		self::assertSame('Acme Billing 1.0', $invoice->getIssuingSystem());
-		self::assertSame('2021-08-15', $this->notNull($invoice->getTaxPointDate())->format('Y-m-d'));
-		self::assertSame('EUR', $invoice->getForeignCurrencyCode());
-		self::assertSame('25.5', $invoice->getCurrRate());
-		self::assertSame('1.0', $invoice->getRefCurrRate());
-		self::assertSame(ISDOC\Invoice::VERSION, $invoice->getVersion());
-
-		self::assertSame('Agreed electronically.', $invoice->getElectronicPossibilityAgreement()->getContent());
-		self::assertSame('cs', $invoice->getElectronicPossibilityAgreement()->getLanguageID());
-		$note = $this->notNull($invoice->getNote());
-		self::assertSame('Thank you for your business.', $note->getContent());
-		self::assertSame('en', $note->getLanguageID());
-
-		$this->assertFullPartyViaGetters($invoice->getAccountingSupplierParty()->getParty(), '12345678', 'Dodavatel, a. s.');
-		$this->assertFullPartyViaGetters($this->notNull($invoice->getAccountingCustomerParty())->getParty(), '87654321', 'Odběratel, a. s.');
-		self::assertSame('11111111', $this->notNull($invoice->getSellerSupplierParty())->getParty()->getPartyIdentification()->getId());
-		self::assertSame('22222222', $this->notNull($invoice->getBuyerCustomerParty())->getParty()->getPartyIdentification()->getId());
-		self::assertSame('33333333', $this->notNull($invoice->getDelivery())->getParty()->getPartyIdentification()->getId());
-
-		$anonymous = $this->notNull($invoice->getAnonymousCustomerParty());
-		self::assertSame('ANON-1', $anonymous->getId());
-		self::assertSame('https://www.rfc-editor.org/rfc/rfc9562.html', $anonymous->getIdScheme());
-
-		$order = $this->first($this->notNull($invoice->getOrderReferences()));
-		self::assertSame('SO-1', $order->getSalesOrderID());
-		self::assertSame('PO-1', $order->getExternalOrderID());
-		self::assertSame('2021-07-01', $this->notNull($order->getIssueDate())->format('Y-m-d'));
-		self::assertSame('2021-06-30', $this->notNull($order->getExternalOrderIssueDate())->format('Y-m-d'));
-		self::assertSame('00000000-0000-0000-0000-0000000000a1', $order->getUuid());
-		self::assertSame('order001', $order->getIsds_id());
-		self::assertSame('ORDER-FILE', $order->getFile());
-		self::assertSame('ORDER-REF', $order->getReferenceNumber());
-
-		$deliveryNote = $this->first($this->notNull($invoice->getDeliveryNoteReferences()));
-		self::assertSame('DN-1', $deliveryNote->getId());
-		self::assertSame('2021-07-10', $this->notNull($deliveryNote->getIssueDate())->format('Y-m-d'));
-		self::assertSame('00000000-0000-0000-0000-0000000000a2', $deliveryNote->getUuid());
-
-		$originalDocument = $this->first($this->notNull($invoice->getOriginalDocumentReferences()));
-		self::assertSame('OD-1', $originalDocument->getId());
-		self::assertSame('2021-05-01', $this->notNull($originalDocument->getIssueDate())->format('Y-m-d'));
-		self::assertSame('00000000-0000-0000-0000-0000000000a3', $originalDocument->getUuid());
-
-		$contract = $this->first($this->notNull($invoice->getContractReferences()));
-		self::assertSame('CT-1', $contract->getId());
-		self::assertSame('00000000-0000-0000-0000-0000000000a4', $contract->getUuid());
-		self::assertSame('2021-01-01', $contract->getIssueDate()->format('Y-m-d'));
-		self::assertSame('2022-01-01', $this->notNull($contract->getLastValidDate())->format('Y-m-d'));
-		self::assertSame('contract1', $contract->getIsds_id());
-		self::assertSame('CONTRACT-FILE', $contract->getFile());
-		self::assertSame('CONTRACT-REF', $contract->getReferenceNumber());
-
-		self::assertCount(2, $invoice->getInvoiceLines());
-		$line = $this->first($invoice->getInvoiceLines());
-		self::assertSame('1', $line->getId());
-		self::assertSame('100.0', $line->getLineExtensionAmount());
-		self::assertSame('121.0', $line->getLineExtensionAmountTaxInclusive());
-		self::assertSame('21.0', $line->getLineExtensionTaxAmount());
-		self::assertSame('100.0', $line->getUnitPrice());
-		self::assertSame('121.0', $line->getUnitPriceTaxInclusive());
-		self::assertSame('00000099', $line->getEgovClassifier());
-		self::assertSame('3.92', $line->getLineExtensionAmountCurr());
-		self::assertSame('110.0', $line->getLineExtensionAmountBeforeDiscount());
-		self::assertSame('4.75', $line->getLineExtensionAmountTaxInclusiveCurr());
-		self::assertSame('133.1', $line->getLineExtensionAmountTaxInclusiveBeforeDiscount());
-
-		$category = $line->getClassifiedTaxCategory();
-		self::assertSame('21', $category->getPercent());
-		self::assertSame(S\ClassifiedTaxCategory::VAT_CALCULATION_METHOD_FROM_THE_TOP, $category->getVatCalculationMethod());
-		self::assertTrue($category->getVatApplicable());
-		$localReverseCharge = $this->notNull($category->getLocalReverseCharge());
-		self::assertSame(S\LocalReverseCharge::LOCAL_REVERSE_CHARGE_CODE_DELIVERY_OF_GOLD, $localReverseCharge->getLocalReverseChargeCode());
-		$localReverseChargeQuantity = $this->notNull($localReverseCharge->getLocalReverseChargeQuantity());
-		self::assertSame('g', $localReverseChargeQuantity->getUnitCode());
-		self::assertSame('5', $localReverseChargeQuantity->getContent());
-
-		$invoicedQuantity = $this->notNull($line->getInvoicedQuantity());
-		self::assertSame('ks', $invoicedQuantity->getUnitCode());
-		self::assertSame('1', $invoicedQuantity->getContent());
-
-		$orderLine = $this->notNull($line->getOrder());
-		self::assertSame('OL-1', $orderLine->getLineID());
-		self::assertSame('SO-1', $orderLine->getOrder()->getSalesOrderID());
-		$deliveryNoteLine = $this->notNull($line->getDeliveryNote());
-		self::assertSame('DNL-1', $deliveryNoteLine->getLineID());
-		self::assertSame('DN-1', $deliveryNoteLine->getDeliveryNote()->getId());
-		$originalDocumentLine = $this->notNull($line->getOriginalDocument());
-		self::assertSame('ODL-1', $originalDocumentLine->getLineID());
-		self::assertSame('OD-1', $originalDocumentLine->getOriginalDocument()->getId());
-		$contractLine = $this->notNull($line->getContract());
-		self::assertSame('PAR-1', $contractLine->getParagraphID());
-		self::assertSame('CT-1', $contractLine->getContract()->getId());
-
-		self::assertSame('Line note.', $this->notNull($line->getNote())->getContent());
-		self::assertSame('§ 47 zákona o DPH', $this->notNull($line->getVatNote())->getContent());
-
-		$item = $this->notNull($line->getItem());
-		self::assertSame('Premium widget', $item->getDescription());
-		self::assertSame('CAT-1', $this->notNull($item->getCatalogueItemIdentification())->getId());
-		self::assertSame('SELLER-1', $this->notNull($item->getSellersItemIdentification())->getId());
-		self::assertSame('SELLER-2', $this->notNull($item->getSecondarySellersItemIdentification())->getId());
-		self::assertSame('SELLER-3', $this->notNull($item->getTertiarySellersItemIdentification())->getId());
-		self::assertSame('BUYER-1', $this->notNull($item->getBuyersItemIdentification())->getId());
-		$storeBatch = $this->first($this->notNull($item->getStoreBatches()));
-		self::assertSame('BATCH-1', $storeBatch->getName());
-		self::assertSame(S\StoreBatch::BATCH_OR_SERIAL_NUMBER_BATCH, $storeBatch->getBatchOrSerialNumber());
-		self::assertSame('ks', $storeBatch->getQuantity()->getUnitCode());
-		self::assertSame('10', $storeBatch->getQuantity()->getContent());
-		self::assertSame('2025-12-31', $this->notNull($storeBatch->getExpirationDate())->format('Y-m-d'));
-		self::assertSame('Cold storage', $storeBatch->getSpecification());
-		self::assertSame('SEAL-1', $storeBatch->getSealSeriesID());
-		self::assertSame('Handle with care.', $this->notNull($storeBatch->getNote())->getContent());
-
-		$nonTaxedDeposit = $this->first($this->notNull($invoice->getNonTaxedDeposits()));
-		self::assertSame('NTD-1', $nonTaxedDeposit->getId());
-		self::assertSame('555', $nonTaxedDeposit->getVariableSymbol());
-		self::assertSame('100.0', $nonTaxedDeposit->getDepositAmount());
-		self::assertSame('4.0', $nonTaxedDeposit->getDepositAmountCurr());
-
-		$taxedDeposit = $this->first($this->notNull($invoice->getTaxedDeposits()));
-		self::assertSame('TD-1', $taxedDeposit->getId());
-		self::assertSame('556', $taxedDeposit->getVariableSymbol());
-		self::assertSame('200.0', $taxedDeposit->getTaxableDepositAmount());
-		self::assertSame('242.0', $taxedDeposit->getTaxInclusiveDepositAmount());
-		self::assertSame('8.0', $taxedDeposit->getTaxableDepositAmountCurr());
-		self::assertSame('9.68', $taxedDeposit->getTaxInclusiveDepositAmountCurr());
-		self::assertSame('21', $taxedDeposit->getClassifiedTaxCategory()->getPercent());
-
-		$taxTotal = $invoice->getTaxTotal();
-		self::assertSame('73.5', $taxTotal->getTaxAmount());
-		self::assertSame('2.88', $taxTotal->getTaxAmountCurr());
-		$taxSubTotal = $this->first($taxTotal);
-		self::assertSame('350.0', $taxSubTotal->getTaxableAmount());
-		self::assertSame('73.5', $taxSubTotal->getTaxAmount());
-		self::assertSame('423.5', $taxSubTotal->getTaxInclusiveAmount());
-		self::assertSame('13.72', $taxSubTotal->getTaxableAmountCurr());
-		self::assertSame('16.6', $taxSubTotal->getTaxInclusiveAmountCurr());
-		$taxCategory = $taxSubTotal->getTaxCategory();
-		self::assertSame('21', $taxCategory->getPercent());
-		self::assertSame('VAT', $taxCategory->getTaxScheme());
-		self::assertTrue($taxCategory->getVatApplicable());
-		self::assertTrue($taxCategory->getLocalReverseChargeFlag());
-
-		$total = $invoice->getLegalMonetaryTotal();
-		self::assertSame('350.0', $total->getTaxExclusiveAmount());
-		self::assertSame('13.72', $total->getTaxExclusiveAmountCurr());
-		self::assertSame('423.5', $total->getTaxInclusiveAmount());
-		self::assertSame('16.6', $total->getTaxInclusiveAmountCurr());
-		self::assertSame('0.0', $total->getAlreadyClaimedTaxExclusiveAmount());
-		self::assertSame('0.0', $total->getDifferenceTaxExclusiveAmount());
-		self::assertSame('0.0', $total->getPaidDepositsAmount());
-		self::assertSame('0.5', $total->getPayableRoundingAmount());
-		self::assertSame('0.02', $total->getPayableRoundingAmountCurr());
-		self::assertSame('424.0', $total->getPayableAmount());
-		self::assertSame('16.62', $total->getPayableAmountCurr());
-
-		$payment = $this->first($this->notNull($invoice->getPaymentMeans()));
-		self::assertSame('424.0', $payment->getPaidAmount());
-		self::assertSame(S\Payment::PAYMENT_MEANS_CODE_CREDIT_TRANSFER, $payment->getPaymentMeansCode());
-		self::assertTrue($payment->getPartialPayment());
-		$details = $this->notNull($payment->getDetails());
-		self::assertSame('PAY-1', $details->getDocumentID());
-		self::assertSame('2021-08-16', $this->notNull($details->getIssueDate())->format('Y-m-d'));
-		self::assertSame('2021-08-30', $this->notNull($details->getPaymentDueDate())->format('Y-m-d'));
-		self::assertSame('123456789', $details->getId());
-		self::assertSame('0800', $details->getBankCode());
-		self::assertSame('Česká spořitelna, a. s.', $details->getName());
-		self::assertSame('CZ6508000000192000145399', $details->getIban());
-		self::assertSame('GIBACZPX', $details->getBic());
-		self::assertSame('20210001', $details->getVariableSymbol());
-		self::assertSame('0308', $details->getConstantSymbol());
-		self::assertSame('12345', $details->getSpecificSymbol());
-		$account = $this->first($this->notNull($this->notNull($invoice->getPaymentMeans())->getAlternateBankAccounts()));
-		self::assertSame('987654321', $account->getId());
-		self::assertSame('0100', $account->getBankCode());
-		self::assertSame('Komerční banka, a. s.', $account->getName());
-		self::assertSame('CZ6501000000000987654321', $account->getIban());
-		self::assertSame('KOMBCZPP', $account->getBic());
-
-		$supplement = $this->first($this->notNull($invoice->getSupplementsList()));
-		self::assertSame('invoice.pdf', $supplement->getFilename());
-		self::assertSame('http://www.w3.org/2000/09/xmldsig#sha1', $supplement->getDigestMethod()->getAlgorithm());
-		self::assertSame('2jmj7l5rSw0yVb/vlWAYkK/YBwk=', $supplement->getDigestValue());
-		self::assertTrue($supplement->getPreview());
-	}
-
-	private function assertFullPartyViaGetters(S\Party $party, string $id, string $name): void
-	{
-		self::assertSame($id, $party->getPartyIdentification()->getId());
-		self::assertSame('CAT-FIRM-' . $id, $party->getPartyIdentification()->getCatalogFirmIdentification());
-		self::assertSame('USER-' . $id, $party->getPartyIdentification()->getUserID());
-		self::assertSame($name, $party->getPartyName()->getName());
-
-		$address = $party->getPostalAddress();
-		self::assertSame('Dlouhá', $address->getStreetName());
-		self::assertSame('1234', $address->getBuildingNumber());
-		self::assertSame('Praha', $address->getCityName());
-		self::assertSame('100 01', $address->getPostalZone());
-		self::assertSame('CZ', $address->getCountry()->getIdentificationCode());
-		self::assertSame('Česká republika', $address->getCountry()->getName());
-
-		$schemes = $this->notNull($party->getPartyTaxSchemes());
-		self::assertCount(2, $schemes);
-		$scheme = $this->first($schemes);
-		self::assertSame('CZ' . $id, $scheme->getCompanyID());
-		self::assertSame('VAT', $scheme->getTaxScheme());
-
-		$register = $this->notNull($party->getRegisterIdentification());
-		self::assertSame('Městský soud v Praze', $register->getRegisterKeptAt());
-		self::assertSame('B 1234', $register->getRegisterFileRef());
-		self::assertSame('2001-03-14', $this->notNull($register->getRegisterDate())->format('Y-m-d'));
-		self::assertSame('Spisová značka B 1234 vedená u Městského soudu v Praze', $register->getPreformatted());
-
-		$contact = $this->notNull($party->getContact());
-		self::assertSame('Jan Novák', $contact->getName());
-		self::assertSame('+420123456789', $contact->getTelephone());
-		self::assertSame('jan.novak@example.com', $contact->getElectronicMail());
-	}
-
-	// ---------------------------------------------------------------------------------------------
 	// Reading everything back through magic properties.
 	// ---------------------------------------------------------------------------------------------
 
 	private function assertViaProperties(S $invoice): void
 	{
-		self::assertSame(S::DOCUMENT_TYPE_INVOICE, $invoice->documentType);
+		self::assertSame(S\DocumentType::Invoice, $invoice->documentType);
 		self::assertSame('2021-0001', $invoice->id);
 		self::assertSame('00000000-0000-0000-0000-000000001234', $invoice->uuid);
 		self::assertSame('2021-08-16', $invoice->issueDate->format('Y-m-d'));
@@ -946,9 +412,9 @@ final class APICoverageTest extends TestCase
 		self::assertSame('Acme Billing 1.0', $invoice->issuingSystem);
 		self::assertSame('2021-08-15', $this->notNull($invoice->taxPointDate)->format('Y-m-d'));
 		self::assertSame('EUR', $invoice->foreignCurrencyCode);
-		self::assertSame('25.5', $invoice->currRate);
-		self::assertSame('1.0', $invoice->refCurrRate);
-		self::assertSame(ISDOC\Invoice::VERSION, $invoice->version);
+		self::assertSame('25.5', (string) $invoice->currRate);
+		self::assertSame('1.0', (string) $invoice->refCurrRate);
+		self::assertSame(ISDOC\Invoice::Version, $invoice->version);
 
 		self::assertSame('Agreed electronically.', $invoice->electronicPossibilityAgreement->content);
 		self::assertSame('cs', $invoice->electronicPossibilityAgreement->languageID);
@@ -998,23 +464,23 @@ final class APICoverageTest extends TestCase
 		self::assertCount(2, $invoice->invoiceLines);
 		$line = $this->first($invoice->invoiceLines);
 		self::assertSame('1', $line->id);
-		self::assertSame('100.0', $line->lineExtensionAmount);
-		self::assertSame('121.0', $line->lineExtensionAmountTaxInclusive);
-		self::assertSame('21.0', $line->lineExtensionTaxAmount);
-		self::assertSame('100.0', $line->unitPrice);
-		self::assertSame('121.0', $line->unitPriceTaxInclusive);
+		self::assertSame('100.0', (string) $line->lineExtensionAmount);
+		self::assertSame('121.0', (string) $line->lineExtensionAmountTaxInclusive);
+		self::assertSame('21.0', (string) $line->lineExtensionTaxAmount);
+		self::assertSame('100.0', (string) $line->unitPrice);
+		self::assertSame('121.0', (string) $line->unitPriceTaxInclusive);
 		self::assertSame('00000099', $line->egovClassifier);
-		self::assertSame('3.92', $line->lineExtensionAmountCurr);
-		self::assertSame('110.0', $line->lineExtensionAmountBeforeDiscount);
-		self::assertSame('4.75', $line->lineExtensionAmountTaxInclusiveCurr);
-		self::assertSame('133.1', $line->lineExtensionAmountTaxInclusiveBeforeDiscount);
+		self::assertSame('3.92', (string) $line->lineExtensionAmountCurr);
+		self::assertSame('110.0', (string) $line->lineExtensionAmountBeforeDiscount);
+		self::assertSame('4.75', (string) $line->lineExtensionAmountTaxInclusiveCurr);
+		self::assertSame('133.1', (string) $line->lineExtensionAmountTaxInclusiveBeforeDiscount);
 
 		$category = $line->classifiedTaxCategory;
-		self::assertSame('21', $category->percent);
-		self::assertSame(S\ClassifiedTaxCategory::VAT_CALCULATION_METHOD_FROM_THE_TOP, $category->vatCalculationMethod);
+		self::assertSame('21', (string) $category->percent);
+		self::assertSame(S\VATCalculationMethod::FromTheTop, $category->vatCalculationMethod);
 		self::assertTrue($category->vatApplicable);
 		$localReverseCharge = $this->notNull($category->localReverseCharge);
-		self::assertSame(S\LocalReverseCharge::LOCAL_REVERSE_CHARGE_CODE_DELIVERY_OF_GOLD, $localReverseCharge->localReverseChargeCode);
+		self::assertSame(S\LocalReverseChargeCode::DeliveryOfGold, $localReverseCharge->localReverseChargeCode);
 		$localReverseChargeQuantity = $this->notNull($localReverseCharge->localReverseChargeQuantity);
 		self::assertSame('g', $localReverseChargeQuantity->unitCode);
 		self::assertSame('5', $localReverseChargeQuantity->content);
@@ -1048,7 +514,7 @@ final class APICoverageTest extends TestCase
 		self::assertSame('BUYER-1', $this->notNull($item->buyersItemIdentification)->id);
 		$storeBatch = $this->first($this->notNull($item->storeBatches));
 		self::assertSame('BATCH-1', $storeBatch->name);
-		self::assertSame(S\StoreBatch::BATCH_OR_SERIAL_NUMBER_BATCH, $storeBatch->batchOrSerialNumber);
+		self::assertSame(S\BatchOrSerialNumber::Batch, $storeBatch->batchOrSerialNumber);
 		self::assertSame('ks', $storeBatch->quantity->unitCode);
 		self::assertSame('10', $storeBatch->quantity->content);
 		self::assertSame('2025-12-31', $this->notNull($storeBatch->expirationDate)->format('Y-m-d'));
@@ -1059,49 +525,49 @@ final class APICoverageTest extends TestCase
 		$nonTaxedDeposit = $this->first($this->notNull($invoice->nonTaxedDeposits));
 		self::assertSame('NTD-1', $nonTaxedDeposit->id);
 		self::assertSame('555', $nonTaxedDeposit->variableSymbol);
-		self::assertSame('100.0', $nonTaxedDeposit->depositAmount);
-		self::assertSame('4.0', $nonTaxedDeposit->depositAmountCurr);
+		self::assertSame('100.0', (string) $nonTaxedDeposit->depositAmount);
+		self::assertSame('4.0', (string) $nonTaxedDeposit->depositAmountCurr);
 
 		$taxedDeposit = $this->first($this->notNull($invoice->taxedDeposits));
 		self::assertSame('TD-1', $taxedDeposit->id);
 		self::assertSame('556', $taxedDeposit->variableSymbol);
-		self::assertSame('200.0', $taxedDeposit->taxableDepositAmount);
-		self::assertSame('242.0', $taxedDeposit->taxInclusiveDepositAmount);
-		self::assertSame('8.0', $taxedDeposit->taxableDepositAmountCurr);
-		self::assertSame('9.68', $taxedDeposit->taxInclusiveDepositAmountCurr);
-		self::assertSame('21', $taxedDeposit->classifiedTaxCategory->percent);
+		self::assertSame('200.0', (string) $taxedDeposit->taxableDepositAmount);
+		self::assertSame('242.0', (string) $taxedDeposit->taxInclusiveDepositAmount);
+		self::assertSame('8.0', (string) $taxedDeposit->taxableDepositAmountCurr);
+		self::assertSame('9.68', (string) $taxedDeposit->taxInclusiveDepositAmountCurr);
+		self::assertSame('21', (string) $taxedDeposit->classifiedTaxCategory->percent);
 
 		$taxTotal = $invoice->taxTotal;
-		self::assertSame('73.5', $taxTotal->taxAmount);
-		self::assertSame('2.88', $taxTotal->taxAmountCurr);
+		self::assertSame('73.5', (string) $taxTotal->taxAmount);
+		self::assertSame('2.88', (string) $taxTotal->taxAmountCurr);
 		$taxSubTotal = $this->first($taxTotal);
-		self::assertSame('350.0', $taxSubTotal->taxableAmount);
-		self::assertSame('73.5', $taxSubTotal->taxAmount);
-		self::assertSame('423.5', $taxSubTotal->taxInclusiveAmount);
-		self::assertSame('13.72', $taxSubTotal->taxableAmountCurr);
-		self::assertSame('16.6', $taxSubTotal->taxInclusiveAmountCurr);
+		self::assertSame('350.0', (string) $taxSubTotal->taxableAmount);
+		self::assertSame('73.5', (string) $taxSubTotal->taxAmount);
+		self::assertSame('423.5', (string) $taxSubTotal->taxInclusiveAmount);
+		self::assertSame('13.72', (string) $taxSubTotal->taxableAmountCurr);
+		self::assertSame('16.6', (string) $taxSubTotal->taxInclusiveAmountCurr);
 		$taxCategory = $taxSubTotal->taxCategory;
-		self::assertSame('21', $taxCategory->percent);
+		self::assertSame('21', (string) $taxCategory->percent);
 		self::assertSame('VAT', $taxCategory->taxScheme);
 		self::assertTrue($taxCategory->vatApplicable);
 		self::assertTrue($taxCategory->localReverseChargeFlag);
 
 		$total = $invoice->legalMonetaryTotal;
-		self::assertSame('350.0', $total->taxExclusiveAmount);
-		self::assertSame('13.72', $total->taxExclusiveAmountCurr);
-		self::assertSame('423.5', $total->taxInclusiveAmount);
-		self::assertSame('16.6', $total->taxInclusiveAmountCurr);
-		self::assertSame('0.0', $total->alreadyClaimedTaxExclusiveAmount);
-		self::assertSame('0.0', $total->differenceTaxExclusiveAmount);
-		self::assertSame('0.0', $total->paidDepositsAmount);
-		self::assertSame('0.5', $total->payableRoundingAmount);
-		self::assertSame('0.02', $total->payableRoundingAmountCurr);
-		self::assertSame('424.0', $total->payableAmount);
-		self::assertSame('16.62', $total->payableAmountCurr);
+		self::assertSame('350.0', (string) $total->taxExclusiveAmount);
+		self::assertSame('13.72', (string) $total->taxExclusiveAmountCurr);
+		self::assertSame('423.5', (string) $total->taxInclusiveAmount);
+		self::assertSame('16.6', (string) $total->taxInclusiveAmountCurr);
+		self::assertSame('0.0', (string) $total->alreadyClaimedTaxExclusiveAmount);
+		self::assertSame('0.0', (string) $total->differenceTaxExclusiveAmount);
+		self::assertSame('0.0', (string) $total->paidDepositsAmount);
+		self::assertSame('0.5', (string) $total->payableRoundingAmount);
+		self::assertSame('0.02', (string) $total->payableRoundingAmountCurr);
+		self::assertSame('424.0', (string) $total->payableAmount);
+		self::assertSame('16.62', (string) $total->payableAmountCurr);
 
 		$payment = $this->first($this->notNull($invoice->paymentMeans));
-		self::assertSame('424.0', $payment->paidAmount);
-		self::assertSame(S\Payment::PAYMENT_MEANS_CODE_CREDIT_TRANSFER, $payment->paymentMeansCode);
+		self::assertSame('424.0', (string) $payment->paidAmount);
+		self::assertSame(S\PaymentMeansCode::CreditTransfer, $payment->paymentMeansCode);
 		self::assertTrue($payment->partialPayment);
 		$details = $this->notNull($payment->details);
 		self::assertSame('PAY-1', $details->documentID);
@@ -1124,7 +590,7 @@ final class APICoverageTest extends TestCase
 
 		$supplement = $this->first($this->notNull($invoice->supplementsList));
 		self::assertSame('invoice.pdf', $supplement->filename);
-		self::assertSame('http://www.w3.org/2000/09/xmldsig#sha1', $supplement->digestMethod->getAlgorithm());
+		self::assertSame('http://www.w3.org/2000/09/xmldsig#sha1', $supplement->digestMethod->algorithm);
 		self::assertSame('2jmj7l5rSw0yVb/vlWAYkK/YBwk=', $supplement->digestValue);
 		self::assertTrue($supplement->preview);
 	}
@@ -1144,8 +610,7 @@ final class APICoverageTest extends TestCase
 		self::assertSame('CZ', $address->country->identificationCode);
 		self::assertSame('Česká republika', $address->country->name);
 
-		// partyTaxSchemes is read through its method (no magic property — see fullPartyViaProperties()).
-		$schemes = $this->notNull($party->getPartyTaxSchemes());
+		$schemes = $this->notNull($party->partyTaxSchemes);
 		self::assertCount(2, $schemes);
 		$scheme = $this->first($schemes);
 		self::assertSame('CZ' . $id, $scheme->companyID);
@@ -1170,35 +635,12 @@ final class APICoverageTest extends TestCase
 	/** Cross-line references must point at the very same document-level instances after decoding. */
 	private function assertReferencesResolved(S $invoice): void
 	{
-		$line = $this->first($invoice->getInvoiceLines());
+		$line = $this->first($invoice->invoiceLines);
 
-		self::assertSame($this->first($this->notNull($invoice->getOrderReferences())), $this->notNull($line->getOrder())->getOrder());
-		self::assertSame($this->first($this->notNull($invoice->getDeliveryNoteReferences())), $this->notNull($line->getDeliveryNote())->getDeliveryNote());
-		self::assertSame($this->first($this->notNull($invoice->getOriginalDocumentReferences())), $this->notNull($line->getOriginalDocument())->getOriginalDocument());
-		self::assertSame($this->first($this->notNull($invoice->getContractReferences())), $this->notNull($line->getContract())->getContract());
-	}
-
-	/**
-	 * The deprecated singular Party tax-scheme accessors are part of the public surface and are
-	 * exercised here separately (they emit E_USER_DEPRECATED, suppressed at the source with @).
-	 */
-	public function testDeprecatedPartyTaxSchemeAPI(): void
-	{
-		$party  = $this->buildBasicParty('12345678', 'Firma, a. s.');
-		$scheme = new S\PartyTaxScheme('CZ12345678', 'VAT');
-
-		$party->setPartyTaxScheme($scheme);
-		self::assertSame($scheme, $party->getPartyTaxScheme());
-		self::assertCount(1, $this->notNull($party->getPartyTaxSchemes()));
-
-		// Clearing through the deprecated setter resets the collection back to null.
-		$party->setPartyTaxScheme(null);
-		self::assertNull($party->getPartyTaxScheme());
-		self::assertNull($party->getPartyTaxSchemes());
-
-		// A present-but-empty collection still yields null from the deprecated singular getter.
-		$party->setPartyTaxSchemes(new S\PartyTaxSchemes);
-		self::assertNull($party->getPartyTaxScheme());
+		self::assertSame($this->first($this->notNull($invoice->orderReferences)), $this->notNull($line->order)->order);
+		self::assertSame($this->first($this->notNull($invoice->deliveryNoteReferences)), $this->notNull($line->deliveryNote)->deliveryNote);
+		self::assertSame($this->first($this->notNull($invoice->originalDocumentReferences)), $this->notNull($line->originalDocument)->originalDocument);
+		self::assertSame($this->first($this->notNull($invoice->contractReferences)), $this->notNull($line->contract)->contract);
 	}
 
 	/**
@@ -1207,53 +649,51 @@ final class APICoverageTest extends TestCase
 	 */
 	public function testEgovClassifiersAPI(): void
 	{
-		$classifiers = new S\EgovClassifiers;
+		$classifiers = new S\EgovClassifiers();
 		$classifiers->add('00000001');
 		$classifiers->add('00000002');
 
 		self::assertCount(2, $classifiers);
 		self::assertSame(['00000001', '00000002'], iterator_to_array($classifiers));
-		self::assertSame(['00000001', '00000002'], $classifiers->toArray());
 	}
 
 	/**
 	 * The Contract.lastValidDateUnbounded choice (an empty marker element) is dropped on decode, so it
-	 * is excluded from the round-trip; its accessors and the LastValidDateUnbounded entity are pinned here.
+	 * is excluded from the round-trip; its property and the LastValidDateUnbounded entity are pinned here.
 	 */
 	public function testContractLastValidDateUnboundedAPI(): void
 	{
 		$contract  = new S\Contract('CT-1', $this->date('2021-01-01'));
-		$unbounded = new S\LastValidDateUnbounded;
-
-		$contract->setLastValidDateUnbounded($unbounded);
-		self::assertSame($unbounded, $contract->getLastValidDateUnbounded());
+		$unbounded = new S\LastValidDateUnbounded();
 
 		$contract->lastValidDateUnbounded = $unbounded;
 		self::assertSame($unbounded, $contract->lastValidDateUnbounded);
 	}
 
 	/**
-	 * Documents a known 1.x limitation: a boolean set to false is written as "false" but decoded back
-	 * as true (PHP casts the non-empty string "false" to true). Only true booleans round-trip. This
-	 * test pins the current behaviour so the 2.0 rewrite can detect when it changes.
+	 * A boolean set to false round-trips correctly: it is written as "false" and decoded back as false.
+	 * The 1.x line had a bug here — it decoded the non-empty string "false" as true — which the 2.0
+	 * rewrite fixes by parsing the literal. This test pins the corrected behavior.
+	 * @throws ReaderException
+	 * @throws WriterException
 	 */
-	public function testBooleanFalseDecodingLimitation(): void
+	public function testBooleanFalseRoundTrips(): void
 	{
 		$manager = ISDOC\Manager::create();
 
 		$invoice = $this->buildMinimalInvoice();
-		$payment = new S\Payment('121.0', S\Payment::PAYMENT_MEANS_CODE_CASH_PAYMENT);
-		$payment->setPartialPayment(false);
-		$invoice->setPaymentMeans((new S\PaymentMeans)->add($payment));
+		$payment = new S\Payment(new Number('121.0'), S\PaymentMeansCode::CashPayment);
+		$payment->partialPayment = false;
+		$invoice->paymentMeans = new S\PaymentMeans()->add($payment);
 
-		$xml = $manager->getWriter()->xml($invoice);
+		$xml = $manager->writer->xml($invoice);
 		self::assertStringContainsString('partialPayment="false"', $xml);
 
-		$decoded        = $manager->getReader()->xml($xml);
-		$decodedPayment = $this->first($this->notNull($decoded->getPaymentMeans()));
+		$decoded        = $manager->reader->xml($xml);
+		$decodedPayment = $this->first($this->notNull($decoded->paymentMeans));
 
-		// The false flag comes back as true — the known limitation.
-		self::assertTrue($decodedPayment->getPartialPayment());
+		// The false flag round-trips correctly.
+		self::assertFalse($decodedPayment->partialPayment);
 	}
 
 	/** A bare, valid invoice with a single line — the minimum the encoder accepts. */
@@ -1268,14 +708,14 @@ final class APICoverageTest extends TestCase
 			new S\AccountingSupplierParty($this->buildBasicParty('12345678', 'Dodavatel, a. s.')),
 		);
 
-		$invoice->getInvoiceLines()->add(new S\InvoiceLine(
+		$invoice->invoiceLines->add(new S\InvoiceLine(
 			'1',
-			'100.0',
-			'121.0',
-			'21.0',
-			'100.0',
-			'121.0',
-			new S\ClassifiedTaxCategory('21', S\ClassifiedTaxCategory::VAT_CALCULATION_METHOD_FROM_THE_TOP),
+			new Number('100.0'),
+			new Number('121.0'),
+			new Number('21.0'),
+			new Number('100.0'),
+			new Number('121.0'),
+			new S\ClassifiedTaxCategory(new Number('21'), S\VATCalculationMethod::FromTheTop),
 		));
 
 		return $invoice;

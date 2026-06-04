@@ -2,29 +2,37 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Collection;
-use Adawolfa\ISDOC\Map;
-use ArrayIterator;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
+use Countable;
+use Generator;
+use IteratorAggregate;
 
 /**
  * Header collection of referenced delivery notes.
- *
- * @extends Collection<DeliveryNote>
+ * @implements IteratorAggregate<int, DeliveryNote>
  */
-#[Map('DeliveryNoteReference', DeliveryNote::class)]
-class DeliveryNoteReferences extends Collection
+class DeliveryNoteReferences implements Entity, IteratorAggregate, Countable
 {
 
-	/** @return ArrayIterator<int, DeliveryNote> */
-	public function getIterator(): ArrayIterator
+	use Backing;
+
+	/** @return Generator<int, DeliveryNote> */
+	public function getIterator(): Generator
 	{
-		return new ArrayIterator($this->items);
+		yield from $this->node->getChildren('DeliveryNoteReference', DeliveryNote::class);
 	}
 
-	public function add(DeliveryNote $deliveryNote): self
+	public function add(DeliveryNote $deliveryNoteReference): self
 	{
-		$this->items[] = $deliveryNote;
+		$this->node->addChild('DeliveryNoteReference', $deliveryNoteReference);
+
 		return $this;
+	}
+
+	public function count(): int
+	{
+		return count($this->node->getChildren('DeliveryNoteReference'));
 	}
 
 }

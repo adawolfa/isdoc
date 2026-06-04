@@ -6,6 +6,7 @@ use Adawolfa;
 use Adawolfa\ISDOC\ReaderException;
 use Adawolfa\ISDOC\SupplementException;
 use Adawolfa\ISDOC\WriterException;
+use BcMath\Number;
 use DateTimeImmutable;
 use LogicException;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -51,13 +52,14 @@ final class PDFTest extends TestCase
 	{
 		$manager     = Adawolfa\ISDOC\Manager::create();
 		$invoice     = self::createInvoice();
-		$supplements = new Adawolfa\ISDOC\Schema\Invoice\SupplementsList;
+		$supplements = new Adawolfa\ISDOC\Schema\Invoice\SupplementsList();
 		$supplements->add(Adawolfa\ISDOC\Invoice\Supplement::fromPath($filename));
 		$invoice->supplementsList = $supplements;
 		$manager->writer->file($invoice, $this->temp);
 
 		$read = $manager->reader->file($this->temp);
-		$this->assertGreaterThanOrEqual(1, $invoice->supplementsList?->count() ?? 0);
+		$this->assertNotNull($read->supplementsList);
+		$this->assertGreaterThanOrEqual(1, $read->supplementsList->count());
 	}
 
 	/**
@@ -82,7 +84,7 @@ final class PDFTest extends TestCase
 	{
 		$manager     = Adawolfa\ISDOC\Manager::create();
 		$invoice     = self::createInvoice();
-		$supplements = new Adawolfa\ISDOC\Schema\Invoice\SupplementsList;
+		$supplements = new Adawolfa\ISDOC\Schema\Invoice\SupplementsList();
 		$supplements->add(Adawolfa\ISDOC\Invoice\Supplement::fromPath(__DIR__ . '/fixtures/append-microsoft.pdf'));
 		$supplements->add(Adawolfa\ISDOC\Invoice\Supplement::fromString('hello world', 'attachment.txt'));
 		$invoice->supplementsList = $supplements;
@@ -100,11 +102,11 @@ final class PDFTest extends TestCase
 		$this->assertInstanceOf(Adawolfa\ISDOC\Invoice\RemoteSupplement::class, $pdf);
 		$this->assertInstanceOf(Adawolfa\ISDOC\Invoice\RemoteSupplement::class, $txt);
 
-		$this->assertSame(basename($this->temp), $pdf->getFilename());
-		$this->assertStringStartsWith('%PDF-', $pdf->getContents());
+		$this->assertSame(basename($this->temp), $pdf->filename);
+		$this->assertStringStartsWith('%PDF-', $pdf->contents);
 
-		$this->assertSame('attachment.txt', $txt->getFilename());
-		$this->assertSame('hello world', $txt->getContents());
+		$this->assertSame('attachment.txt', $txt->filename);
+		$this->assertSame('hello world', $txt->contents);
 	}
 
 	protected function setUp(): void
@@ -122,7 +124,7 @@ final class PDFTest extends TestCase
 		$invoice = new Adawolfa\ISDOC\Invoice(
 			'12345',
 			'00000000-0000-0000-0000-000000001234',
-			DateTimeImmutable::createFromFormat('Y-m-d', '2021-08-16') ?: throw new LogicException,
+			DateTimeImmutable::createFromFormat('Y-m-d', '2021-08-16') ?: throw new LogicException(),
 			false,
 			'CZK',
 			new Adawolfa\ISDOC\Schema\Invoice\AccountingSupplierParty(
@@ -134,25 +136,25 @@ final class PDFTest extends TestCase
 						'1234',
 						'Praha',
 						'100 01',
-						new Adawolfa\ISDOC\Schema\Invoice\Country('CZ', 'Česká republika')
-					)
-				)
-			)
+						new Adawolfa\ISDOC\Schema\Invoice\Country('CZ', 'Česká republika'),
+					),
+				),
+			),
 		);
 
 		$invoice->invoiceLines->add(
 			new Adawolfa\ISDOC\Schema\Invoice\InvoiceLine(
 				'1',
-				'100.0',
-				'121.0',
-				'21.0',
-				'100.0',
-				'121.0',
+				new Number('100.0'),
+				new Number('121.0'),
+				new Number('21.0'),
+				new Number('100.0'),
+				new Number('121.0'),
 				new Adawolfa\ISDOC\Schema\Invoice\ClassifiedTaxCategory(
-					'21',
-					Adawolfa\ISDOC\Schema\Invoice\ClassifiedTaxCategory::VAT_CALCULATION_METHOD_FROM_THE_TOP,
+					new Number('21'),
+					Adawolfa\ISDOC\Schema\Invoice\VATCalculationMethod::FromTheTop,
 				),
-			)
+			),
 		);
 
 		return $invoice;

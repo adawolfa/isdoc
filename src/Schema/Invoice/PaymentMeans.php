@@ -2,47 +2,43 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Collection;
-use Adawolfa\ISDOC\Map;
-use ArrayIterator;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
+use Countable;
+use Generator;
+use IteratorAggregate;
 
 /**
  * Information about payment means.
- *
- * @extends Collection<Payment>
- * @property AlternateBankAccounts|null $alternateBankAccounts
+ * @implements IteratorAggregate<int, Payment>
  */
-#[Map('Payment', Payment::class)]
-class PaymentMeans extends Collection
+class PaymentMeans implements Entity, IteratorAggregate, Countable
 {
 
-	/** Collection of alternative bank accounts. */
-	#[Map('AlternateBankAccounts')]
-	private ?AlternateBankAccounts $alternateBankAccounts = null;
+	use Backing;
 
-	/** @return ArrayIterator<int, Payment> */
-	public function getIterator(): ArrayIterator
+	/** Collection of alternative bank accounts. */
+	public ?AlternateBankAccounts $alternateBankAccounts {
+		get => $this->node->getChild('AlternateBankAccounts', AlternateBankAccounts::class);
+		set { $this->node->setChild('AlternateBankAccounts', $value); }
+	}
+
+	/** @return Generator<int, Payment> */
+	public function getIterator(): Generator
 	{
-		return new ArrayIterator($this->items);
+		yield from $this->node->getChildren('Payment', Payment::class);
 	}
 
 	public function add(Payment $payment): self
 	{
-		$this->items[] = $payment;
+		$this->node->addChild('Payment', $payment);
+
 		return $this;
 	}
 
-	/** @deprecated Method accessors are deprecated, use {@see $alternateBankAccounts} property instead. */
-	public function getAlternateBankAccounts(): ?AlternateBankAccounts
+	public function count(): int
 	{
-		return $this->alternateBankAccounts;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $alternateBankAccounts} property instead. */
-	public function setAlternateBankAccounts(?AlternateBankAccounts $alternateBankAccounts): self
-	{
-		$this->alternateBankAccounts = $alternateBankAccounts;
-		return $this;
+		return count($this->node->getChildren('Payment'));
 	}
 
 }

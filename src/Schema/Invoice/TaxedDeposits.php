@@ -2,29 +2,37 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Collection;
-use Adawolfa\ISDOC\Map;
-use ArrayIterator;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
+use Countable;
+use Generator;
+use IteratorAggregate;
 
 /**
  * Collection of taxed deposits (advance invoices with VAT).
- *
- * @extends Collection<TaxedDeposit>
+ * @implements IteratorAggregate<int, TaxedDeposit>
  */
-#[Map('TaxedDeposit', TaxedDeposit::class)]
-class TaxedDeposits extends Collection
+class TaxedDeposits implements Entity, IteratorAggregate, Countable
 {
 
-	/** @return ArrayIterator<int, TaxedDeposit> */
-	public function getIterator(): ArrayIterator
+	use Backing;
+
+	/** @return Generator<int, TaxedDeposit> */
+	public function getIterator(): Generator
 	{
-		return new ArrayIterator($this->items);
+		yield from $this->node->getChildren('TaxedDeposit', TaxedDeposit::class);
 	}
 
 	public function add(TaxedDeposit $taxedDeposit): self
 	{
-		$this->items[] = $taxedDeposit;
+		$this->node->addChild('TaxedDeposit', $taxedDeposit);
+
 		return $this;
+	}
+
+	public function count(): int
+	{
+		return count($this->node->getChildren('TaxedDeposit'));
 	}
 
 }

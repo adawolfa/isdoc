@@ -2,79 +2,64 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Collection;
-use Adawolfa\ISDOC\Deprecations;
-use Adawolfa\ISDOC\Map;
-use Adawolfa\ISDOC\Restriction;
-use ArrayIterator;
-use BcMath;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
+use Adawolfa\ISDOC\XML\Exception;
+use BcMath\Number;
+use Countable;
+use Generator;
+use IteratorAggregate;
 
 /**
  * Information about a total amount of a particular type of tax.
- *
- * @extends Collection<TaxSubTotal>
- * @property string|BcMath\Number|null $taxAmountCurr
- * @property string|BcMath\Number      $taxAmount
+ * @implements IteratorAggregate<int, TaxSubTotal>
  */
-#[Map('TaxSubTotal', TaxSubTotal::class)]
-class TaxTotal extends Collection
+class TaxTotal implements Entity, IteratorAggregate, Countable
 {
 
-	/** Amount. */
-	#[Map('TaxAmountCurr')]
-	private ?string $taxAmountCurr = null;
+	use Backing;
 
 	/** Amount. */
-	#[Map('TaxAmount')]
-	private string $taxAmount;
-
-	public function __construct(string|BcMath\Number $taxAmount)
-	{
-		$this->setTaxAmount($taxAmount);
+	public ?Number $taxAmountCurr {
+		/** @throws Exception */
+		get => $this->node->getNumber('TaxAmountCurr');
+		set {
+			$this->node->setNumber('TaxAmountCurr', $value);
+		}
 	}
 
-	/** @return ArrayIterator<int, TaxSubTotal> */
-	public function getIterator(): ArrayIterator
+	/** Amount. */
+	public Number $taxAmount {
+		/** @throws Exception */
+		get => $this->node->getNumberOrThrow('TaxAmount');
+		set {
+			$this->node->setNumber('TaxAmount', $value);
+		}
+	}
+
+	public function __construct(
+		Number $taxAmount,
+	)
 	{
-		return new ArrayIterator($this->items);
+		$this->taxAmount = $taxAmount;
+	}
+
+	/** @return Generator<int, TaxSubTotal> */
+	public function getIterator(): Generator
+	{
+		yield from $this->node->getChildren('TaxSubTotal', TaxSubTotal::class);
 	}
 
 	public function add(TaxSubTotal $taxSubTotal): self
 	{
-		$this->items[] = $taxSubTotal;
+		$this->node->addChild('TaxSubTotal', $taxSubTotal);
+
 		return $this;
 	}
 
-	/** @deprecated Method accessors are deprecated, use {@see $taxAmountCurr} property instead. */
-	public function getTaxAmountCurr(): ?string
+	public function count(): int
 	{
-		return $this->taxAmountCurr;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $taxAmountCurr} property instead. */
-	public function setTaxAmountCurr(string|BcMath\Number|null $taxAmountCurr): self
-	{
-		Deprecations::number($taxAmountCurr);
-		$taxAmountCurr = $taxAmountCurr === null ? null : (string) $taxAmountCurr;
-		Restriction::decimal($taxAmountCurr);
-		$this->taxAmountCurr = $taxAmountCurr;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $taxAmount} property instead. */
-	public function getTaxAmount(): string
-	{
-		return $this->taxAmount;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $taxAmount} property instead. */
-	public function setTaxAmount(string|BcMath\Number $taxAmount): self
-	{
-		Deprecations::number($taxAmount);
-		$taxAmount = (string) $taxAmount;
-		Restriction::decimal($taxAmount);
-		$this->taxAmount = $taxAmount;
-		return $this;
+		return count($this->node->getChildren('TaxSubTotal'));
 	}
 
 }

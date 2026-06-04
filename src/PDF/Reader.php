@@ -6,9 +6,9 @@ use Adawolfa\ISDOC;
 use Adawolfa\ISDOC\Decoder;
 use Adawolfa\ISDOC\ReaderException;
 use Adawolfa\ISDOC\Schema\Invoice as T;
-use Exception;
 use Smalot\PdfParser\Parser;
 use Smalot\PdfParser\PDFObject;
+use Throwable;
 
 /**
  * PDF ISDOC reader.
@@ -38,12 +38,12 @@ final class Reader
 	{
 		try {
 			$pdf = $this->parser->parseFile($filename);
-		} catch (Exception $exception) {
+		} catch (Throwable $exception) {
 			throw ReaderException::pdfParsingFailed($exception);
 		}
 
 		$xml         = null;
-		$supplements = new T\SupplementsList;
+		$supplements = new T\SupplementsList();
 
 		foreach ($pdf->getObjectsByType('EmbeddedFile') as $object) {
 
@@ -64,10 +64,12 @@ final class Reader
 				continue;
 			}
 
-			if ($xml === null
+			if (
+				$xml === null
 				&& $length < (1 << 18) // This is what the XSD itself fits.
 				&& str_starts_with($contents, '<?xml')
-				&& str_contains($contents, '<Invoice')) {
+				&& str_contains($contents, '<Invoice')
+			) {
 				$xml = $contents;
 				continue;
 			}

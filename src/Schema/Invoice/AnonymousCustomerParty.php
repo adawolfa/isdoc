@@ -2,60 +2,40 @@
 
 namespace Adawolfa\ISDOC\Schema\Invoice;
 
-use Adawolfa\ISDOC\Arrayable;
-use Adawolfa\ISDOC\Map;
-use Adawolfa\ISDOC\ToArray;
-use Nette\SmartObject;
+use Adawolfa\ISDOC\Schema\Backing;
+use Adawolfa\ISDOC\Schema\Entity;
+use Adawolfa\ISDOC\XML\Exception;
 
 /**
  * Anonymous receiver of simplified tax document.
- *
- * @property string      $id
- * @property string|null $idScheme
  */
-class AnonymousCustomerParty implements Arrayable
+class AnonymousCustomerParty implements Entity
 {
 
-	use SmartObject;
-	use ToArray;
+	use Backing;
 
 	/** Unique identifier. */
-	#[Map('ID')]
-	private string $id;
+	public string $id {
+		/** @throws Exception */
+		get => $this->node->getStringOrThrow('ID');
+		set {
+			$this->node->setString('ID', $value);
+		}
+	}
 
 	/** Identification of schema used for identifier construction. */
-	#[Map('IDScheme')]
-	private ?string $idScheme = null;
-
-	public function __construct(string $id)
-	{
-		$this->setId($id);
+	public ?string $idScheme {
+		get => $this->node->getString('IDScheme');
+		set {
+			$this->node->setString('IDScheme', $value);
+		}
 	}
 
-	/** @deprecated Method accessors are deprecated, use {@see $id} property instead. */
-	public function getId(): string
-	{
-		return $this->id;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $id} property instead. */
-	public function setId(string $id): self
+	public function __construct(
+		string $id,
+	)
 	{
 		$this->id = $id;
-		return $this;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $idScheme} property instead. */
-	public function getIdScheme(): ?string
-	{
-		return $this->idScheme;
-	}
-
-	/** @deprecated Method accessors are deprecated, use {@see $idScheme} property instead. */
-	public function setIdScheme(?string $idScheme): self
-	{
-		$this->idScheme = $idScheme;
-		return $this;
 	}
 
 }
