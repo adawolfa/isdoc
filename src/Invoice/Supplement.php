@@ -16,6 +16,12 @@ use Adawolfa\ISDOC\SupplementException;
 class Supplement extends ISDOC\Schema\Invoice\Supplement implements RemoteSupplement
 {
 
+	/**
+	 * Default size cap for the file, enforced from its on-disk size before it is read into memory. 32 MB; callers
+	 * can raise it, or pass null to disable it, on getContents() / saveTo().
+	 */
+	public const SIZE_LIMIT = 1 << 25;
+
 	private string $path;
 
 	public function __construct(
@@ -82,20 +88,28 @@ class Supplement extends ISDOC\Schema\Invoice\Supplement implements RemoteSupple
 	}
 
 	/**
+	 * @param int|null $sizeLimit Size cap enforced on the file; raise it or pass null to disable it.
 	 * @throws SupplementException
 	 */
-	public function saveTo(string $filename): void
+	public function saveTo(string $filename, ?int $sizeLimit = self::SIZE_LIMIT): void
 	{
+		$this->checkSize($sizeLimit);
+
 		if (@copy($this->getPath(), $filename) === false) {
 			throw ISDOC\SupplementException::couldNotWriteFile($this->getFilename(), $filename);
 		}
 	}
 
 	/**
+	 * @param int|null $sizeLimit Size cap enforced on the file; raise it or pass null to disable it.
+	 * @throws SupplementException
+	 * @throws ISDOC\RuntimeException
 	 * @deprecated use {@see $contents} instead
 	 */
-	public function getContents(): string
+	public function getContents(?int $sizeLimit = self::SIZE_LIMIT): string
 	{
+		$this->checkSize($sizeLimit);
+
 		$contents = @file_get_contents($this->getPath());
 
 		if ($contents === false) {
@@ -103,6 +117,25 @@ class Supplement extends ISDOC\Schema\Invoice\Supplement implements RemoteSupple
 		}
 
 		return $contents;
+	}
+
+	/**
+	 * Rejects an oversized file from its on-disk size before reading it into memory. A null limit disables the
+	 * check.
+	 *
+	 * @throws SupplementException
+	 */
+	private function checkSize(?int $sizeLimit): void
+	{
+		if ($sizeLimit === null) {
+			return;
+		}
+
+		$size = @filesize($this->getPath());
+
+		if ($size !== false && $size > $sizeLimit) {
+			throw ISDOC\SupplementException::supplementTooLarge($this->getFilename(), $size, $sizeLimit);
+		}
 	}
 
 }
