@@ -103,141 +103,150 @@ final readonly class Writer
 			throw ISDOC\WriterException::fileCouldNotWrite($filename);
 		}
 
-		fseek($fd, -(1 << 8), SEEK_END);
-		$buf = fread($fd, 1 << 8);
+		try {
 
-		if ($buf === false) {
-			throw ISDOC\WriterException::pdfAppendFailed('read error');
-		}
-
-		$pos = strrpos($buf, "startxref\n");
-
-		if ($pos === false) {
-			throw ISDOC\WriterException::pdfAppendFailed('startxref not found');
-		}
-
-		$startxref = (int) strtok(substr($buf, $pos + 10), "\n");
-
-		if ($startxref <= 0 || $startxref > ftell($fd)) {
-			throw ISDOC\WriterException::pdfAppendFailed('startxref out of bounds');
-		}
-
-		fseek($fd, $startxref);
-
-		if (fgets($fd) !== "xref\n") {
-			throw ISDOC\WriterException::pdfAppendFailed('xref not found');
-		}
-
-		$size = null;
-		$root = null;
-
-		do {
-
-			$line = fgets($fd);
-
-			if ($line === false) {
-				throw ISDOC\WriterException::pdfAppendFailed('read error');
-			}
-
-			if ($line !== "trailer\n") {
-				continue;
-			}
-
-			$buf = fread($fd, 1 << 10);
+			fseek($fd, -(1 << 8), SEEK_END);
+			$buf = fread($fd, 1 << 8);
 
 			if ($buf === false) {
 				throw ISDOC\WriterException::pdfAppendFailed('read error');
 			}
 
-			$pos = strpos($buf, '/Size ');
+			$pos = strrpos($buf, "startxref\n");
 
 			if ($pos === false) {
-				throw ISDOC\WriterException::pdfAppendFailed('size not found, small buffer');
+				throw ISDOC\WriterException::pdfAppendFailed('startxref not found');
 			}
 
-			$size = (int) strtok(substr($buf, $pos + 6), " /\n");
+			$startxref = (int) strtok(substr($buf, $pos + 10), "\n");
 
-			if ($size < 0 || $size > (1 << 20)) {
-				throw ISDOC\WriterException::pdfAppendFailed('size out of range');
+			if ($startxref <= 0 || $startxref > ftell($fd)) {
+				throw ISDOC\WriterException::pdfAppendFailed('startxref out of bounds');
 			}
 
-			$pos = strpos($buf, '/Root ');
+			fseek($fd, $startxref);
 
-			if ($pos === false) {
-				throw ISDOC\WriterException::pdfAppendFailed('root not found');
+			if (fgets($fd) !== "xref\n") {
+				throw ISDOC\WriterException::pdfAppendFailed('xref not found');
 			}
 
-			$root = strtok(substr($buf, $pos + 6), "/\n");
+			$size = null;
+			$root = null;
 
-			if ($root === false) {
-				throw ISDOC\WriterException::pdfAppendFailed('root parse error');
+			do {
+
+				$line = fgets($fd);
+
+				if ($line === false) {
+					throw ISDOC\WriterException::pdfAppendFailed('read error');
+				}
+
+				if ($line !== "trailer\n") {
+					continue;
+				}
+
+				$buf = fread($fd, 1 << 10);
+
+				if ($buf === false) {
+					throw ISDOC\WriterException::pdfAppendFailed('read error');
+				}
+
+				$pos = strpos($buf, '/Size ');
+
+				if ($pos === false) {
+					throw ISDOC\WriterException::pdfAppendFailed('size not found, small buffer');
+				}
+
+				$size = (int) strtok(substr($buf, $pos + 6), " /\n");
+
+				if ($size < 0 || $size > (1 << 20)) {
+					throw ISDOC\WriterException::pdfAppendFailed('size out of range');
+				}
+
+				$pos = strpos($buf, '/Root ');
+
+				if ($pos === false) {
+					throw ISDOC\WriterException::pdfAppendFailed('root not found');
+				}
+
+				// The ">" delimiter stops the token at the closing ">>" when /Root is the trailer's last entry,
+				// so the indirect reference (e.g. "1 0 R") is never captured together with the dictionary close.
+				$root = strtok(substr($buf, $pos + 6), "/\n>");
+
+				if ($root === false) {
+					throw ISDOC\WriterException::pdfAppendFailed('root parse error');
+				}
+
+				$root = rtrim($root);
+
+			} while (!feof($fd));
+
+			if ($size === null || $root === null) {
+				throw ISDOC\WriterException::pdfAppendFailed('trailer not located');
 			}
 
-			$root = rtrim($root);
+			fseek($fd, 0, SEEK_END);
+			$xmlLength = strlen($xml);
+			$objPos    = ftell($fd);
 
-		} while (!feof($fd));
-
-		if ($size === null || $root === null) {
-			throw ISDOC\WriterException::pdfAppendFailed('trailer not located');
-		}
-
-		fseek($fd, 0, SEEK_END);
-		$xmlLength = strlen($xml);
-		$objPos    = ftell($fd);
-
-		fwrite($fd, "$size 0 obj\n");
-		fwrite($fd, "<< /Type /EmbeddedFile /Subtype /text#2Fxml /F (invoice.isdoc) /Length $xmlLength >>\n");
-		fwrite($fd, "stream\n");
-		fwrite($fd, $xml);
-		fwrite($fd, "\nendstream\nendobj\n");
-
-		$positions = [$objPos];
-		$num       = $size + 1;
-
-		foreach ($supplements as $supplement) {
-
-			$sfd = fopen($supplement->path, 'r');
-
-			if ($sfd === false) {
-				throw ISDOC\WriterException::failedAddSupplement($supplement->path, $supplement->filename);
-			}
-
-			$filesize = filesize($supplement->path);
-
-			if ($filesize === false || $filesize > (1 << 24)) {
-				fclose($sfd);
-				throw ISDOC\WriterException::failedAddSupplement($supplement->path, $supplement->filename);
-			}
-
-			$name   = preg_replace('/[^a-zA-Z0-9-.]/', '_', $supplement->filename);
-			$objPos = ftell($fd);
-
-			fprintf($fd, "%d 0 obj\n", $num++);
-			fprintf($fd, "<< /Type /EmbeddedFile /F (%s) /Length %d >>\n", $name, $filesize);
+			fwrite($fd, "$size 0 obj\n");
+			fwrite($fd, "<< /Type /EmbeddedFile /Subtype /text#2Fxml /F (invoice.isdoc) /Length $xmlLength >>\n");
 			fwrite($fd, "stream\n");
-			stream_copy_to_stream($sfd, $fd);
+			fwrite($fd, $xml);
 			fwrite($fd, "\nendstream\nendobj\n");
 
-			fclose($sfd);
+			$positions = [$objPos];
+			$num       = $size + 1;
 
-			$positions[] = $objPos;
+			foreach ($supplements as $supplement) {
 
+				$sfd = fopen($supplement->path, 'r');
+
+				if ($sfd === false) {
+					throw ISDOC\WriterException::failedAddSupplement($supplement->path, $supplement->filename);
+				}
+
+				try {
+
+					$filesize = filesize($supplement->path);
+
+					if ($filesize === false || $filesize > (1 << 24)) {
+						throw ISDOC\WriterException::failedAddSupplement($supplement->path, $supplement->filename);
+					}
+
+					$name   = preg_replace('/[^a-zA-Z0-9-.]/', '_', $supplement->filename);
+					$objPos = ftell($fd);
+
+					fprintf($fd, "%d 0 obj\n", $num++);
+					fprintf($fd, "<< /Type /EmbeddedFile /F (%s) /Length %d >>\n", $name, $filesize);
+					fwrite($fd, "stream\n");
+					stream_copy_to_stream($sfd, $fd);
+					fwrite($fd, "\nendstream\nendobj\n");
+
+				} finally {
+					fclose($sfd);
+				}
+
+				$positions[] = $objPos;
+
+			}
+
+			$newXRefPos = ftell($fd);
+			fprintf($fd, "xref\n%d %d\n", $size, count($positions));
+
+			foreach ($positions as $position) {
+				fprintf($fd, "%010d 00000 n \n", $position);
+			}
+
+			fwrite($fd, "trailer\n");
+			fprintf($fd, "<< /Size %d /Root %s /Prev %d >>\n", $size + count($positions), rtrim($root), $startxref);
+			fwrite($fd, "startxref\n");
+			fprintf($fd, "%d\n", $newXRefPos);
+			fwrite($fd, "%%EOF\n");
+
+		} finally {
+			fclose($fd);
 		}
-
-		$newXRefPos = ftell($fd);
-		fprintf($fd, "xref\n%d %d\n", $size, count($positions));
-
-		foreach ($positions as $position) {
-			fprintf($fd, "%010d 00000 n \n", $position);
-		}
-
-		fwrite($fd, "trailer\n");
-		fprintf($fd, "<< /Size %d /Root %s /Prev %d >>\n", $size + count($positions), rtrim($root), $startxref);
-		fwrite($fd, "startxref\n");
-		fprintf($fd, "%d\n", $newXRefPos);
-		fwrite($fd, "%%EOF\n");
-
-		fclose($fd);
 	}
 
 }

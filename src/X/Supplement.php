@@ -52,23 +52,34 @@ final class Supplement extends ISDOC\Schema\Invoice\Supplement implements ISDOC\
 	public function saveTo(string $filename): void
 	{
 		$resource = $this->stream;
-		$handle   = @fopen($filename, 'w');
 
-		if ($handle === false) {
-			throw SupplementException::couldNotWriteFile($this->filename, $filename);
-		}
+		try {
 
-		while (!feof($resource)) {
+			$handle = @fopen($filename, 'w');
 
-			$chunk = @fread($resource, 1 << 14);
-
-			if ($chunk === false || @fwrite($handle, $chunk) === false) {
+			if ($handle === false) {
 				throw SupplementException::couldNotWriteFile($this->filename, $filename);
 			}
 
-		}
+			try {
 
-		fclose($handle);
+				while (!feof($resource)) {
+
+					$chunk = @fread($resource, 1 << 14);
+
+					if ($chunk === false || @fwrite($handle, $chunk) === false) {
+						throw SupplementException::couldNotWriteFile($this->filename, $filename);
+					}
+
+				}
+
+			} finally {
+				fclose($handle);
+			}
+
+		} finally {
+			fclose($resource);
+		}
 	}
 
 	public bool $ok {

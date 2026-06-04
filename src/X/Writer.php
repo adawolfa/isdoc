@@ -30,36 +30,54 @@ final class Writer
 			throw ISDOC\WriterException::zipCouldNotCreate($filename);
 		}
 
-		try {
-			$xml = $this->encoder->encode($invoice);
-		} catch (ISDOC\EncoderException $exception) {
-			throw ISDOC\WriterException::encodeFailure($exception);
-		}
+		$success = false;
 
-		// Reading the typed invoice id and supplement names to build the archive entries can surface a lazy
-		// XML\Exception; wrap it so the writer keeps throwing only WriterException.
 		try {
 
-			$isdocFilename = sprintf('%s.isdoc', $invoice->id);
-			$zip->addFromString($isdocFilename, $xml);
-			$zip->addFromString('manifest.xml', $this->manifest($isdocFilename));
-
-			foreach ($invoice->supplementsList ?? [] as $supplement) {
-
-				if (
-					$supplement instanceof ISDOC\Invoice\Supplement
-					&& $zip->addFile($supplement->path, $supplement->filename) === false
-				) {
-					throw ISDOC\WriterException::failedAddSupplement($supplement->path, $supplement->filename);
-				}
-
+			try {
+				$xml = $this->encoder->encode($invoice);
+			} catch (ISDOC\EncoderException $exception) {
+				throw ISDOC\WriterException::encodeFailure($exception);
 			}
 
-		} /** @noinspection PhpRedundantCatchClauseInspection */ catch (ISDOC\XML\Exception $exception) {
-			throw ISDOC\WriterException::invalidInvoice($exception);
-		}
+			// Reading the typed invoice id and supplement names to build the archive entries can surface a lazy
+			// XML\Exception; wrap it so the writer keeps throwing only WriterException.
+			try {
 
-		$zip->close();
+				$isdocFilename = sprintf('%s.isdoc', $invoice->id);
+				$zip->addFromString($isdocFilename, $xml);
+				$zip->addFromString('manifest.xml', $this->manifest($isdocFilename));
+
+				foreach ($invoice->supplementsList ?? [] as $supplement) {
+
+					if (
+						$supplement instanceof ISDOC\Invoice\Supplement
+						&& $zip->addFile($supplement->path, $supplement->filename) === false
+					) {
+						throw ISDOC\WriterException::failedAddSupplement($supplement->path, $supplement->filename);
+					}
+
+				}
+
+			} /** @noinspection PhpRedundantCatchClauseInspection */ catch (ISDOC\XML\Exception $exception) {
+				throw ISDOC\WriterException::invalidInvoice($exception);
+			}
+
+			$success = true;
+
+		} finally {
+
+			// On failure discard the staged entries so close() never flushes a half-written archive, then close
+			// unconditionally to release the file handle (and its lock on Windows). The close() return value is
+			// intentionally ignored on the failure path so the original exception is not masked.
+			if (!$success) {
+				$zip->unchangeAll();
+				@$zip->close();
+			} else {
+				$zip->close();
+			}
+
+		}
 	}
 
 	private function manifest(string $filename): string

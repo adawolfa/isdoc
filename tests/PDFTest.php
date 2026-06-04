@@ -109,6 +109,55 @@ final class PDFTest extends TestCase
 		$this->assertSame('hello world', $txt->contents);
 	}
 
+	/**
+	 * When the carrier trailer ends with /Root as its last entry, the indirect reference
+	 * must be parsed without swallowing the closing ">>", otherwise the rebuilt trailer
+	 * becomes "… 22 0 R >> /Prev …", a duplicate-">>" dictionary that some PDF tools reject.
+	 *
+	 * @throws SupplementException
+	 * @throws WriterException
+	 * @throws ReaderException
+	 */
+	public function testAppendTrailerRootLast(): void
+	{
+		$carrier = file_get_contents(__DIR__ . '/fixtures/append-pdfobject.pdf');
+		self::assertNotFalse($carrier);
+
+		// Reorder the trailer dictionary so /Root is its final entry, immediately followed by ">>".
+		$carrier = str_replace('/Size 42 /Root 22 0 R /Info', '/Size 42 /Info', $carrier, $removed);
+		self::assertSame(1, $removed);
+		$carrier = str_replace("] >>\nstartxref", "] /Root 22 0 R >>\nstartxref", $carrier, $appended);
+		self::assertSame(1, $appended);
+
+		$carrierFile = sprintf('%s/isdoc_test_carrier.%d.pdf', sys_get_temp_dir(), getmypid());
+		self::assertNotFalse(file_put_contents($carrierFile, $carrier));
+
+		try {
+
+			$manager     = Adawolfa\ISDOC\Manager::create();
+			$invoice     = self::createInvoice();
+			$supplements = new Adawolfa\ISDOC\Schema\Invoice\SupplementsList();
+			$supplements->add(Adawolfa\ISDOC\Invoice\Supplement::fromPath($carrierFile));
+			$invoice->supplementsList = $supplements;
+
+			$manager->writer->file($invoice, $this->temp);
+
+			$produced = file_get_contents($this->temp);
+			self::assertNotFalse($produced);
+
+			// The appended trailer must keep "/Root 22 0 R" intact and never grow a stray "22 0 R >> /Prev".
+			self::assertStringContainsString('/Root 22 0 R /Prev', $produced);
+			self::assertStringNotContainsString('22 0 R >> /Prev', $produced);
+
+			$read = $manager->reader->file($this->temp);
+			self::assertNotNull($read->supplementsList);
+			self::assertGreaterThanOrEqual(1, $read->supplementsList->count());
+
+		} finally {
+			@unlink($carrierFile);
+		}
+	}
+
 	protected function setUp(): void
 	{
 		$this->temp = sprintf('%s/isdoc_test.%d.pdf', sys_get_temp_dir(), getmypid());
