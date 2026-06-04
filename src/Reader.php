@@ -12,7 +12,11 @@ final class Reader
 
 	private X\Reader $xReader;
 
-	private ?PDF\Reader $pdfReader;
+	/**
+	 * The PDF reader, or {@code null} when "smalot/pdfparser" is not installed. Exposed so callers can tune its
+	 * configuration — most notably {@see PDF\Reader::$supplementSizeLimit}.
+	 */
+	public readonly ?PDF\Reader $pdfReader;
 
 	public function __construct(Decoder $decoder, X\Reader $xReader, ?PDF\Reader $pdfReader = null)
 	{

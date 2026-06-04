@@ -43,6 +43,49 @@ final class PDFTest extends TestCase
 	}
 
 	/**
+	 * The size cap on PDF embedded files is a configurable default on the PDF reader: it can be lowered to reject
+	 * content the default allows, raised for larger embedded files, or set to {@code null} to disable the check
+	 * entirely.
+	 *
+	 * @throws ReaderException
+	 */
+	public function testConfigurableSupplementSizeLimit(): void
+	{
+		$file    = __DIR__ . '/fixtures/read-colsys.pdf';
+		$manager = Adawolfa\ISDOC\Manager::create();
+		self::assertNotNull($manager->reader->pdfReader);
+
+		// The default cap reads the fixture in full.
+		self::assertNotNull($manager->reader->file($file)->supplementsList);
+
+		// A 1-byte cap rejects the embedded file up front, before it is decompressed.
+		$manager->reader->pdfReader->supplementSizeLimit = 1;
+
+		try {
+			$manager->reader->file($file);
+			self::fail('Expected the lowered size limit to reject the embedded file.');
+		} catch (ReaderException) {
+			// Expected.
+		}
+
+		// null disables the cap entirely.
+		$manager->reader->pdfReader->supplementSizeLimit = null;
+		self::assertNotNull($manager->reader->file($file)->supplementsList);
+	}
+
+	/**
+	 * A negative cap is nonsensical and is refused at assignment.
+	 */
+	public function testNegativeSupplementSizeLimitIsRejected(): void
+	{
+		$manager = Adawolfa\ISDOC\Manager::create();
+		self::assertNotNull($manager->reader->pdfReader);
+
+		$this->expectException(Adawolfa\ISDOC\RuntimeException::class);
+		$manager->reader->pdfReader->supplementSizeLimit = -1;
+	}
+
+	/**
 	 * @throws WriterException
 	 * @throws ReaderException
 	 * @throws SupplementException

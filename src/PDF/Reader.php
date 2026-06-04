@@ -18,6 +18,23 @@ use Throwable;
 final class Reader
 {
 
+	/**
+	 * Declared-size cap for a single embedded file, rejected before {@see PDFObject::getContent()} decompresses it
+	 * and {@see Supplement} computes its digest. Defaults to the supplement cap ({@see ISDOC\Invoice\RemoteSupplement::SizeLimit},
+	 * 32 MB); generous for a real attachment. This bounds the stored stream length — the PDF library still owns
+	 * whole-file memory. Raise it for larger embedded files, or set {@code null} to disable the check entirely; a
+	 * negative limit is rejected.
+	 */
+	public ?int $supplementSizeLimit = ISDOC\Invoice\RemoteSupplement::SizeLimit {
+		set {
+			if ($value !== null && $value < 0) {
+				throw new ISDOC\RuntimeException("Supplement size limit must not be negative, got $value.");
+			}
+
+			$this->supplementSizeLimit = $value;
+		}
+	}
+
 	private Decoder $decoder;
 
 	private Parser $parser;
@@ -44,6 +61,7 @@ final class Reader
 
 		$xml         = null;
 		$supplements = new T\SupplementsList();
+		$limit       = $this->supplementSizeLimit;
 
 		foreach ($pdf->getObjectsByType('EmbeddedFile') as $object) {
 
@@ -56,6 +74,15 @@ final class Reader
 
 			if ($length === null) {
 				continue;
+			}
+
+			if ($limit !== null && is_numeric($length) && $length > $limit) {
+				$name = $details['F'] ?? null;
+				throw ReaderException::pdfSupplementTooLarge(
+					is_string($name) ? $name : 'unknown',
+					(int) $length,
+					$limit,
+				);
 			}
 
 			$contents = $object->getContent();
@@ -74,7 +101,11 @@ final class Reader
 				continue;
 			}
 
-			$supplements->add(new Supplement($object));
+			try {
+				$supplements->add(new Supplement($object));
+			} catch (ISDOC\SupplementException $exception) {
+				throw ReaderException::pdfCouldNotCreateSupplement($exception);
+			}
 
 		}
 

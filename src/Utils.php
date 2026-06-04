@@ -17,6 +17,14 @@ final class Utils
 	}
 
 	/**
+	 * Verifies a supplement's bytes against the digest declared alongside them.
+	 *
+	 * Security: this is an integrity check, not an authenticity one. The digest and the bytes both come from the
+	 * same untrusted container, so a match proves only that the attachment was not corrupted in transit — never
+	 * that it originates from a trusted party. Callers must not treat a {@code true} result as a trust boundary.
+	 * SHA1 is mandated by the ISDOC spec ({@code …xmldsig#sha1}); the limitation is the self-referential check,
+	 * not the algorithm.
+	 *
 	 * @throws SupplementException
 	 */
 	public static function checkSupplementDigest(RemoteSupplement $supplement): bool

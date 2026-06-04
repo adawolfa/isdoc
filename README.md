@@ -180,11 +180,21 @@ foreach ($invoice->supplementsList as $supplement) {
             throw new Exception('Digest failed.');
         }
         
-        $supplement->saveTo("supplements/{$supplement->filename}");
+        $supplement->saveTo('supplements/' . basename($supplement->filename));
         
     }
 
 }
+~~~
+
+> `$supplement->filename` is whatever the document declared and `$supplement->ok` is an *integrity* check (the bytes
+> were not corrupted), **not** an authenticity one — do not treat a passing digest as a trust boundary.
+
+Reading an attachment from an untrusted container (an ISDOCX ZIP entry or a PDF embedded file) is capped at **32 MB** by default, so a tiny archive declaring a multi-gigabyte entry cannot exhaust memory. The `$contents` / `$stream` properties apply that default; when 32 MB is not enough (or you want it tighter), call `getContents($sizeLimit)` / `getStream($sizeLimit)` / `saveTo($filename, $sizeLimit)` with your own limit — pass `null` to disable the cap entirely:
+
+~~~php
+$bytes  = $supplement->getContents(64 * 1024 * 1024); // allow up to 64 MB
+$handle = $supplement->getStream(64 * 1024 * 1024);   // a read stream you must fclose()
 ~~~
 
 ## PDF

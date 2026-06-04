@@ -23,35 +23,50 @@ final class Supplement extends ISDOC\Schema\Invoice\Supplement implements ISDOC\
 
 	public string $contents {
 		/** @throws SupplementException */
-		get {
-			$contents = $this->zip->getFromName($this->findRealFile());
-
-			if ($contents === false) {
-				throw SupplementException::zipDoesNotContainFile($this->filename);
-			}
-
-			return $contents;
-		}
+		get => $this->getContents();
 	}
 
 	/** @var resource */
 	public $stream {
 		/** @throws SupplementException */
-		get {
-			$resource = $this->zip->getStream($this->findRealFile());
-
-			if ($resource === false) {
-				throw SupplementException::zipDoesNotContainFile($this->filename);
-			}
-
-			return $resource;
-		}
+		get => $this->getStream();
 	}
 
 	/** @throws SupplementException */
-	public function saveTo(string $filename): void
+	public function getContents(?int $sizeLimit = self::SizeLimit): string
 	{
-		$resource = $this->stream;
+		$name = $this->findRealFile();
+		$this->checkSize($name, $sizeLimit);
+		$contents = $this->zip->getFromName($name);
+
+		if ($contents === false) {
+			throw SupplementException::zipDoesNotContainFile($this->filename);
+		}
+
+		return $contents;
+	}
+
+	/**
+	 * @return resource
+	 * @throws SupplementException
+	 */
+	public function getStream(?int $sizeLimit = self::SizeLimit)
+	{
+		$name = $this->findRealFile();
+		$this->checkSize($name, $sizeLimit);
+		$resource = $this->zip->getStream($name);
+
+		if ($resource === false) {
+			throw SupplementException::zipDoesNotContainFile($this->filename);
+		}
+
+		return $resource;
+	}
+
+	/** @throws SupplementException */
+	public function saveTo(string $filename, ?int $sizeLimit = self::SizeLimit): void
+	{
+		$resource = $this->getStream($sizeLimit);
 
 		try {
 
@@ -61,24 +76,60 @@ final class Supplement extends ISDOC\Schema\Invoice\Supplement implements ISDOC\
 				throw SupplementException::couldNotWriteFile($this->filename, $filename);
 			}
 
+			$written  = 0;
+			$complete = false;
+
 			try {
 
 				while (!feof($resource)) {
 
 					$chunk = @fread($resource, 1 << 14);
 
-					if ($chunk === false || @fwrite($handle, $chunk) === false) {
+					if ($chunk === false) {
+						throw SupplementException::couldNotWriteFile($this->filename, $filename);
+					}
+
+					$written += strlen($chunk);
+
+					// Defence in depth: a stream that inflates past the declared size (or a malformed entry) is
+					// stopped here so a decompression bomb cannot fill the disk even when statName() under-reports.
+					if ($sizeLimit !== null && $written > $sizeLimit) {
+						throw SupplementException::supplementTooLarge($this->filename, $written, $sizeLimit);
+					}
+
+					if (@fwrite($handle, $chunk) === false) {
 						throw SupplementException::couldNotWriteFile($this->filename, $filename);
 					}
 
 				}
 
+				$complete = true;
+
 			} finally {
 				fclose($handle);
+
+				// Never leave a partial (or bomb-truncated) file behind when the copy did not finish cleanly.
+				if (!$complete) {
+					@unlink($filename);
+				}
 			}
 
 		} finally {
 			fclose($resource);
+		}
+	}
+
+	/**
+	 * Rejects an oversized entry from its central-directory size before any bytes are inflated.
+	 *
+	 * @throws SupplementException
+	 */
+	private function checkSize(string $name, ?int $sizeLimit): void
+	{
+		$size = Zip::entrySize($this->zip, $name);
+
+		if ($sizeLimit !== null && $size !== null && $size > $sizeLimit) {
+			throw SupplementException::supplementTooLarge($this->filename, $size, $sizeLimit);
 		}
 	}
 

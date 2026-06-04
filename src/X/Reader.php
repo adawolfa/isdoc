@@ -17,6 +17,13 @@ use ZipArchive;
 final readonly class Reader
 {
 
+	/**
+	 * Uncompressed-size cap for the manifest and the ISDOC XML, enforced before the entry is inflated to defend
+	 * against a ZIP decompression bomb. 256 KB is the documented "what the XSD itself fits" bound, mirroring the
+	 * PDF reader's XML-detection limit.
+	 */
+	private const int DocumentSizeLimit = 1 << 18;
+
 	public function __construct(private Decoder $decoder)
 	{
 	}
@@ -58,6 +65,7 @@ final readonly class Reader
 		return $invoice;
 	}
 
+	/** @throws ISDOC\ReaderException */
 	private function readXML(ZipArchive $zip): ?string
 	{
 		$fromManifest = $this->readXMLFromManifest($zip);
@@ -82,16 +90,21 @@ final readonly class Reader
 			return null;
 		}
 
-		$xml = $zip->getFromName($files[0]);
-
-		return $xml === false ? null : $xml;
+		return $this->readEntry($zip, $files[0]);
 	}
 
+	/** @throws ISDOC\ReaderException */
 	private function readXMLFromManifest(ZipArchive $zip): ?string
 	{
-		$manifest = $zip->getFromName('manifest.xml');
+		$manifest = $this->readEntry($zip, 'manifest.xml');
 
-		if ($manifest === false) {
+		if ($manifest === null) {
+			return null;
+		}
+
+		// Security: reject any DTD outright (no XXE / billion-laughs on attacker-supplied manifests) and keep
+		// LIBXML_NOENT / LIBXML_DTDLOAD out of these flags as a second line of defence. See XML\Document::ParseOptions.
+		if (ISDOC\XML\Document::declaresDoctype($manifest)) {
 			return null;
 		}
 
@@ -119,13 +132,35 @@ final readonly class Reader
 				continue;
 			}
 
-			$xml = $zip->getFromName($filename);
-
-			return $xml === false ? null : $xml;
+			return $this->readEntry($zip, $filename);
 
 		}
 
 		return null;
+	}
+
+	/**
+	 * Reads an archive entry into memory, rejecting a decompression bomb up front: the uncompressed size is read
+	 * from the central directory and checked against {@see self::DocumentSizeLimit} before a single byte is
+	 * inflated. Returns null when the entry is absent.
+	 *
+	 * @throws ISDOC\ReaderException
+	 */
+	private function readEntry(ZipArchive $zip, string $name): ?string
+	{
+		$size = Zip::entrySize($zip, $name);
+
+		if ($size === null) {
+			return null;
+		}
+
+		if ($size > self::DocumentSizeLimit) {
+			throw ISDOC\ReaderException::zipEntryTooLarge($name, $size, self::DocumentSizeLimit);
+		}
+
+		$contents = $zip->getFromName($name);
+
+		return $contents === false ? null : $contents;
 	}
 
 }

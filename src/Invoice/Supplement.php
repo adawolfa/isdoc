@@ -66,21 +66,79 @@ class Supplement extends ISDOC\Schema\Invoice\Supplement implements RemoteSupple
 	}
 
 	public string $contents {
-		/** @throws ISDOC\RuntimeException */
-		get {
-			$contents = @file_get_contents($this->path);
+		/**
+		 * @throws SupplementException
+		 * @throws ISDOC\RuntimeException
+		 */
+		get => $this->getContents();
+	}
 
-			if ($contents === false) {
-				throw new ISDOC\RuntimeException('Failed to read contents of the supplement.');
-			}
+	/** @var resource */
+	public $stream {
+		/**
+		 * @throws SupplementException
+		 * @throws ISDOC\RuntimeException
+		 */
+		get => $this->getStream();
+	}
 
-			return $contents;
+	/**
+	 * @throws SupplementException
+	 * @throws ISDOC\RuntimeException
+	 */
+	public function getContents(?int $sizeLimit = self::SizeLimit): string
+	{
+		$size = @filesize($this->path);
+
+		if ($sizeLimit !== null && $size !== false && $size > $sizeLimit) {
+			throw SupplementException::supplementTooLarge($this->filename, $size, $sizeLimit);
 		}
+
+		$contents = @file_get_contents($this->path);
+
+		if ($contents === false) {
+			throw new ISDOC\RuntimeException('Failed to read contents of the supplement.');
+		}
+
+		// Defence in depth if filesize() under-reported (a local file is trusted, but the stat could race a write).
+		if ($sizeLimit !== null && strlen($contents) > $sizeLimit) {
+			throw SupplementException::supplementTooLarge($this->filename, strlen($contents), $sizeLimit);
+		}
+
+		return $contents;
+	}
+
+	/**
+	 * @return resource
+	 * @throws SupplementException
+	 * @throws ISDOC\RuntimeException
+	 */
+	public function getStream(?int $sizeLimit = self::SizeLimit)
+	{
+		$size = @filesize($this->path);
+
+		if ($sizeLimit !== null && $size !== false && $size > $sizeLimit) {
+			throw SupplementException::supplementTooLarge($this->filename, $size, $sizeLimit);
+		}
+
+		$resource = @fopen($this->path, 'rb');
+
+		if ($resource === false) {
+			throw new ISDOC\RuntimeException('Failed to read contents of the supplement.');
+		}
+
+		return $resource;
 	}
 
 	/** @throws SupplementException */
-	public function saveTo(string $filename): void
+	public function saveTo(string $filename, ?int $sizeLimit = self::SizeLimit): void
 	{
+		$size = @filesize($this->path);
+
+		if ($sizeLimit !== null && $size !== false && $size > $sizeLimit) {
+			throw SupplementException::supplementTooLarge($this->filename, $size, $sizeLimit);
+		}
+
 		if (@copy($this->path, $filename) === false) {
 			throw SupplementException::couldNotWriteFile($this->filename, $filename);
 		}

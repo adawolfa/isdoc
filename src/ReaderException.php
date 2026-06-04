@@ -37,6 +37,16 @@ final class ReaderException extends Exception
 		return new self("Could not find ISDOC data within ISDOCX file '$filename'.");
 	}
 
+	public static function zipEntryTooLarge(string $name, int $size, int $limit): self
+	{
+		return new self("ISDOCX entry '$name' declares $size uncompressed bytes, exceeding the $limit byte limit.");
+	}
+
+	public static function pdfSupplementTooLarge(string $filename, int $size, int $limit): self
+	{
+		return new self("PDF embedded file '$filename' declares $size bytes, exceeding the $limit byte limit.");
+	}
+
 	public static function pdfParsingNotAvailable(): self
 	{
 		return new self('PDF parser library is not installed. Please install "smalot/pdfparser" package.');
