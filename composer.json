@@ -22,6 +22,7 @@
 		"smalot/pdfparser": "^2.12",
 		"symfony/console": "^6.0|^7.0|^8.0",
 		"phpunit/phpunit": "^10.0|^11.0|^12.0",
+		"brianium/paratest": "^7.20",
 		"phpstan/phpstan": "^1.12|^2.0",
 		"squizlabs/php_codesniffer": "^4.0",
 		"slevomat/coding-standard": "^8.0",

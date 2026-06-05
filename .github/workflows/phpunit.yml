@@ -30,5 +30,9 @@ jobs:
       - name: Install dependencies
         run: composer install --no-progress --prefer-dist
 
-      - name: Run PHPUnit
-        run: vendor/bin/phpunit tests
+      # Tests run under ParaTest: PHP 8.4's rewritten ext/dom corrupts the glibc
+      # heap during a DOM-heavy run and aborts (SIGABRT) at shutdown, *after* the
+      # assertions pass. Splitting the run across worker processes (the runner
+      # itself executes no tests) sidesteps the engine bug; 8.5 is unaffected.
+      - name: Run tests
+        run: vendor/bin/paratest tests
