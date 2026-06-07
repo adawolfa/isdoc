@@ -82,7 +82,19 @@ final class Data
 			$list = [$list];
 		}
 
-		return array_map(fn(array $item): self => new self($item, $this, $name), $list);
+		$children = [];
+
+		foreach ($list as $item) {
+
+			if (!is_array($item)) {
+				throw new RuntimeException('Child list item is not an array.');
+			}
+
+			$children[] = new self($item, $this, $name);
+
+		}
+
+		return $children;
 	}
 
 	/**
