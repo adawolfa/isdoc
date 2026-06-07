@@ -15,12 +15,16 @@ final class Supplement extends ISDOC\Schema\Invoice\Supplement implements ISDOC\
 
 	private PDFObject $object;
 
-	/** @throws SupplementException */
-	public function __construct(PDFObject $object)
+	/**
+	 * @param string|null $name Filename from the carrier's /Filespec, where it conformantly belongs. When null, the
+	 *                          legacy /F on the embedded-file stream is used as a fallback.
+	 * @throws SupplementException
+	 */
+	public function __construct(PDFObject $object, ?string $name = null)
 	{
 		$this->object = $object;
 
-		$name = $object->getDetails()['F'] ?? null;
+		$name ??= $object->getDetails()['F'] ?? null;
 
 		parent::__construct(
 			is_string($name) ? $name : 'unknown.dat',
