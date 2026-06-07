@@ -23,7 +23,11 @@ final class Supplement extends ISDOC\Schema\Invoice\Supplement implements ISDOC\
 
 	private PDFObject $object;
 
-	public function __construct(PDFObject $object)
+	/**
+	 * @param string|null $name Filename from the carrier's /Filespec, where it conformantly belongs. When null, the
+	 *                          legacy /F on the embedded-file stream is used as a fallback.
+	 */
+	public function __construct(PDFObject $object, ?string $name = null)
 	{
 		$this->object = $object;
 
@@ -32,7 +36,7 @@ final class Supplement extends ISDOC\Schema\Invoice\Supplement implements ISDOC\
 					?? throw new ISDOC\RuntimeException('Failed to get contents of the PDF embedded file.');
 
 		parent::__construct(
-			$object->getDetails()['F'] ?? 'unknown.dat',
+			$name ?? $object->getDetails()['F'] ?? 'unknown.dat',
 			new ISDOC\Schema\Invoice\DigestMethod('http://www.w3.org/2000/09/xmldsig#sha1'),
 			base64_encode(sha1($contents, true)),
 		);
