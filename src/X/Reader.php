@@ -16,6 +16,8 @@ use ZipArchive;
 final class Reader
 {
 
+	private const DOCUMENT_SIZE_LIMIT = 1 << 18;
+
 	private XmlEncoder $xmlEncoder;
 
 	private Decoder $decoder;
@@ -98,20 +100,14 @@ final class Reader
 			return null;
 		}
 
-		$xml = $zip->getFromName($files[0]);
-
-		if ($xml === false) {
-			return null;
-		}
-
-		return $xml;
+		return $this->readEntry($zip, $files[0]);
 	}
 
 	private function readXMLFromManifest(ZipArchive $zip): ?string
 	{
-		$manifestXML = $zip->getFromName('manifest.xml');
+		$manifestXML = $this->readEntry($zip, 'manifest.xml');
 
-		if ($manifestXML === false) {
+		if ($manifestXML === null) {
 			return null;
 		}
 
@@ -131,13 +127,24 @@ final class Reader
 			return null;
 		}
 
-		$xml = $zip->getFromName($filename);
+		return $this->readEntry($zip, $filename);
+	}
 
-		if ($xml === false) {
+	private function readEntry(ZipArchive $zip, string $name): ?string
+	{
+		$size = Zip::entrySize($zip, $name);
+
+		if ($size === null) {
 			return null;
 		}
 
-		return $xml;
+		if ($size > self::DOCUMENT_SIZE_LIMIT) {
+			throw ISDOC\ReaderException::zipEntryTooLarge($name, $size, self::DOCUMENT_SIZE_LIMIT);
+		}
+
+		$xml = $zip->getFromName($name);
+
+		return $xml === false ? null : $xml;
 	}
 
 }
