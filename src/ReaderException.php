@@ -37,4 +37,9 @@ final class ReaderException extends Exception
 		return new self("Could not find ISDOC data within ISDOCX file '$filename'.");
 	}
 
+	public static function zipEntryTooLarge(string $name, int $size, int $limit): self
+	{
+		return new self("ISDOCX entry '$name' declares $size uncompressed bytes, exceeding the $limit byte limit.");
+	}
+
 }

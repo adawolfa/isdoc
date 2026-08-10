@@ -17,6 +17,8 @@ use ZipArchive;
 final class Supplement extends ISDOC\Schema\Invoice\Supplement
 {
 
+	public const SIZE_LIMIT = 1 << 25;
+
 	private ZipArchive $zip;
 
 	public function __construct(
@@ -31,9 +33,11 @@ final class Supplement extends ISDOC\Schema\Invoice\Supplement
 	}
 
 	/** @throws SupplementException */
-	public function getContents(): string
+	public function getContents(?int $sizeLimit = self::SIZE_LIMIT): string
 	{
-		$contents = $this->zip->getFromName($this->findRealFile());
+		$name = $this->findRealFile();
+		$this->checkSize($name, $sizeLimit);
+		$contents = $this->zip->getFromName($name);
 
 		if ($contents === false) {
 			throw SupplementException::zipDoesNotContainFile($this->getFilename());
@@ -46,9 +50,11 @@ final class Supplement extends ISDOC\Schema\Invoice\Supplement
 	 * @return resource
 	 * @throws SupplementException
 	 */
-	public function getStream()
+	public function getStream(?int $sizeLimit = self::SIZE_LIMIT)
 	{
-		$resource = $this->zip->getStream($this->findRealFile());
+		$name = $this->findRealFile();
+		$this->checkSize($name, $sizeLimit);
+		$resource = $this->zip->getStream($name);
 
 		if ($resource === false) {
 			throw SupplementException::zipDoesNotContainFile($this->getFilename());
@@ -57,28 +63,64 @@ final class Supplement extends ISDOC\Schema\Invoice\Supplement
 		return $resource;
 	}
 
-	/** @throws SupplementException */
-	public function saveTo(string $filename): void
+	private function checkSize(string $name, ?int $sizeLimit): void
 	{
-		// I assume rewound descriptor.
-		$resource = $this->getStream();
-		$f        = @fopen($filename, 'w');
-
-		if ($f === false) {
-			throw SupplementException::couldNotWriteFile($this->getFilename(), $filename);
+		if ($sizeLimit === null) {
+			return;
 		}
 
-		while (!feof($resource)) {
+		$size = Zip::entrySize($this->zip, $name);
 
-			$chunk = @fread($resource, 1 << 14);
+		if ($size !== null && $size > $sizeLimit) {
+			throw SupplementException::supplementTooLarge($this->getFilename(), $size, $sizeLimit);
+		}
+	}
 
-			if ($chunk === false || @fwrite($f, $chunk) === false) {
+	/** @throws SupplementException */
+	public function saveTo(string $filename, ?int $sizeLimit = self::SIZE_LIMIT): void
+	{
+		$resource = $this->getStream($sizeLimit);
+
+		try {
+			$f = @fopen($filename, 'w');
+
+			if ($f === false) {
 				throw SupplementException::couldNotWriteFile($this->getFilename(), $filename);
 			}
 
-		}
+			$written  = 0;
+			$complete = false;
 
-		fclose($f);
+			try {
+				while (!feof($resource)) {
+					$chunk = @fread($resource, 1 << 14);
+
+					if ($chunk === false) {
+						throw SupplementException::couldNotWriteFile($this->getFilename(), $filename);
+					}
+
+					$written += strlen($chunk);
+
+					if ($sizeLimit !== null && $written > $sizeLimit) {
+						throw SupplementException::supplementTooLarge($this->getFilename(), $written, $sizeLimit);
+					}
+
+					if (@fwrite($f, $chunk) === false) {
+						throw SupplementException::couldNotWriteFile($this->getFilename(), $filename);
+					}
+				}
+
+				$complete = true;
+			} finally {
+				fclose($f);
+
+				if (!$complete) {
+					@unlink($filename);
+				}
+			}
+		} finally {
+			fclose($resource);
+		}
 	}
 
 	/** @throws SupplementException */

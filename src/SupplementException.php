@@ -22,6 +22,11 @@ final class SupplementException extends ISDOC\Exception
 		return new self("Failed to save '$source' supplement file into '$filename'.");
 	}
 
+	public static function supplementTooLarge(string $filename, int $size, int $limit): self
+	{
+		return new self("Supplement '$filename' is $size bytes, exceeding the $limit byte limit.");
+	}
+
 	public static function couldNotCreateSupplement(string $filename): self
 	{
 		return new self("Failed to create supplement '$filename'.");
